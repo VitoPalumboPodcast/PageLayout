@@ -775,25 +775,57 @@ $('.microqa')?.addEventListener('click',e=>{
 /* =========================================================
    ATTIVITÀ GUIDATA
    ========================================================= */
-const orderGoal=['[STEP_A]','[STEP_B]','[STEP_C]'];
+let lastIngestedData=null;
+let orderGoal=[];
 let selectedOrder=[];
+const guidedTaskTexts={success:'',retry:'',help1:'',help2:'',help3:''};
 function updateOrderOut(){ $('#taskOut').textContent = 'Scelte: ' + (selectedOrder.join(' → ') || '—'); }
+function readButtonLabel(el){
+  if(!el) return '';
+  return (el.textContent||'').trim();
+}
+function getPlaceholderValue(key, fallback=''){
+  const raw=lastIngestedData?.placeholders?.[key];
+  if(typeof raw==='string' && raw.trim()) return raw.trim();
+  return fallback;
+}
+function initGuidedTask(){
+  const btns=Array.from(document.querySelectorAll('#taskOrder button[data-step]'));
+  orderGoal=btns.map(btn=>{
+    const val=(btn.dataset.step??btn.textContent??'').trim();
+    return val;
+  }).filter(Boolean);
+  selectedOrder=[];
+  updateOrderOut();
+  const helpEl=$('#taskHelp');
+  if(helpEl){
+    helpEl.style.display='none';
+    helpEl.textContent='';
+  }
+  guidedTaskTexts.success=getPlaceholderValue('SPIEGAZIONE_SUCCINTA','[SPIEGAZIONE_SUCCINTA]');
+  guidedTaskTexts.retry=getPlaceholderValue('INDIZIO_DIAGNOSTICO','[INDIZIO_DIAGNOSTICO]');
+  guidedTaskTexts.help1=getPlaceholderValue('AIUTO_1', readButtonLabel($('#btnHelp1')) || '[AIUTO_1]');
+  guidedTaskTexts.help2=getPlaceholderValue('AIUTO_2', readButtonLabel($('#btnHelp2')) || '[AIUTO_2]');
+  guidedTaskTexts.help3=getPlaceholderValue('SOLUZIONE_COMMENTATA', readButtonLabel($('#btnHelp3')) || '[SOLUZIONE_COMMENTATA]');
+}
 $('#taskOrder').addEventListener('click',e=>{
   const b=e.target.closest('button[data-step]'); if(!b) return;
-  const val=b.dataset.step; if(selectedOrder.includes(val)) return;
+  const val=(b.dataset.step||'').trim(); if(!val || selectedOrder.includes(val)) return;
   selectedOrder.push(val); updateOrderOut();
   if(selectedOrder.length===orderGoal.length){
     const ok=selectedOrder.every((v,i)=>v===orderGoal[i]);
     const help=$('#taskHelp'); help.style.display='block';
+    const successText=guidedTaskTexts.success ? ` ${escapeHTML(guidedTaskTexts.success)}` : '';
+    const retryText=guidedTaskTexts.retry ? `Rifletti: ${escapeHTML(guidedTaskTexts.retry)}` : 'Rifletti.';
     help.innerHTML = ok
-      ? '<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> [SPIEGAZIONE_SUCCINTA].'
-      : 'Rifletti: [INDIZIO_DIAGNOSTICO].';
+      ? `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div>${successText}`
+      : retryText;
   }
 });
 $('#btnResetOrder').addEventListener('click',()=>{ selectedOrder=[]; updateOrderOut(); const h=$('#taskHelp'); h.style.display='none'; h.textContent=''; });
-$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_1].'; });
-$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_2].'; });
-$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.innerHTML='<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> [SOLUZIONE_COMMENTATA].'; });
+$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent=(guidedTaskTexts.help1||'[AIUTO_1]'); });
+$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent=(guidedTaskTexts.help2||'[AIUTO_2]'); });
+$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; const txt=guidedTaskTexts.help3||'[SOLUZIONE_COMMENTATA]'; h.innerHTML=`<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> ${escapeHTML(txt)}`; });
 
 /* =========================================================
    QUIZ UNIFICATO
@@ -1244,8 +1276,6 @@ function announce(msg){ live.textContent=msg; }
   }
 
   // --- Ingestione dati comune ---
-  let lastIngestedData=null;
-
   function ingestData(data){
     if(data && typeof data==='object'){
       try{
@@ -1277,9 +1307,12 @@ function announce(msg){ live.textContent=msg; }
       payload.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
       call('renderQuizList');
     }
+    initGuidedTask();
   }
   ensure('ingestData', ingestData);
   if(typeof window!=='undefined') window.ingestData=ingestData;
+
+  initGuidedTask();
 
   // --- Toolbar: aggiungi pulsanti Import/Incolla/Export in modo non intrusivo ---
   function ensureToolbarButtons(){
