@@ -5,6 +5,7 @@
     "TOOLTIP_IMPORTA": "Importa da file JSON",
     "TOOLTIP_INCOLLA": "Incolla JSON generato",
     "TOOLTIP_ESPORTA": "Esporta pagina completa",
+    "TOOLTIP_MODELLO": "Scarica il modello JSON di partenza",
     "SCOP0_IN_2_RIGHE": "Riconoscere cos'è un'emozione.\nDistinguere emozione, sentimento e umore.",
     "PUNTO_CALDO_1": "Quando l'emozione aiuta a decidere",
     "PUNTO_CALDO_2": "Quando l'emozione confonde la decisione",
