@@ -755,25 +755,53 @@ $('.microqa')?.addEventListener('click',e=>{
 /* =========================================================
    ATTIVITÀ GUIDATA
    ========================================================= */
-const orderGoal=['[STEP_A]','[STEP_B]','[STEP_C]'];
+let orderGoal=[];
+const taskMessages={
+  shortExplanation:'',
+  diagnosticHint:'',
+  helps:['',''],
+  solution:''
+};
 let selectedOrder=[];
 function updateOrderOut(){ $('#taskOut').textContent = 'Scelte: ' + (selectedOrder.join(' → ') || '—'); }
 $('#taskOrder').addEventListener('click',e=>{
   const b=e.target.closest('button[data-step]'); if(!b) return;
   const val=b.dataset.step; if(selectedOrder.includes(val)) return;
   selectedOrder.push(val); updateOrderOut();
+  const help=$('#taskHelp');
+  if(orderGoal.length===0){
+    help.style.display='block';
+    help.textContent = 'Definisci un ordine corretto nel JSON per attivare il controllo.';
+    return;
+  }
   if(selectedOrder.length===orderGoal.length){
     const ok=selectedOrder.every((v,i)=>v===orderGoal[i]);
-    const help=$('#taskHelp'); help.style.display='block';
-    help.innerHTML = ok
-      ? '<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> [SPIEGAZIONE_SUCCINTA].'
-      : 'Rifletti: [INDIZIO_DIAGNOSTICO].';
+    help.style.display='block';
+    if(ok){
+      const msg=(taskMessages.shortExplanation||'').trim() || 'Ben fatto: hai ricostruito la sequenza corretta.';
+      help.innerHTML = `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> ${escapeHTML(msg)}`;
+    }else{
+      const msg=(taskMessages.diagnosticHint||'').trim();
+      help.textContent = msg ? `Rifletti: ${msg}` : 'Rifletti: quali passaggi vengono prima e quali dopo?';
+    }
   }
 });
 $('#btnResetOrder').addEventListener('click',()=>{ selectedOrder=[]; updateOrderOut(); const h=$('#taskHelp'); h.style.display='none'; h.textContent=''; });
-$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_1].'; });
-$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_2].'; });
-$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.innerHTML='<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> [SOLUZIONE_COMMENTATA].'; });
+$('#btnHelp1').addEventListener('click',()=>{
+  const h=$('#taskHelp'); h.style.display='block';
+  const msg=taskMessages.helps[0] || 'Suggerimento non disponibile.';
+  h.textContent=msg;
+});
+$('#btnHelp2').addEventListener('click',()=>{
+  const h=$('#taskHelp'); h.style.display='block';
+  const msg=taskMessages.helps[1] || 'Suggerimento non disponibile.';
+  h.textContent=msg;
+});
+$('#btnHelp3').addEventListener('click',()=>{
+  const h=$('#taskHelp'); h.style.display='block';
+  const msg=taskMessages.solution || 'Ecco la soluzione: verifica l’ordine logico tra i passaggi.';
+  h.innerHTML=`<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> ${escapeHTML(msg)}`;
+});
 
 /* =========================================================
    QUIZ UNIFICATO
@@ -1165,7 +1193,10 @@ function announce(msg){ live.textContent=msg; }
       dl.appendChild(dt); dl.appendChild(dd);
     });
   });
-  ensure('escapeHTML', function(s){return String(s).replace(/[&<>\"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;'}[m]));});
+  ensure('escapeHTML', function(s){
+    const map={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'};
+    return String(s).replace(/[&<>"']/g, m=>map[m]||m);
+  });
 
   // --- Placeholders globali su tutta la pagina ---
   function makeKeyRegex(key){ return new RegExp('\\['+ key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&') +'\\]','g'); }
@@ -1234,7 +1265,41 @@ function announce(msg){ live.textContent=msg; }
       data.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
       call('renderQuizList');
     }
+
+    const placeholders=data.placeholders||{};
+    const guided=data.guidedTask||{};
+    const trimString=(value)=>typeof value==='string'?value.trim():'';
+    const pickArray=(value)=>Array.isArray(value)?value.map(v=>trimString(v)).filter(Boolean):[];
+    const orderFromGuided=pickArray(guided.orderGoal);
+    const orderFromNamed=pickArray([guided.stepA,guided.stepB,guided.stepC]);
+    const orderFromPlaceholders=pickArray(['STEP_A','STEP_B','STEP_C'].map(k=>placeholders[k]||''));
+    const nextOrder=orderFromGuided.length?orderFromGuided:orderFromNamed.length?orderFromNamed:orderFromPlaceholders;
+    orderGoal = nextOrder.map(s=>s.trim()).filter(Boolean);
+    if(!orderGoal.length){
+      orderGoal=['[STEP_A]','[STEP_B]','[STEP_C]'];
+    }
+
+    const placeholderShort=trimString(placeholders.SPIEGAZIONE_SUCCINTA);
+    const placeholderDiag=trimString(placeholders.INDIZIO_DIAGNOSTICO);
+    const placeholderHelp1=trimString(placeholders.AIUTO_1);
+    const placeholderHelp2=trimString(placeholders.AIUTO_2);
+    const placeholderSolution=trimString(placeholders.SOLUZIONE_COMMENTATA);
+
+    taskMessages.shortExplanation = trimString(guided.shortExplanation) || placeholderShort;
+    taskMessages.diagnosticHint = trimString(guided.diagnosticHint) || placeholderDiag;
+    const helps = pickArray(guided.helps);
+    taskMessages.helps[0] = trimString(guided.help1) || helps[0] || placeholderHelp1;
+    taskMessages.helps[1] = trimString(guided.help2) || helps[1] || placeholderHelp2;
+    taskMessages.solution = trimString(guided.solution) || placeholderSolution;
+
+    selectedOrder=[];
+    updateOrderOut();
+    const helpBox=$('#taskHelp');
+    if(helpBox){ helpBox.style.display='none'; helpBox.textContent=''; }
   }
+
+  window.ingestData = ingestData;
+  ensure('ingestData', ingestData);
 
   // --- Toolbar: aggiungi pulsanti Import/Incolla/Export in modo non intrusivo ---
   function ensureToolbarButtons(){
