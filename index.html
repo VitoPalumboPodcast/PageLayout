@@ -143,6 +143,17 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 .mermaid-wrap{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:1rem;overflow:auto}
 .mermaid{min-width:520px}
 
+/* Dialog import JSON */
+#importDialog{border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);width:min(560px,90vw)}
+#importDialog::backdrop{background:rgba(15,23,42,.35)}
+#importDialog h2{margin-top:0;font-size:1.3rem}
+#importDialog textarea{width:100%;min-height:200px;margin-top:.6rem;font-family:monospace;font-size:1rem;line-height:1.5;border:1px solid var(--border);border-radius:10px;padding:.6rem;background:var(--surface-weak);color:inherit}
+#importDialog textarea:focus{outline:3px solid var(--focus);outline-offset:2px}
+#importDialog .actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem}
+#importDialog .actions button{padding:.45rem .9rem;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer}
+#importDialog .actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+#importDialog .error{color:var(--danger);margin-top:.6rem}
+
 /* STAMPA */
 @media print{
   .toolbar,.read-progress,.reading-ruler,.kw-pop,#quizControls{display:none!important}
@@ -440,6 +451,20 @@ flowchart TD
   </aside>
 </div>
 
+<dialog id="importDialog" aria-labelledby="importDialogTitle" aria-describedby="importDialogDesc" aria-modal="true" aria-hidden="true">
+  <form method="dialog" id="importForm">
+    <h2 id="importDialogTitle"><i class="fa-solid fa-paste"></i> Importa contenuti JSON</h2>
+    <p id="importDialogDesc">Incolla o modifica il JSON dei contenuti e premi “Importa”. Premi Esc per annullare.</p>
+    <label for="importTextarea" class="visually-hidden">Contenuti in formato JSON</label>
+    <textarea id="importTextarea" name="importTextarea" rows="10" aria-describedby="importDialogDesc importError"></textarea>
+    <p id="importError" class="error" role="alert" hidden></p>
+    <div class="actions">
+      <button type="button" id="importCancel">Annulla</button>
+      <button type="button" id="importConfirm" class="primary">Importa</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 /* =========================================================
    MERMAID
@@ -470,6 +495,103 @@ const state=Object.assign({
   savedStepId:'orientamento'
 }, JSON.parse(localStorage.getItem(PREF)||'{}'));
 const save=()=>localStorage.setItem(PREF,JSON.stringify(state));
+
+/* Dialog per incolla/import JSON */
+const importDialog=$('#importDialog');
+const importTextarea=$('#importTextarea');
+const importError=$('#importError');
+const importConfirm=$('#importConfirm');
+const importCancel=$('#importCancel');
+let importReturnFocus=null;
+
+function setImportError(msg){
+  if(!importError) return;
+  importError.textContent=msg||'';
+  importError.hidden=!msg;
+}
+
+function resetImportDialog(){
+  if(importTextarea) importTextarea.value='';
+  setImportError('');
+}
+
+function openImportDialog(trigger){
+  if(!importDialog) return;
+  importReturnFocus=trigger||document.activeElement;
+  resetImportDialog();
+  importDialog.setAttribute('aria-hidden','false');
+  if(typeof importDialog.showModal==='function'){
+    if(!importDialog.open) importDialog.showModal();
+  }else{
+    importDialog.setAttribute('open','true');
+    importDialog.removeAttribute('hidden');
+  }
+  requestAnimationFrame(()=>importTextarea?.focus());
+}
+
+function closeImportDialog(){
+  if(!importDialog) return;
+  if(typeof importDialog.close==='function' && importDialog.open){
+    importDialog.close();
+  }else{
+    importDialog.removeAttribute('open');
+    importDialog.setAttribute('aria-hidden','true');
+    resetImportDialog();
+    if(importReturnFocus?.focus) importReturnFocus.focus();
+    importReturnFocus=null;
+  }
+}
+
+if(importDialog){
+  importDialog.addEventListener('close',()=>{
+    resetImportDialog();
+    importDialog.setAttribute('aria-hidden','true');
+    if(importReturnFocus?.focus) importReturnFocus.focus();
+    importReturnFocus=null;
+  });
+  importDialog.addEventListener('cancel',event=>{
+    event.preventDefault();
+    closeImportDialog();
+  });
+  if(typeof importDialog.showModal!=='function'){
+    importDialog.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){
+        event.preventDefault();
+        closeImportDialog();
+      }
+    });
+  }
+}
+
+importConfirm?.addEventListener('click',()=>{
+  if(!importTextarea) return;
+  const txt=importTextarea.value.trim();
+  if(!txt){
+    setImportError('Inserisci il JSON da importare.');
+    importTextarea.focus();
+    return;
+  }
+  let data;
+  try{
+    data=JSON.parse(txt);
+  }catch(err){
+    console.error(err);
+    setImportError('Il testo inserito non è un JSON valido.');
+    importTextarea.focus();
+    return;
+  }
+  try{
+    ingestData(data);
+    (window.announce||console.log)('Contenuti incollati.');
+    closeImportDialog();
+  }catch(err){
+    console.error(err);
+    setImportError('Importazione non riuscita: verifica la struttura del JSON.');
+    importTextarea.focus();
+  }
+});
+
+importCancel?.addEventListener('click',()=>closeImportDialog());
 
 /* Temi sfondo (no nero) + font */
 const BG=[
@@ -1127,15 +1249,7 @@ function announce(msg){ live.textContent=msg; }
       finally{ e.target.value=''; }
     });
 
-    pasteBtn?.el?.addEventListener('click', ()=>{
-      const txt = prompt('Incolla qui il JSON dei contenuti:');
-      if(!txt) return;
-      try{
-        const data=JSON.parse(txt);
-        ingestData(data);
-        (window.announce||console.log)('Contenuti incollati.');
-      }catch(err){ alert('Errore: il testo incollato non è un JSON valido.'); }
-    });
+    pasteBtn?.el?.addEventListener('click', ()=>openImportDialog(pasteBtn.el));
 
     exportBtn?.el?.addEventListener('click', ()=>{
       const html = '<!DOCTYPE html>\\n' + document.documentElement.outerHTML;
