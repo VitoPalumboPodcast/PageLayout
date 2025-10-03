@@ -1,0 +1,60 @@
+{
+  "placeholders": {
+    "TITOLO_ARGOMENTO": "Emozioni: definizione e fisiologia (1ª liceo)",
+    "META_DESCRIZIONE": "Pagina Inclusiva completa con import/export, segnaposto globali, mappa Mermaid, glossario e quiz.",
+    "TOOLTIP_IMPORTA": "Importa da file JSON",
+    "TOOLTIP_INCOLLA": "Incolla JSON generato",
+    "TOOLTIP_ESPORTA": "Esporta pagina completa",
+    "SCOP0_IN_2_RIGHE": "Riconoscere cos'è un'emozione.\nDistinguere emozione, sentimento e umore.",
+    "PUNTO_CALDO_1": "Quando l'emozione aiuta a decidere",
+    "PUNTO_CALDO_2": "Quando l'emozione confonde la decisione",
+    "DEFINIZIONE_OPERATIVA": "Risposta breve con cambiamenti corporei e cognitivi.",
+    "MODULO_1_TITOLO": "Componenti dell’emozione",
+    "MODULO_1_DEFINIZIONE": "Fisiologia, cognizione, espressione.",
+    "MODULO_2_TITOLO": "Allarme rapido: amigdala",
+    "MODULO_2_DEFINIZIONE": "Rilevazione minaccia e attivazione.",
+    "MODULO_3_TITOLO": "Ormoni dello stress",
+    "MODULO_3_DEFINIZIONE": "Adrenalina e cortisolo preparano all’azione.",
+    "IMG_SRC": "https://mastercoachitalia.com/wp-content/uploads/2023/08/ruota-emozioni.png",
+    "ALT_IMMAGINE": "Ruota delle emozioni con famiglie e sfumature",
+    "DIDASCALIA_IMMAGINE": "La ruota mostra famiglie e sfumature emotive.",
+    "IMG_CREDITO_URL": "https://mastercoachitalia.com/",
+    "ISTRUZIONI_COMPITO": "Ordina i passaggi del circuito base della paura.",
+    "STEP_A": "Stimolo percepito",
+    "STEP_B": "Valutazione rapida (amigdala) / lenta (corteccia)",
+    "STEP_C": "Risposta corporea (autonomico, ormoni)",
+    "AIUTO_1": "Pensa al prima-durante-dopo.",
+    "AIUTO_2": "Cosa precede il battito accelerato?",
+    "SOLUZIONE_COMMENTATA": "Prima stimolo, poi valutazione, quindi risposta.",
+    "ISTRUZIONI_QUIZ": "Scegli una risposta, leggi il feedback, puoi chiedere aiuto/soluzione.",
+    "CREDITI_PAGINA": "© 2025 Classe 1G – Pagina Inclusiva",
+    "NOTE_ACCESSIBILITA": "Contrasto alto, righello, karaoke, semplifica, export HTML."
+  },
+  "sectionTitles": {
+    "attivazione": "Scalda-cervello",
+    "primer": "Idea chiave",
+    "percorso": "Percorso in 3 tappe",
+    "schema": "Mappa concettuale",
+    "immagine": "Immagine di contesto",
+    "attivita": "Compito guidato",
+    "quiz": "Verifica rapida",
+    "glossario": "Glossario essenziale"
+  },
+  "image": {
+    "src": "https://mastercoachitalia.com/wp-content/uploads/2023/08/ruota-emozioni.png",
+    "ALT": "Ruota emozioni (immagine educativa)",
+    "caption": "Famiglie e sfumature emotive.",
+    "creditUrl": "https://mastercoachitalia.com/"
+  },
+  "mermaid": "flowchart TD; S[Stimolo]-->P[Percezione]; P-->A[Amigdala]; A-->R[Risposta corporea]; P-->C[Corteccia]; C-->M[Modulazione]; M-->R;",
+  "glossario": [
+    {"term":"emozione","def":"Risposta rapida a uno stimolo."},
+    {"term":"amigdala","def":"Allarme rapido per minacce."},
+    {"term":"adrenalina","def":"Aumenta prontezza e battito."}
+  ],
+  "quiz": [
+    {"q":"Quale NON fa parte della triade dell’emozione?","choices":["Fisiologia","Cognizione","Espressione","Digestione intensa"],"correct":3,"hint":"Pensa alla triade classica.","explain":"La digestione si inibisce nello stress; non è una componente della triade."},
+    {"q":"L’amigdala serve a…","choices":["Elaborare il linguaggio","Rilevare minacce","Regolare la temperatura","Vedere i colori"],"correct":1,"hint":"È un allarme rapido.","explain":"Rileva minacce e attiva risposte rapide."},
+    {"q":"L’adrenalina…","choices":["Rallenta il battito","Aumenta la prontezza","Favorisce la digestione","Fa addormentare"],"correct":1,"hint":"Preparazione all’azione.","explain":"Aumenta battito e prontezza."}
+  ]
+}
