@@ -67,7 +67,8 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 }
 .toolbar-settings{position:relative;display:flex;align-items:center}
 .toolbar-settings-menu{
-  position:absolute;top:calc(100% + .4rem);right:0;
+  position:absolute;top:calc(100% + .4rem);left:0;
+  transform:translateX(.2rem);
   background:var(--surface);border:1px solid var(--border);border-radius:12px;
   box-shadow:var(--shadow);padding:.4rem;display:flex;flex-direction:column;gap:.3rem;
   min-width:220px;z-index:20;
