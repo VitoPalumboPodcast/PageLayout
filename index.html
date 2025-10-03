@@ -1190,7 +1190,10 @@ function announce(msg){ live.textContent=msg; }
   });
 
   // --- Placeholders globali su tutta la pagina ---
-  function makeKeyRegex(key){ return new RegExp('\\['+ key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&') +'\\]','g'); }
+  function makeKeyRegex(key){
+    const escaped=key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&');
+    return new RegExp('\\['+ escaped +'(?::[^\\]]*)?\\]','g');
+  }
   function replaceInString(str,map){ if(typeof str!=='string') return str; let out=str; for(const k of Object.keys(map)){ out=out.replace(makeKeyRegex(k), String(map[k])); } return out; }
 
   function applyGlobalPlaceholders(map){
