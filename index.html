@@ -831,7 +831,8 @@ $('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.di
    QUIZ UNIFICATO
    ========================================================= */
 const quizData=[
- {q:"[Q1_TESTO: concetto chiave #1]", choices:["[Q1_OPZ_1]","[Q1_OPZ_2]","[Q1_OPZ_3]","[Q1_OPZ_4]"], correct:1, hint:"[Q1_HINT]", explain:"[Q1_SPEGAZIONE]."},
+  // Mantieni sincronizzato con la logica in ingestData
+  {q:"[Q1_TESTO: concetto chiave #1]", choices:["[Q1_OPZ_1]","[Q1_OPZ_2]","[Q1_OPZ_3]","[Q1_OPZ_4]"], correct:1, hint:"[Q1_HINT]", explain:"[Q1_SPEGAZIONE]."},
  {q:"[Q2_TESTO: concetto chiave #2]", choices:["[Q2_OPZ_1]","[Q2_OPZ_2]","[Q2_OPZ_3]","[Q2_OPZ_4]"], correct:0, hint:"[Q2_HINT]", explain:"[Q2_SPEGAZIONE]."},
  {q:"[Q3_TESTO: applicazione di base]", choices:["[Q3_OPZ_1]","[Q3_OPZ_2]","[Q3_OPZ_3]","[Q3_OPZ_4]"], correct:2, hint:"[Q3_HINT]", explain:"[Q3_SPEGAZIONE]."}
 ];
@@ -1327,9 +1328,9 @@ function announce(msg){ live.textContent=msg; }
     }
     if(payload.mermaid) call('applyMermaid', payload.mermaid);
     if(Array.isArray(payload.glossario)) call('applyGlossary', payload.glossario);
-    if(Array.isArray(payload.quiz) && window.quizData){
-      window.quizData.length=0;
-      payload.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
+    if(Array.isArray(payload.quiz)){
+      quizData.length=0;
+      payload.quiz.forEach(q=>quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
       call('renderQuizList');
     }
     initGuidedTask();
