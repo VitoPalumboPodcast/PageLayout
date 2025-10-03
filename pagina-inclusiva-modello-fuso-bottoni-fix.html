@@ -1099,11 +1099,12 @@ function announce(msg){ live.textContent=msg; }
     if(!toolbar) return;
 
     function mkBtn(id, icon, label, title){
-      if(document.getElementById(id)) return null;
+      const existing=document.getElementById(id);
+      if(existing) return {el:existing, created:false};
       const b=document.createElement('button');
       b.id=id; b.className='btn ebtn'; b.title=title||label;
       b.innerHTML = '<i class="'+icon+'"></i><span>'+label+'</span>';
-      return b;
+      return {el:b, created:true};
     }
 
     const importBtn = mkBtn('tbImport','fa-solid fa-file-import','Importa','[TOOLTIP_IMPORTA]');
@@ -1111,11 +1112,11 @@ function announce(msg){ live.textContent=msg; }
     const exportBtn = mkBtn('tbExport','fa-solid fa-file-export','Esporta','[TOOLTIP_ESPORTA]');
     const file = document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
 
-    if(importBtn) toolbar.appendChild(importBtn);
-    if(pasteBtn)  toolbar.appendChild(pasteBtn);
-    if(exportBtn) toolbar.appendChild(exportBtn);
+    if(importBtn?.created) toolbar.appendChild(importBtn.el);
+    if(pasteBtn?.created)  toolbar.appendChild(pasteBtn.el);
+    if(exportBtn?.created) toolbar.appendChild(exportBtn.el);
 
-    importBtn && importBtn.addEventListener('click', ()=> file.click());
+    importBtn?.el?.addEventListener('click', ()=> file.click());
     file && file.addEventListener('change', async (e)=>{
       const f=e.target.files?.[0]; if(!f) return;
       try{
@@ -1126,7 +1127,7 @@ function announce(msg){ live.textContent=msg; }
       finally{ e.target.value=''; }
     });
 
-    pasteBtn && pasteBtn.addEventListener('click', ()=>{
+    pasteBtn?.el?.addEventListener('click', ()=>{
       const txt = prompt('Incolla qui il JSON dei contenuti:');
       if(!txt) return;
       try{
@@ -1136,7 +1137,7 @@ function announce(msg){ live.textContent=msg; }
       }catch(err){ alert('Errore: il testo incollato non è un JSON valido.'); }
     });
 
-    exportBtn && exportBtn.addEventListener('click', ()=>{
+    exportBtn?.el?.addEventListener('click', ()=>{
       const html = '<!DOCTYPE html>\\n' + document.documentElement.outerHTML;
       const blob = new Blob([html], {type:'text/html;charset=utf-8'});
       const a=document.createElement('a');
