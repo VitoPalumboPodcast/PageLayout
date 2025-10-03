@@ -1144,7 +1144,10 @@ function announce(msg){ live.textContent=msg; }
       dl.appendChild(dt); dl.appendChild(dd);
     });
   });
-  ensure('escapeHTML', function(s){return String(s).replace(/[&<>\"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;'}[m]));});
+  ensure('escapeHTML', function(s){
+    const map={"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"};
+    return String(s).replace(/[&<>"']/g, m=>map[m]);
+  });
 
   // --- Placeholders globali su tutta la pagina ---
   function makeKeyRegex(key){ return new RegExp('\\['+ key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&') +'\\]','g'); }
@@ -1197,23 +1200,42 @@ function announce(msg){ live.textContent=msg; }
   }
 
   // --- Ingestione dati comune ---
+  let lastIngestedData=null;
+
   function ingestData(data){
-    applyGlobalPlaceholders(data.placeholders||{});
-    call('applySectionTitles', data.sectionTitles||null);
-    if(data.image){
-      const img=Object.assign({}, data.image);
-      if(!img.ALT && data.placeholders?.ALT_IMMAGINE) img.ALT=data.placeholders.ALT_IMMAGINE;
-      if(!img.caption && data.placeholders?.DIDASCALIA_IMMAGINE) img.caption=data.placeholders.DIDASCALIA_IMMAGINE;
+    if(data && typeof data==='object'){
+      try{
+        lastIngestedData = typeof structuredClone==='function'
+          ? structuredClone(data)
+          : JSON.parse(JSON.stringify(data));
+      }catch(err){
+        console.warn('Impossibile clonare i dati importati in modo profondo.', err);
+        try{ lastIngestedData = JSON.parse(JSON.stringify(data)); }
+        catch(_){ lastIngestedData = data; }
+      }
+    }else{
+      lastIngestedData=null;
+    }
+    const payload=(data && typeof data==='object') ? data : {};
+    const ph=payload.placeholders||{};
+    applyGlobalPlaceholders(ph);
+    call('applySectionTitles', payload.sectionTitles||null);
+    if(payload.image){
+      const img=Object.assign({}, payload.image);
+      if(!img.ALT && ph?.ALT_IMMAGINE) img.ALT=ph.ALT_IMMAGINE;
+      if(!img.caption && ph?.DIDASCALIA_IMMAGINE) img.caption=ph.DIDASCALIA_IMMAGINE;
       call('applyImage', img);
     }
-    if(data.mermaid) call('applyMermaid', data.mermaid);
-    if(Array.isArray(data.glossario)) call('applyGlossary', data.glossario);
-    if(Array.isArray(data.quiz) && window.quizData){
+    if(payload.mermaid) call('applyMermaid', payload.mermaid);
+    if(Array.isArray(payload.glossario)) call('applyGlossary', payload.glossario);
+    if(Array.isArray(payload.quiz) && window.quizData){
       window.quizData.length=0;
-      data.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
+      payload.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
       call('renderQuizList');
     }
   }
+  ensure('ingestData', ingestData);
+  if(typeof window!=='undefined') window.ingestData=ingestData;
 
   // --- Toolbar: aggiungi pulsanti Import/Incolla/Export in modo non intrusivo ---
   function ensureToolbarButtons(){
@@ -1252,7 +1274,50 @@ function announce(msg){ live.textContent=msg; }
     pasteBtn?.el?.addEventListener('click', ()=>openImportDialog(pasteBtn.el));
 
     exportBtn?.el?.addEventListener('click', ()=>{
-      const html = '<!DOCTYPE html>\\n' + document.documentElement.outerHTML;
+      const clonedRoot=document.documentElement.cloneNode(true);
+
+      if(lastIngestedData){
+        const placeholders=lastIngestedData.placeholders||{};
+        const scriptCloseRe=new RegExp('</'+'script>','gi');
+        const scripts=Array.from(clonedRoot.querySelectorAll('script'));
+        if(Object.keys(placeholders).length){
+          scripts.forEach(scr=>{
+            if(scr.textContent){
+              scr.textContent=replaceInString(scr.textContent, placeholders);
+            }
+          });
+        }
+
+        if(Array.isArray(lastIngestedData.quiz) && lastIngestedData.quiz.length){
+          const quizScript=scripts.find(scr=>scr.textContent && scr.textContent.includes('const quizData='));
+          if(quizScript){
+            const quizJson=JSON.stringify(lastIngestedData.quiz, null, 2).replace(scriptCloseRe,'<\\/script>');
+            quizScript.textContent = quizScript.textContent.replace(/const\s+quizData\s*=\s*\[[\s\S]*?\];/, `const quizData=${quizJson};`);
+          }
+        }
+
+        const bodyClone=clonedRoot.querySelector('body');
+        if(bodyClone){
+          const dataJson=JSON.stringify(lastIngestedData).replace(scriptCloseRe,'<\\/script>');
+          const bootstrap=document.createElement('script');
+          bootstrap.type='text/javascript';
+          bootstrap.textContent=`(function(){
+  window.__EXPORTED_DATA__ = ${dataJson};
+  window.addEventListener('DOMContentLoaded', function(){
+    try{
+      if(window.__EXPORTED_DATA__ && typeof window.ingestData==='function'){
+        window.ingestData(window.__EXPORTED_DATA__);
+      }
+    }catch(err){
+      console.error('Ripristino dati esportati fallito', err);
+    }
+  }, {once:true});
+})();`;
+          bodyClone.appendChild(bootstrap);
+        }
+      }
+
+      const html = '<!DOCTYPE html>\\n' + clonedRoot.outerHTML;
       const blob = new Blob([html], {type:'text/html;charset=utf-8'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
