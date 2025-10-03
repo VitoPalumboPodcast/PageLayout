@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>[TITOLO_ARGOMENTO: 3–6 parole, concrete, senza metafore]</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;600;700&family=Readex+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+<style>
+/* =========================================================
+   TEMA + BASI ACCESSIBILITÀ
+   ========================================================= */
+:root{
+  --bg:#ffffff; --fg:#1f2328; --muted:#5a5f69;
+  --accent:#0b5fff; --accent-weak:#dfe9ff;
+  --ok:#176f2c; --danger:#b00020;
+  --card:#f6f8fa; --surface:#fff; --surface-weak:#f9fafb; --border:#d0d7de;
+  --focus:#ffb100;
+  --ff:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+  --font-size:18px; --line:1.7; --content:72ch;
+  --radius:14px; --shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.contrast-high{
+  --bg:#000; --fg:#fff; --muted:#cfcfcf;
+  --accent:#ffd400; --accent-weak:#3a3000;
+  --card:#121212; --surface:#0f0f0f; --surface-weak:#171717; --border:#3a3a3a; --focus:#ff0;
+}
+
+/* Base tipografica e focus */
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ff);font-size:var(--font-size);line-height:var(--line)}
+a{color:var(--accent)}
+a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid var(--focus);outline-offset:2px}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.caps-on #content{text-transform:uppercase;letter-spacing:.04em}
+
+/* Layout generale: main + indice laterale (sticky) */
+.app{
+  display:grid;
+  grid-template-columns: 1fr minmax(220px, 280px);
+  gap:1rem;
+  min-height:100dvh;
+}
+@media(max-width:1100px){
+  .app{grid-template-columns:1fr}
+  .toc{display:none}
+}
+.main{padding:1rem 1rem 3.5rem}
+.toc{
+  position:sticky; top:72px; align-self:start;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:.9rem; margin:1rem 1rem 1rem 0;
+}
+.toc h2{margin:.2rem 0 .6rem; font-size:1.05rem}
+.toc ol{margin:0; padding-left:1rem}
+.toc a{ text-decoration:none }
+
+/* Toolbar alta */
+.toolbar{
+  position:sticky; top:0; z-index:9; background:var(--bg);
+  border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow); display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
+  padding:.6rem; margin:1rem; margin-bottom:0.6rem;
+}
+.toolbar .sep{width:1px;height:28px;background:var(--border)}
+.btn{border:1px solid var(--border); background:var(--card); color:var(--fg);
+     border-radius:10px; padding:.45rem .7rem; display:inline-flex; gap:.4rem; align-items:center; cursor:pointer}
+.btn:active{box-shadow: inset 0 0 0 9999px rgba(0,0,0,.06)}
+/* Toggle persistenti evidenziati */
+.tbtn[aria-pressed="true"]{
+  background:var(--accent-weak); border-color:var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent-weak);
+}
+/* In alto contrasto, rendi le icone chiare */
+.contrast-high .toolbar .btn{background:#1a1a1a;border-color:#444;color:#fff}
+.contrast-high .toolbar .btn i{color:#fff}
+.state-pill{background:var(--accent-weak);border:1px solid var(--border);border-radius:999px;padding:.2rem .5rem;font-size:.85rem}
+
+/* Contenuti */
+.content{max-width:var(--content);margin:0 auto}
+.content h1{
+  font-size:1.9rem;margin:.2rem 0 .8rem;display:flex;gap:.6rem;align-items:flex-start;
+  /* wrap sicuro: non oltrepassa il fianco destro */
+  flex-wrap:wrap; word-break:break-word; overflow-wrap:anywhere;
+}
+.content h2{font-size:1.35rem;margin:1.2rem 0 .6rem;display:flex;gap:.5rem;align-items:center}
+.content p{margin:.6rem 0}
+.card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:1rem;margin:1rem 0}
+.notice{border-left:6px solid var(--accent);background:var(--accent-weak);padding:.8rem 1rem;border-radius:6px}
+
+/* Immagine di contesto */
+#immagine img{width:100%;height:auto;max-height:clamp(220px,45vh,360px);object-fit:cover;border-radius:12px}
+#immagine figcaption a{font-size:.9rem}
+
+/* Blocchi concetto */
+.concept{display:flex;align-items:flex-start;gap:.8rem;margin:.7rem 0}
+.concept-icon{width:46px;min-width:46px;height:46px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--accent-weak);color:var(--fg)}
+.concept-text{flex:1}
+
+/* Barra progresso lettura + righello */
+.read-progress{position:fixed;inset:0 0 auto 0;height:6px;background:var(--accent-weak);z-index:9999}
+.read-progress>div{height:100%;width:0;background:var(--accent);transition:width .12s linear}
+.reading-ruler{position:fixed;left:0;right:0;height:2.2em;background:rgba(255,230,120,.28);pointer-events:none;transform:translateY(-9999px);z-index:5}
+
+/* Karaoke: evidenzia parola letta */
+.karaoke .word.active{background:#fff3bf;box-shadow:0 0 0 2px #ffe08a inset;border-radius:4px}
+.contrast-high .karaoke .word.active{background:#5a4a00;box-shadow:0 0 0 2px #8a7200 inset;color:#fff}
+
+/* Parole chiave: pills + popover */
+.kw-list{display:flex;flex-wrap:wrap;gap:.3rem}
+.kw-pill{font-size:.85rem;padding:.2rem .5rem;border-radius:999px;border:1px solid var(--border);background:var(--surface);cursor:pointer}
+.kw-word{outline-offset:2px;border-bottom:2px dotted rgba(0,0,0,.25); cursor:pointer}
+.kw-pop{position:fixed;z-index:9998;max-width:440px;background:#111;color:#fff;border:1px solid #2b2b2b;border-radius:10px;padding:.75rem}
+.kw-pop .t{font-weight:700;margin:0 0 .4rem}
+.kw-pop .x{position:absolute;top:6px;right:8px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;padding:.1rem .35rem;cursor:pointer}
+
+/* STEP/PROGRESSO (solo indicatore Passo X/Y in toolbar) */
+.stepper{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.stepper .dot{width:10px;height:10px;border-radius:50%;background:#cbd5e1;border:1px solid var(--border)}
+.stepper .dot.active{background:var(--accent)}
+.stepper .label{font-size:.9rem}
+
+/* MICRO-ATTIVAZIONE */
+.microqa .item{border:1px dashed var(--border);background:var(--surface);border-radius:12px;padding:.8rem;margin:.6rem 0}
+.microqa .choices{display:flex;gap:.6rem;flex-wrap:wrap}
+.microqa .choices button{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:.35rem .6rem}
+
+/* QUIZ UNICO */
+.quiz-item{display:none;margin:1rem 0}
+.quiz-item.active{display:block}
+.choice-list{list-style:none;margin:.8rem 0;padding:0;display:grid;gap:.6rem}
+.choice{border:2px solid var(--border);background:var(--surface);border-radius:12px;padding:.8rem 1rem;cursor:pointer}
+.choice.correct{border-color:var(--ok);background:#eaf6ed}
+.choice.wrong{border-color:var(--danger);background:#fde7ea}
+.feedback{margin-top:.6rem}
+.feedback .good{color:var(--ok);font-weight:700}
+.feedback .learn{border-left:4px solid var(--accent);background:var(--accent-weak);padding:.6rem .8rem;border-radius:8px}
+
+/* Mermaid */
+.mermaid-wrap{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:1rem;overflow:auto}
+.mermaid{min-width:520px}
+
+/* STAMPA */
+@media print{
+  .toolbar,.read-progress,.reading-ruler,.kw-pop,#quizControls{display:none!important}
+  .main{padding:0!important}
+  .content{max-width:100%!important}
+  .mermaid{min-width:auto!important}
+  .quiz-item{display:block!important}
+  .choice.correct,.choice.wrong{border-color:#bbb!important;background:#fff!important}
+  .feedback{display:none!important}
+  a[href]::after{content:""!important}
+  @page{margin:12mm}
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .main{padding:.6rem .8rem 3rem}
+  .mermaid{min-width:360px}
+}
+</style>
+</head>
+<body>
+<!-- Barra progresso e righello -->
+<div class="read-progress" aria-hidden="true"><div></div></div>
+<div id="readingRuler" class="reading-ruler" aria-hidden="true"></div>
+
+<a href="#main" class="visually-hidden">Salta al contenuto principale</a>
+
+<!-- TOOLBAR -->
+
+
+  <!-- Import/Export controls -->
+  <button id="tbImport" class="btn ebtn" title="[TOOLTIP_IMPORTA]">
+    <i class="fa-solid fa-file-import"></i><span>Importa</span>
+  </button>
+  <button id="tbPasteImport" class="btn ebtn" title="[TOOLTIP_INCOLLA]">
+    <i class="fa-solid fa-paste"></i><span>Incolla contenuti</span>
+  </button>
+  <button id="tbExport" class="btn ebtn" title="[TOOLTIP_ESPORTA]">
+    <i class="fa-solid fa-file-export"></i><span>Esporta</span>
+  </button>
+
+  <!-- Tipografia/impaginazione (azioni non persistenti) -->
+  <button id="tbFontMinus" class="btn ebtn" title="A−"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+  <button id="tbFontPlus"  class="btn ebtn" title="A+"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+  <button id="tbSpacing"   class="btn ebtn" title="Spaziatura"><i class="fa-solid fa-arrows-up-down"></i></button>
+  <button id="tbWidth"     class="btn ebtn" title="Larghezza"><i class="fa-solid fa-arrows-left-right"></i></button>
+  <button id="tbBg"        class="btn ebtn" title="Sfondo (ciclo)"><i class="fa-solid fa-paint-roller"></i></button>
+  <button id="tbFontCycle" class="btn ebtn" title="Font inclusivi"><i class="fa-solid fa-font"></i></button>
+  <span class="sep"></span>
+  <!-- Toggle persistenti -->
+  <button id="tbContrast"  class="btn tbtn" aria-pressed="false" title="Contrasto alto"><i class="fa-solid fa-circle-half-stroke"></i></button>
+  <button id="tbCaps"      class="btn tbtn" aria-pressed="false" title="MAIUSCOLO"><i class="fa-solid fa-a"></i></button>
+  <button id="tbRuler"     class="btn tbtn" aria-pressed="false" title="Righello (R)"><i class="fa-solid fa-ruler-horizontal"></i></button>
+  <button id="tbSimplify"  class="btn tbtn" aria-pressed="false" title="Semplifica (S)"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+  <button id="tbKaraoke"   class="btn tbtn" aria-pressed="false" title="Karaoke One-Click (K)"><i class="fa-solid fa-highlighter"></i></button>
+  <span class="sep"></span>
+  <!-- TTS: Leggi (senza karaoke), Pausa, Stop + Voce + Velocità -->
+  <button id="tbSpeak" class="btn ebtn" title="Leggi senza karaoke"><i class="fa-solid fa-volume-high"></i> Leggi</button>
+  <button id="tbPause" class="btn ebtn" title="Pausa"><i class="fa-solid fa-pause"></i></button>
+  <button id="tbStop"  class="btn ebtn" title="Stop"><i class="fa-solid fa-stop"></i></button>
+  <label class="visually-hidden" for="voiceSel">Voce</label>
+  <select id="voiceSel" class="btn" style="min-width:12ch" title="Voce sintetica"></select>
+  <label class="visually-hidden" for="rate">Velocità</label>
+  <input type="range" id="rate" min="0.7" max="1.4" step="0.05" value="1" title="Velocità" style="accent-color:var(--accent)">
+  <span class="sep"></span>
+  <!-- Docente on demand + stampa -->
+  <button id="tbDoc" class="btn tbtn" aria-pressed="false" title="Mostra/Nascondi sezione per il docente"><i class="fa-solid fa-chalkboard-user"></i> Docente</button>
+  <button id="tbPrint" class="btn ebtn" title="Stampa/PDF"><i class="fa-solid fa-print"></i></button>
+  <span class="sep"></span>
+  <span class="state-pill" id="pillStateTop">Pronto</span>
+  <span class="sep"></span>
+  <!-- Indicatore Passo X/Y -->
+  <div class="stepper" aria-live="polite">
+    <div class="dot" id="dot1"></div><div class="dot" id="dot2"></div><div class="dot" id="dot3"></div><div class="dot" id="dot4"></div><div class="dot" id="dot5"></div><div class="dot" id="dot6"></div><div class="dot" id="dot7"></div><div class="dot" id="dot8"></div>
+    <span class="label" id="stepLabel">Passo 1/8</span>
+  </div>
+</div>
+
+<div class="app" id="appRoot">
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <article id="content" class="content" aria-live="polite">
+      <!-- ORIENTAMENTO -->
+      <header id="orientamento" class="card">
+        <h1><i class="fa-solid fa-book"></i> [TITOLO_ARGOMENTO: sintetico, concreto, livello scolastico tra parentesi se utile. Evita giochi di parole.]</h1>
+        <p class="notice"><strong>Che cosa imparerai.</strong> [SCOP0_IN_2_RIGHE: linguaggio semplice (CEFR B1), 1 frase per riga, 1–3 abilità misurabili.]</p>
+        <p class="notice"><strong>A che ti servirà.</strong> [UTILITÀ_IN_2_RIGHE: contesto autentico in cui applicare il concetto.]</p>
+        <p><strong>Prerequisiti essenziali.</strong> [PREREQUISITI: 2–4 conoscenze minime; se mancanti, proponi recap di 10 minuti.]</p>
+        <section class="card" id="legenda">
+          <h2><i class="fa-solid fa-map"></i> Legenda icone</h2>
+          <ul>
+            <li><i class="fa-solid fa-key"></i> Parola chiave • <i class="fa-solid fa-lightbulb"></i> Suggerimento • <i class="fa-solid fa-triangle-exclamation"></i> Avviso</li>
+            <li><i class="fa-solid fa-book-open"></i> Definizione • <i class="fa-solid fa-image"></i> Esempio • <i class="fa-solid fa-ban"></i> Controesempio</li>
+          </ul>
+        </section>
+      </header>
+
+      <!-- IMMAGINE DI CONTESTO -->
+      <section id="immagine" class="card">
+        <h2><i class="fa-solid fa-image"></i> Immagine di contesto</h2>
+        <figure>
+          <img src="https://picsum.photos/seed/argomento/1200/600" alt="[ALT_IMMAGINE: descrizione funzionale, 10–15 parole che connettono l’immagine al concetto]">
+          <figcaption>
+            [DIDASCALIA_IMMAGINE: 1 riga che collega l’immagine al nucleo della lezione].
+            Fonte: <a href="https://picsum.photos/" target="_blank" rel="noopener">https://picsum.photos/</a>
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- MICRO-ATTIVAZIONE -->
+      <section id="attivazione" class="card">
+        <h2><i class="fa-solid fa-bolt"></i> Micro-attivazione</h2>
+        <p>[ISTRUZIONI_BREVI: 1 riga per spiegare che seguono 2 stimoli a basso sforzo.]</p>
+        <div class="microqa">
+          <div class="item" data-correct="A">
+            <p>[DOMANDA_RIATTIVAZIONE_1: chiusa a 2 opzioni, 1 riga.]</p>
+            <div class="choices">
+              <button data-choice="A">[OPZIONE_A: corretta]</button>
+              <button data-choice="B">[OPZIONE_B: distrattore tipico]</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="item" data-correct="Vero">
+            <p>[DOMANDA_RIATTIVAZIONE_2: vero/falso, sul nucleo.]</p>
+            <div class="choices">
+              <button data-choice="Vero">Vero</button>
+              <button data-choice="Falso">Falso</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <aside class="card sticky-note" aria-label="Falsi amici">
+          <h3><i class="fa-solid fa-triangle-exclamation"></i> Falsi amici</h3>
+          <ul>
+            <li>[FALSO_AMICO_1: formula comune ma errata + correzione breve.]</li>
+            <li>[FALSO_AMICO_2: misunderstanding atteso + chiarimento operativo.]</li>
+          </ul>
+        </aside>
+      </section>
+
+      <!-- PRIMER -->
+      <section id="primer" class="card">
+        <h2><i class="fa-solid fa-rocket"></i> Primer rapido</h2>
+        <p><i class="fa-solid fa-book-open"></i> <strong>Definizione operativa.</strong> [DEFINIZIONE_OPERATIVA].</p>
+        <p><i class="fa-solid fa-image"></i> <strong>Esempio pulito.</strong> [ESEMPIO_PULITO].</p>
+      </section>
+
+      <!-- PERCORSO MODULARE -->
+      <section id="percorso" class="card">
+        <h2><i class="fa-solid fa-layer-group"></i> Percorso modulare</h2>
+
+        <!-- Modulo 1 -->
+        <div class="concept">
+          <div class="concept-icon" aria-hidden="true"><i class="fa-solid fa-1"></i></div>
+          <div class="concept-text">
+            <p class="estesa"><i class="fa-solid fa-book-open"></i> <strong>[MODULO_1_TITOLO]</strong>: [MODULO_1_DEFINIZIONE].</p>
+            <p class="estesa"><i class="fa-solid fa-image"></i> Esempio: [MODULO_1_ESEMPIO].</p>
+            <p class="estesa"><i class="fa-solid fa-ban"></i> Controesempio: [MODULO_1_CONTROESEMPIO].</p>
+            <p class="semplificata"><strong>[MODULO_1_TITOLO_SEMPLIFICATO]</strong>: [MODULO_1_RISCRITTURA_SEMPLICE].</p>
+            <details class="details-lite"><summary>Approfondisci <span class="tag">+</span></summary><p>[MODULO_1_APPROFONDIMENTO].</p></details>
+          </div>
+        </div>
+
+        <!-- Modulo 2 -->
+        <div class="concept">
+          <div class="concept-icon" aria-hidden="true"><i class="fa-solid fa-2"></i></div>
+          <div class="concept-text">
+            <p class="estesa"><i class="fa-solid fa-book-open"></i> <strong>[MODULO_2_TITOLO]</strong>: [MODULO_2_DEFINIZIONE].</p>
+            <p class="estesa"><i class="fa-solid fa-image"></i> Esempio: [MODULO_2_ESEMPIO].</p>
+            <p class="estesa"><i class="fa-solid fa-ban"></i> Controesempio: [MODULO_2_CONTROESEMPIO].</p>
+            <p class="semplificata"><strong>[MODULO_2_TITOLO_SEMPLIFICATO]</strong>: [MODULO_2_RISCRITTURA_SEMPLICE].</p>
+            <details class="details-lite"><summary>Approfondisci <span class="tag">+</span></summary><p>[MODULO_2_APPROFONDIMENTO].</p></details>
+          </div>
+        </div>
+
+        <!-- Modulo 3 -->
+        <div class="concept">
+          <div class="concept-icon" aria-hidden="true"><i class="fa-solid fa-3"></i></div>
+          <div class="concept-text">
+            <p class="estesa"><i class="fa-solid fa-book-open"></i> <strong>[MODULO_3_TITOLO]</strong>: [MODULO_3_DEFINIZIONE].</p>
+            <p class="estesa"><i class="fa-solid fa-image"></i> Esempio: [MODULO_3_ESEMPIO].</p>
+            <p class="estesa"><i class="fa-solid fa-ban"></i> Controesempio: [MODULO_3_CONTROESEMPIO].</p>
+            <p class="semplificata"><strong>[MODULO_3_TITOLO_SEMPLIFICATO]</strong>: [MODULO_3_RISCRITTURA_SEMPLICE].</p>
+            <details class="details-lite"><summary>Approfondisci <span class="tag">+</span></summary><p>[MODULO_3_APPROFONDIMENTO].</p></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAPPA (MERMAID) -->
+      <section id="schema" class="card">
+        <h2><i class="fa-solid fa-sitemap"></i> Mappa dell’argomento (Mermaid)</h2>
+        <div class="mermaid-wrap">
+<div class="mermaid" id="mermaidMap">
+flowchart TD
+  A("NODO_1 — concetto iniziale")
+  B("NODO_2 — passo successivo")
+  C("NODO_3 — esito o principio chiave")
+  D("NODO_4 — alternativa/ramo")
+  A -->|etichetta 1: causa/condizione/segue| B
+  B -->|etichetta 2| C
+  A -->|etichetta 3| D
+</div>
+        </div>
+      </section>
+
+      <!-- ATTIVITÀ GUIDATA -->
+      <section id="attivita" class="card">
+        <h2><i class="fa-solid fa-person-chalkboard"></i> Attività guidata (compito breve)</h2>
+        <p class="notice">[ISTRUZIONI_COMPITO: 1–2 frasi. Genera un errore frequente e correggilo con aiuti progressivi.]</p>
+        <div id="taskOrder" style="display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0" aria-label="Ordina i passaggi">
+          <button data-step="[STEP_A]">[STEP_A: primo passo]</button>
+          <button data-step="[STEP_B]">[STEP_B: secondo passo]</button>
+          <button data-step="[STEP_C]">[STEP_C: terzo passo]</button>
+        </div>
+        <div id="taskOut" class="state-pill">Scelte: —</div>
+        <div id="taskHelp" class="feedback learn" style="display:none"></div>
+        <div style="display:flex;gap:.6rem;margin-top:.6rem">
+          <button id="btnHelp1"><i class="fa-solid fa-lightbulb"></i> [AIUTO_1]</button>
+          <button id="btnHelp2"><i class="fa-solid fa-circle-question"></i> [AIUTO_2]</button>
+          <button id="btnHelp3"><i class="fa-solid fa-eye"></i> [SOLUZIONE_COMMENTATA]</button>
+          <button id="btnResetOrder"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        </div>
+      </section>
+
+      <!-- VERIFICA FORMATIVA -->
+      <section id="quiz" class="card">
+        <h2><i class="fa-solid fa-clipboard-list"></i> Verifica formativa</h2>
+        <p id="quizIntro" class="notice">
+          [ISTRUZIONI_QUIZ: 1 riga. Clicca una risposta, ricevi feedback; puoi chiedere un aiuto o la soluzione commentata.]
+        </p>
+
+        <div id="quizControls" style="display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0">
+          <button id="btnReadQ"><i class="fa-solid fa-volume-high"></i> Leggi domanda</button>
+          <button id="btnHint" style="display:none"><i class="fa-solid fa-lightbulb"></i> Suggerimento</button>
+          <button id="btnShowSolution" style="display:none"><i class="fa-solid fa-eye"></i> Mostra soluzione</button>
+          <button id="btnNext" disabled><i class="fa-solid fa-arrow-right"></i> Avanti</button>
+          <span class="state-pill" id="quizState">Domanda 1</span>
+        </div>
+
+        <div id="quizList"></div>
+
+        <div id="quizHint" class="feedback learn" style="display:none"></div>
+        <div id="quizExplain" class="feedback" style="display:none"></div>
+      </section>
+
+      <!-- PER IL DOCENTE (nascosto di default, richiamabile da toolbar) -->
+      <section id="docente" class="card" hidden>
+        <h2><i class="fa-solid fa-chalkboard-user"></i> Per il docente</h2>
+        <details class="details-lite" open>
+          <summary>Criteri rapidi di osservazione <span class="tag">DOC</span></summary>
+          <ul>
+            <li>[CRITERIO_1]</li>
+            <li>[CRITERIO_2]</li>
+            <li>[CRITERIO_3]</li>
+          </ul>
+        </details>
+        <details class="details-lite">
+          <summary>Varianti per livelli diversi <span class="tag">DOC</span></summary>
+          <ul>
+            <li>[VARIANTE_BASE]</li>
+            <li>[VARIANTE_INTERMEDIA]</li>
+            <li>[VARIANTE_AVANZATA]</li>
+          </ul>
+        </details>
+      </section>
+
+      <!-- PAROLE CHIAVE + GLOSSARIO -->
+      <section id="glossario" class="card">
+        <h2><i class="fa-solid fa-key"></i> Parole chiave e glossario</h2>
+        <div id="kwList" class="kw-list"></div>
+        <dl>
+          <dt><strong>[TERMINE_1]</strong></dt><dd>[DEFINIZIONE_1].</dd>
+          <dt><strong>[TERMINE_2]</strong></dt><dd>[DEFINIZIONE_2].</dd>
+          <dt><strong>[TERMINE_3]</strong></dt><dd>[DEFINIZIONE_3].</dd>
+        </dl>
+      </section>
+    </article>
+  </main>
+
+  <!-- INDICE LATERALE (sticky) -->
+  <aside class="toc" aria-label="Indice">
+    <h2><i class="fa-solid fa-list-ol"></i> Indice</h2>
+    <ol id="toc">
+      <li><a href="#orientamento">Orientamento</a></li>
+      <li><a href="#immagine">Immagine di contesto</a></li>
+      <li><a href="#attivazione">Micro-attivazione</a></li>
+      <li><a href="#primer">Primer</a></li>
+      <li><a href="#percorso">Percorso modulare</a></li>
+      <li><a href="#schema">Mappa (Mermaid)</a></li>
+      <li><a href="#attivita">Attività guidata</a></li>
+      <li><a href="#quiz">Verifica formativa</a></li>
+      <li><a href="#docente">Per il docente</a></li>
+      <li><a href="#glossario">Glossario</a></li>
+    </ol>
+  </aside>
+</div>
+
+<script>
+/* =========================================================
+   MERMAID
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad:false,
+      securityLevel:"loose",
+      flowchart:{ htmlLabels:false, wrap:true }
+    });
+    mermaid.run({querySelector:'.mermaid'});
+  }
+});
+
+/* =========================================================
+   UTILITÀ + STATO
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const content=$('#content');
+const app=$('#appRoot');
+const PREF='layoutInclusivo:template:senzaSidebar:v3';
+const state=Object.assign({
+  font:18,line:1.7,width:72,contrast:false,caps:false,
+  simplified:false,bgIndex:0,fontIndex:0,
+  rate:1.0,voiceURI:'',karaoke:false,ruler:false,showDoc:false,
+  savedStepId:'orientamento'
+}, JSON.parse(localStorage.getItem(PREF)||'{}'));
+const save=()=>localStorage.setItem(PREF,JSON.stringify(state));
+
+/* Temi sfondo (no nero) + font */
+const BG=[
+  {name:'Standard',bg:'#ffffff',fg:'#1f2328',card:'#f6f8fa',surface:'#fff',weak:'#f9fafb',border:'#d0d7de',muted:'#5a5f69'},
+  {name:'Paglierino',bg:'#fff8dc',fg:'#1d1d1d',card:'#fffbe7',surface:'#fffdf2',weak:'#fff8e4',border:'#e6deb0',muted:'#6a644d'},
+  {name:'Seppia',bg:'#f5efe6',fg:'#1e1a14',card:'#f2e9df',surface:'#f9f4ec',weak:'#f4ede3',border:'#d8cab8',muted:'#6b5e4e'},
+  {name:'Grigio caldo',bg:'#f7f7f7',fg:'#1f2328',card:'#ffffff',surface:'#ffffff',weak:'#f4f4f4',border:'#d9d9d9',muted:'#666'}
+];
+const FONTS=[
+  {name:'Sistema', stack:'system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif'},
+  {name:'Atkinson Hyperlegible', stack:'"Atkinson Hyperlegible",system-ui,-apple-system,Segoe UI,Arial,sans-serif'},
+  {name:'Lexend', stack:'"Lexend",system-ui,-apple-system,Segoe UI,Arial,sans-serif'},
+  {name:'Readex Pro', stack:'"Readex Pro",system-ui,-apple-system,Segoe UI,Arial,sans-serif'}
+];
+function applyPrefs(){
+  document.documentElement.style.setProperty('--font-size',state.font+'px');
+  document.documentElement.style.setProperty('--line',state.line);
+  document.documentElement.style.setProperty('--content',state.width+'ch');
+  document.body.classList.toggle('contrast-high',!!state.contrast);
+  document.body.classList.toggle('caps-on',!!state.caps);
+  document.body.classList.toggle('mode-simplified',!!state.simplified);
+  $('#docente')?.toggleAttribute('hidden', !state.showDoc);
+
+  const t=BG[state.bgIndex%BG.length];
+  const r=document.documentElement.style;
+  r.setProperty('--bg',t.bg); r.setProperty('--fg',t.fg); r.setProperty('--card',t.card);
+  r.setProperty('--surface',t.surface); r.setProperty('--surface-weak',t.weak);
+  r.setProperty('--border',t.border); r.setProperty('--muted',t.muted);
+
+  const f=FONTS[state.fontIndex%FONTS.length]; r.setProperty('--ff',f.stack);
+  const label=(state.simplified?'Semplificata':'Completa')+(state.contrast?' · Contrasto':'')+(state.caps?' · MAIUSC':'')+(state.karaoke?' · Karaoke':'')+(state.ruler?' · Righello':'')+` · Sfondo: ${t.name} · Font: ${f.name}`;
+  $('#pillStateTop').textContent=label;
+
+  // Aggiorna stato visivo dei toggle persistenti
+  $('#tbContrast').setAttribute('aria-pressed', String(!!state.contrast));
+  $('#tbCaps').setAttribute('aria-pressed', String(!!state.caps));
+  $('#tbRuler').setAttribute('aria-pressed', String(!!state.ruler));
+  $('#tbSimplify').setAttribute('aria-pressed', String(!!state.simplified));
+  $('#tbKaraoke').setAttribute('aria-pressed', String(!!state.karaoke));
+  $('#tbDoc').setAttribute('aria-pressed', String(!!state.showDoc));
+
+  save();
+}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+
+/* Barra progresso lettura */
+const progressBar=document.querySelector('.read-progress>div');
+function onScroll(){ const d=document.documentElement; const total=d.scrollHeight-d.clientHeight; const s=total>0?(d.scrollTop/total):0; progressBar.style.width=(s*100).toFixed(1)+'%'; }
+document.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+/* Righello */
+const ruler=$('#readingRuler');
+document.addEventListener('mousemove',e=>{
+  if(!state.ruler) return;
+  const rect=content.getBoundingClientRect();
+  if(e.clientY>=rect.top && e.clientY<=rect.bottom) ruler.style.transform=`translateY(${e.clientY - ruler.offsetHeight/2}px)`; else ruler.style.transform='translateY(-9999px)';
+});
+
+/* =========================================================
+   KARAOKE / SINTESI VOCALE (Leggi ≠ Karaoke)
+   ========================================================= */
+const EXCLUDE_WRAP='script,style,code,pre,.mermaid,.kw-pop,button,.btn,[role="button"],input,select,textarea,.choice-list,.concept-icon';
+function instrumentWords(root){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+  const toWrap=[]; let node;
+  while(node=walker.nextNode()){
+    const t=node.nodeValue; if(!t || !t.trim()) continue;
+    if(node.parentElement.closest(EXCLUDE_WRAP)) continue;
+    toWrap.push(node);
+  }
+  toWrap.forEach(n=>{
+    const parts=n.nodeValue.split(/(\s+)/); const frag=document.createDocumentFragment();
+    for(const part of parts){
+      if(part==='') continue;
+      if(/\s+/.test(part)) frag.appendChild(document.createTextNode(part));
+      else{ const w=document.createElement('span'); w.className='word'; w.textContent=part; frag.appendChild(w); }
+    }
+    n.parentNode.replaceChild(frag,n);
+  });
+}
+function instrumentSubtree(el){ instrumentWords(el); annotateKeywordWords(el); }
+
+const synth=window.speechSynthesis; let voices=[]; let utter=null; let paused=false;
+
+/* Precarica voci, predefinita: Diego se disponibile (in italiano) */
+function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
+async function setupVoices(){
+  voices=synth.getVoices(); if(!voices.length) voices=await waitForVoices();
+  const sel=$('#voiceSel'); sel.innerHTML='';
+  const itVoices=voices.filter(v=>/it-|ital/i.test(v.lang));
+  const list=itVoices.length?itVoices:voices;
+  // Preferisci Diego, poi it-IT qualsiasi
+  let preferred=list.find(v=>/diego/i.test(v.name)) || itVoices[0] || list[0];
+  list.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=`${v.name} – ${v.lang}`;sel.appendChild(o);});
+  const keep = voices.find(v=>v.voiceURI===state.voiceURI);
+  sel.value = (keep?.voiceURI) || (preferred?.voiceURI) || sel.value;
+  if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
+}
+if('speechSynthesis' in window){ setupVoices(); speechSynthesis.onvoiceschanged=setupVoices; }
+const getSelVoice=()=>voices.find(v=>v.voiceURI===$('#voiceSel').value)||null;
+
+let karaokeBundle=null, afterSpeak=null;
+function buildTextAndRanges(root){
+  let text=''; const ranges=[]; let idx=0;
+  const visible=node=>{
+    if(!(node instanceof Element)) return true;
+    const cs=getComputedStyle(node);
+    if(cs.display==='none' || cs.visibility==='hidden' || cs.opacity==='0') return false;
+    if(node.closest('.semplificata') && !document.body.classList.contains('mode-simplified')) return false;
+    if(node.closest('.estesa') &&  document.body.classList.contains('mode-simplified')) return false;
+    return true;
+  };
+  const walk=(node)=>{
+    if(node.nodeType===Node.TEXT_NODE){ const val=node.nodeValue||''; text+=val; idx+=val.length; return; }
+    if(node.nodeType===Node.ELEMENT_NODE){
+      if(!visible(node)) return;
+      if(node.classList.contains('word')){ const v=node.textContent||''; ranges.push({start:idx,end:idx+v.length,el:node}); text+=v; idx+=v.length; return; }
+      if(node.matches(EXCLUDE_WRAP)) return;
+      node.childNodes.forEach(walk);
+      if(/^(p|li|h\d|figcaption|summary|div)$/i.test(node.tagName)) { text+=' '; idx+=1; }
+    }
+  };
+  walk(root); return {text,ranges};
+}
+
+/* Karaoke ON/OFF (toggle persistente con evidenziazione) */
+function speakBundle(){
+  if(!karaokeBundle || !karaokeBundle.text.trim()) return;
+  stopTTS(true);
+  utter=new SpeechSynthesisUtterance(karaokeBundle.text);
+  utter.rate=state.rate||1.0;
+  const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
+
+  let ptr=-1;
+  const act=(ci)=>{
+    if(!state.karaoke || !karaokeBundle.ranges.length) return;
+    while(ptr+1<karaokeBundle.ranges.length && ci>=karaokeBundle.ranges[ptr+1].start) ptr++;
+    const target=karaokeBundle.ranges[Math.max(0,ptr)];
+    if(!target) return;
+    const prev=$('#content .word.active'); if(prev) prev.classList.remove('active');
+    target.el.classList.add('active');
+    const r=target.el.getBoundingClientRect(); if(r.top<0 || r.bottom>window.innerHeight){ target.el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  };
+  utter.onboundary=(e)=>{ if(e.name==='word' || typeof e.charIndex==='number') act(e.charIndex||0); };
+  utter.onstart=()=>{ $('#pillStateTop').textContent='In lettura…'; content.classList.add('karaoke'); };
+  const clearUI=msg=>{ const prev=$('#content .word.active'); if(prev) prev.classList.remove('active'); content.classList.remove('karaoke'); $('#pillStateTop').textContent=msg; };
+  utter.onend=()=>{ state.karaoke=false; applyPrefs(); clearUI('Completato'); const cb=afterSpeak; afterSpeak=null; if(typeof cb==='function') cb(); };
+  utter.onerror=()=>{ state.karaoke=false; applyPrefs(); clearUI('Errore lettura'); afterSpeak=null; };
+  try{ synth.speak(utter); }catch(_){}
+}
+function stopTTS(quiet=false){
+  if(synth.speaking||synth.pending) synth.cancel();
+  const prev=$('#content .word.active'); if(prev) prev.classList.remove('active');
+  content.classList.remove('karaoke');
+  if(!quiet){ $('#pillStateTop').textContent='Pronto'; }
+}
+
+/* Leggi (NO karaoke): legge selezione o l’intero articolo */
+function getSelectedOrAll(){
+  const sel=window.getSelection();
+  if(sel && String(sel).trim()){
+    const div=document.createElement('div'); div.textContent=String(sel).trim(); return div;
+  }
+  return $('#content');
+}
+function speakPlain(el){
+  stopTTS(true);
+  const bundle=buildTextAndRanges(el); // riuso estrazione testo ma senza boundary/hl
+  utter=new SpeechSynthesisUtterance(bundle.text);
+  utter.rate=state.rate||1.0;
+  const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
+  utter.onstart=()=>{ $('#pillStateTop').textContent='In lettura…'; };
+  utter.onend=()=>{ $('#pillStateTop').textContent='Completato'; };
+  utter.onerror=()=>{ $('#pillStateTop').textContent='Errore lettura'; };
+  try{ synth.speak(utter); }catch(_){}
+}
+
+/* =========================================================
+   RICERCA PAROLE CHIAVE (POPOVER ANCHE NEL TESTO)
+   ========================================================= */
+const KW={map:new Map(), norm:new Map()};
+const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function buildGlossary(){
+  KW.map.clear(); KW.norm.clear();
+  $$('#glossario dt').forEach(dt=>{
+    const term=(dt.textContent||'').trim(); const dd=dt.nextElementSibling?.textContent?.trim()||'';
+    if(term){ KW.map.set(term.toLowerCase(), dd); KW.norm.set(norm(term), dd); }
+  });
+  const list=$('#kwList'); list.innerHTML='';
+  for(const term of KW.map.keys()){
+    const b=document.createElement('button'); b.className='kw-pill'; b.type='button'; b.textContent=term;
+    b.addEventListener('click',()=>showKwPopover(term,b));
+    list.appendChild(b);
+  }
+}
+function annotateKeywordWords(root=document){ $$('#content .word').forEach(w=>{ const t=norm(w.textContent||''); if(KW.norm.has(t)){ w.classList.add('kw-word'); w.tabIndex=0; w.dataset.term=(w.textContent||'').trim().toLowerCase(); }}); }
+
+let kwPop=null, kwAnchor=null, kwLastFocus=null;
+function showKwPopover(term, anchor){
+  const def=KW.map.get((term||'').toLowerCase()) || KW.norm.get(norm(term)) || 'Definizione non ancora fornita.';
+  hideKwPopover();
+  kwAnchor=anchor; kwLastFocus=document.activeElement;
+  kwPop=document.createElement('div'); kwPop.className='kw-pop';
+  kwPop.innerHTML=`<button class="x" aria-label="Chiudi">✕</button><div class="t">${escapeHTML(term)}</div><p>${escapeHTML(def)}</p>`;
+  document.body.appendChild(kwPop);
+  positionKwPopover(anchor, kwPop);
+  kwPop.querySelector('.x').addEventListener('click', hideKwPopover);
+  setTimeout(()=>kwPop.focus?.(),0);
+  document.addEventListener('keydown', kwEsc, true);
+  document.addEventListener('click', kwAutoClose, true);
+  window.addEventListener('resize', kwReposition, {passive:true});
+  window.addEventListener('scroll', kwReposition, {passive:true});
+}
+function hideKwPopover(){
+  if(!kwPop) return;
+  document.removeEventListener('keydown', kwEsc, true);
+  document.removeEventListener('click', kwAutoClose, true);
+  window.removeEventListener('resize', kwReposition);
+  window.removeEventListener('scroll', kwReposition);
+  kwPop.remove(); kwPop=null;
+  const f=kwLastFocus||kwAnchor; if(f && f.focus) f.focus();
+  kwLastFocus=null; kwAnchor=null;
+}
+function kwEsc(e){ if(e.key==='Escape') hideKwPopover(); }
+function kwAutoClose(e){ if(!kwPop) return; const inPop=e.target.closest?.('.kw-pop'); const inAnchor=kwAnchor && (e.target===kwAnchor||kwAnchor.contains?.(e.target)); if(!inPop && !inAnchor) hideKwPopover(); }
+function kwReposition(){ if(kwPop && kwAnchor) positionKwPopover(kwAnchor, kwPop); }
+function positionKwPopover(anchor, pop){
+  const a=anchor.getBoundingClientRect(); const vw=innerWidth, vh=innerHeight; const m=10;
+  const pw=Math.min(440, vw*.92); pop.style.maxWidth=pw+'px';
+  let left=a.left + a.width/2 - pw/2; let top=a.bottom + m;
+  left=Math.max(m, Math.min(vw-m-pw, left));
+  if(top+pop.offsetHeight>vh-m){ top=Math.max(m, a.top - pop.offsetHeight - m); }
+  pop.style.left=Math.round(left)+'px'; pop.style.top=Math.round(top)+'px';
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+/* Click nel testo su parole chiave annotate */
+document.addEventListener('click', (e)=>{
+  const w=e.target.closest?.('.kw-word'); if(!w) return;
+  const term=(w.dataset.term||w.textContent||'').trim();
+  showKwPopover(term, w);
+});
+
+/* =========================================================
+   MICRO-ATTIVAZIONE
+   ========================================================= */
+$('.microqa')?.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-choice]'); if(!b) return;
+  const item=b.closest('.item'); const fb=item.querySelector('.feedback');
+  const correct=item.dataset.correct;
+  if(b.dataset.choice===correct){
+    fb.textContent='Corretto. Hai attivato l’idea giusta.';
+  }else{
+    fb.textContent='Quasi. Rileggi la domanda: punta all’aspetto centrale, non al contesto.';
+  }
+});
+
+/* =========================================================
+   ATTIVITÀ GUIDATA
+   ========================================================= */
+const orderGoal=['[STEP_A]','[STEP_B]','[STEP_C]'];
+let selectedOrder=[];
+function updateOrderOut(){ $('#taskOut').textContent = 'Scelte: ' + (selectedOrder.join(' → ') || '—'); }
+$('#taskOrder').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-step]'); if(!b) return;
+  const val=b.dataset.step; if(selectedOrder.includes(val)) return;
+  selectedOrder.push(val); updateOrderOut();
+  if(selectedOrder.length===orderGoal.length){
+    const ok=selectedOrder.every((v,i)=>v===orderGoal[i]);
+    const help=$('#taskHelp'); help.style.display='block';
+    help.innerHTML = ok
+      ? '<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> [SPIEGAZIONE_SUCCINTA].'
+      : 'Rifletti: [INDIZIO_DIAGNOSTICO].';
+  }
+});
+$('#btnResetOrder').addEventListener('click',()=>{ selectedOrder=[]; updateOrderOut(); const h=$('#taskHelp'); h.style.display='none'; h.textContent=''; });
+$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_1].'; });
+$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent='[AIUTO_2].'; });
+$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.innerHTML='<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> [SOLUZIONE_COMMENTATA].'; });
+
+/* =========================================================
+   QUIZ UNIFICATO
+   ========================================================= */
+const quizData=[
+ {q:"[Q1_TESTO: concetto chiave #1]", choices:["[Q1_OPZ_1]","[Q1_OPZ_2]","[Q1_OPZ_3]","[Q1_OPZ_4]"], correct:1, hint:"[Q1_HINT]", explain:"[Q1_SPEGAZIONE]."},
+ {q:"[Q2_TESTO: concetto chiave #2]", choices:["[Q2_OPZ_1]","[Q2_OPZ_2]","[Q2_OPZ_3]","[Q2_OPZ_4]"], correct:0, hint:"[Q2_HINT]", explain:"[Q2_SPEGAZIONE]."},
+ {q:"[Q3_TESTO: applicazione di base]", choices:["[Q3_OPZ_1]","[Q3_OPZ_2]","[Q3_OPZ_3]","[Q3_OPZ_4]"], correct:2, hint:"[Q3_HINT]", explain:"[Q3_SPEGAZIONE]."}
+];
+let qi=0, attempts=0, quizIntroSpoken=false;
+const quizListEl=$('#quizList');
+const quizHintEl=$('#quizHint');
+const quizExplainEl=$('#quizExplain');
+const btnReadQ=$('#btnReadQ');
+const btnNext=$('#btnNext');
+const btnHint=$('#btnHint');
+const btnShowSolution=$('#btnShowSolution');
+const quizState=$('#quizState');
+
+function renderQuizList(){
+  quizListEl.innerHTML='';
+  quizData.forEach((q,idx)=>{
+    const wrap=document.createElement('div'); wrap.className='quiz-item'; wrap.dataset.index=idx;
+    const qEl=document.createElement('div'); qEl.className='qtext'; qEl.style.fontWeight='700'; qEl.style.marginBottom='.5rem';
+    qEl.textContent=`Domanda ${idx+1}/${quizData.length}. ${q.q}`; wrap.appendChild(qEl);
+    const ul=document.createElement('ul'); ul.className='choice-list'; ul.setAttribute('role','radiogroup');
+    q.choices.forEach((txt,i)=>{
+      const li=document.createElement('li'); li.className='choice'; li.setAttribute('role','radio'); li.setAttribute('aria-checked','false'); li.tabIndex=0;
+      li.innerHTML=`<label style="display:block;cursor:pointer">${txt}</label>`;
+      li.addEventListener('click',()=>grade(idx,i,li));
+      li.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); grade(idx,i,li);} });
+      ul.appendChild(li);
+    });
+    wrap.appendChild(ul);
+    quizListEl.appendChild(wrap);
+  });
+}
+function setActiveQuestion(idx){
+  qi=idx; attempts=0; resetQuizFeedback(); btnNext.disabled=true;
+  $$('.quiz-item').forEach(el=>el.classList.toggle('active', Number(el.dataset.index)===qi));
+  instrumentSubtree($('.quiz-item.active'));
+  updateQuizState();
+  $('.quiz-item.active').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function updateQuizState(){ quizState.textContent=`Domanda ${qi+1}/${quizData.length}`; }
+function resetQuizFeedback(){
+  quizHintEl.style.display='none'; quizExplainEl.style.display='none';
+  quizHintEl.textContent=''; quizExplainEl.textContent='';
+  btnHint.style.display='none'; btnShowSolution.style.display='none';
+}
+function lockActiveChoices(){ $$('.quiz-item.active .choice').forEach(c=>c.style.pointerEvents='none'); }
+function grade(qIndex, choiceIndex, li){
+  if(qIndex!==qi) setActiveQuestion(qIndex);
+  const q=quizData[qi];
+  $$('.quiz-item.active .choice').forEach(c=>{ c.classList.remove('selected'); c.setAttribute('aria-checked','false'); });
+  li.classList.add('selected'); li.setAttribute('aria-checked','true');
+  if(choiceIndex===q.correct){
+    li.classList.add('correct'); lockActiveChoices();
+    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> ${escapeHTML(q.explain)}`;
+    quizExplainEl.style.display='block';
+    btnNext.disabled=false; btnHint.style.display='none'; btnShowSolution.style.display='none';
+    // Leggi feedback in voce "plain"
+    const tmp=document.createElement('div'); tmp.textContent=quizExplainEl.textContent; speakPlain(tmp);
+  }else{
+    li.classList.add('wrong'); li.style.pointerEvents='none';
+    attempts++;
+    quizHintEl.textContent = q.hint || 'Riprova: individua il passaggio davvero importante nella domanda.';
+    quizHintEl.style.display='block';
+    btnHint.style.display='inline-block'; btnShowSolution.style.display='inline-block';
+    const tmp=document.createElement('div'); tmp.textContent=quizHintEl.textContent; speakPlain(tmp);
+  }
+}
+function showExtraHint(){
+  const q=quizData[qi];
+  const extra=`Rileggi con calma: ${q.q} Elimina i distrattori che non rispettano la definizione.`;
+  quizHintEl.innerHTML = `${escapeHTML(quizHintEl.textContent)}<br>${escapeHTML(extra)}`;
+  quizHintEl.style.display='block';
+  const tmp=document.createElement('div'); tmp.textContent=quizHintEl.textContent; speakPlain(tmp);
+}
+function revealSolution(){
+  const q=quizData[qi];
+  $$('.quiz-item.active .choice').forEach((c,idx)=>{ if(idx===q.correct) c.classList.add('correct'); c.style.pointerEvents='none'; });
+  quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione commentata.</div> ${escapeHTML(q.explain)}`;
+  quizExplainEl.style.display='block';
+  btnNext.disabled=false;
+  const tmp=document.createElement('div'); tmp.textContent=quizExplainEl.textContent; speakPlain(tmp);
+}
+function nextQuestion(){
+  if(qi<quizData.length-1){ setActiveQuestion(qi+1); }
+  else{
+    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-flag-checkered"></i> Verifica completata.</div> [CONSIGLIO_STUDIO].`;
+    quizExplainEl.style.display='block';
+    btnNext.disabled=true; btnHint.style.display='none'; btnShowSolution.style.display='none';
+    const tmp=document.createElement('div'); tmp.textContent=quizExplainEl.textContent; speakPlain(tmp);
+  }
+}
+btnReadQ.addEventListener('click', ()=>{
+  if(!quizIntroSpoken){
+    quizIntroSpoken=true;
+    speakPlain($('#quizIntro')); // plain
+    setTimeout(readCurrentQuestionPack, 300);
+  }else readCurrentQuestionPack();
+});
+function readCurrentQuestionPack(){
+  const active=$('.quiz-item.active');
+  const pack=document.createElement('div');
+  pack.appendChild(active.querySelector('.qtext').cloneNode(true));
+  const opts=document.createElement('ul'); opts.innerHTML = $$('.quiz-item.active .choice label').map(l=>`<li>${l.textContent}</li>`).join('');
+  pack.appendChild(opts); speakPlain(pack);
+}
+btnNext.addEventListener('click', nextQuestion);
+btnHint.addEventListener('click', showExtraHint);
+btnShowSolution.addEventListener('click', revealSolution);
+
+/* =========================================================
+   INDICATORE DI PASSO
+   ========================================================= */
+const STEPS=['orientamento','immagine','attivazione','primer','percorso','schema','attivita','quiz'];
+let currentStepIndex=0;
+function setStepById(id){
+  const i=STEPS.indexOf(id); if(i>=0){ currentStepIndex=i; updateStepperUI(); state.savedStepId=id; save(); }
+}
+function updateStepperUI(){
+  $$('.stepper .dot').forEach((d,idx)=>d.classList.toggle('active', idx<=currentStepIndex));
+  $('#stepLabel').textContent = `Passo ${currentStepIndex+1}/${STEPS.length}`;
+}
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      const id=en.target.id;
+      if(STEPS.includes(id)){ setStepById(id); }
+    }
+  });
+},{root:null,rootMargin:'-40% 0px -50% 0px',threshold:0.0});
+STEPS.forEach(id=>{ const el=document.getElementById(id); if(el) obs.observe(el); });
+
+/* =========================================================
+   CONTROLLI UI (toolbar)
+   ========================================================= */
+const incFont=d=>{state.font=clamp(state.font+d,14,28);applyPrefs();};
+function cycleWidth(){ const v=[60,72,84]; state.width=v[(v.indexOf(state.width)+1)%v.length]; applyPrefs(); }
+function cycleSpacing(){ const v=[1.7,1.9,2.1]; state.line=v[(v.indexOf(state.line)+1)%v.length]; applyPrefs(); }
+
+$('#tbFontMinus').addEventListener('click',()=>incFont(-2));
+$('#tbFontPlus').addEventListener('click',()=>incFont(+2));
+$('#tbSpacing').addEventListener('click',cycleSpacing);
+$('#tbWidth').addEventListener('click',cycleWidth);
+$('#tbBg').addEventListener('click',()=>{state.bgIndex=(state.bgIndex+1)%BG.length;applyPrefs();});
+$('#tbFontCycle').addEventListener('click',()=>{state.fontIndex=(state.fontIndex+1)%FONTS.length;applyPrefs();});
+
+$('#tbContrast').addEventListener('click',()=>{state.contrast=!state.contrast;applyPrefs();});
+$('#tbCaps').addEventListener('click',()=>{state.caps=!state.caps;applyPrefs();});
+$('#tbRuler').addEventListener('click',()=>{state.ruler=!state.ruler;applyPrefs();});
+$('#tbSimplify').addEventListener('click',()=>{state.simplified=!state.simplified;applyPrefs();});
+$('#tbDoc').addEventListener('click',()=>{state.showDoc=!state.showDoc;applyPrefs();});
+
+// Karaoke toggle: se ON e non sta parlando, avvia; se OFF, ferma
+$('#tbKaraoke').addEventListener('click',()=>{
+  state.karaoke=!state.karaoke; applyPrefs();
+  if(state.karaoke){
+    instrumentSubtree(content);
+    karaokeBundle=buildTextAndRanges(content);
+    speakBundle();
+  }else{
+    stopTTS();
+  }
+});
+
+// TTS plain
+$('#voiceSel').addEventListener('change',e=>{state.voiceURI=e.target.value;save();});
+$('#rate').addEventListener('input',e=>{state.rate=parseFloat(e.target.value);save();});
+$('#tbSpeak').addEventListener('click',()=>{ const el=getSelectedOrAll(); speakPlain(el); });
+$('#tbPause').addEventListener('click',()=>{
+  if(!speechSynthesis.speaking) return;
+  if(!paused){ speechSynthesis.pause(); paused=true; $('#pillStateTop').textContent='In pausa'; }
+  else{ speechSynthesis.resume(); paused=false; $('#pillStateTop').textContent='In lettura…'; }
+});
+$('#tbStop').addEventListener('click',()=>{ paused=false; stopTTS(); });
+
+$('#tbPrint').addEventListener('click',()=>window.print());
+
+/* Shortcut tastiera essenziali */
+document.addEventListener('keydown',e=>{
+  if(/input|textarea|select/i.test(e.target.tagName)) return;
+  if((e.key==='+'||e.key==='=')&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); state.font=clamp(state.font+2,14,28); applyPrefs(); }
+  if(e.key==='-'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); state.font=clamp(state.font-2,14,28); applyPrefs(); }
+  const k=e.key.toLowerCase();
+  if(k==='c'){ state.contrast=!state.contrast; applyPrefs(); }
+  if(k==='r'){ state.ruler=!state.ruler; applyPrefs(); }
+  if(k==='s'){ state.simplified=!state.simplified; applyPrefs(); }
+  if(k==='k'){ state.karaoke=!state.karaoke; applyPrefs(); if(state.karaoke){ instrumentSubtree(content); karaokeBundle=buildTextAndRanges(content); speakBundle(); } else { stopTTS(); } }
+  if(k==='u'){ state.caps=!state.caps; applyPrefs(); }
+});
+
+/* =========================================================
+   AVVIO
+   ========================================================= */
+buildGlossary();
+instrumentWords(content);
+annotateKeywordWords();
+renderQuizList();
+setActiveQuestion(0);
+applyPrefs();
+
+/* TOC: aggiorna passo su click */
+$('#toc')?.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]'); if(!a) return;
+  const id=a.getAttribute('href').slice(1); setStepById(id);
+});
+
+/* ARIA live announcer */
+const live=document.createElement('div'); live.setAttribute('aria-live','polite'); live.setAttribute('aria-atomic','true'); live.style.position='fixed'; live.style.left='-9999px'; live.style.top='-9999px'; document.body.appendChild(live);
+function announce(msg){ live.textContent=msg; }
+</script>
+
+<!-- ==== UPGRADE PACK: Import/Export + Incolla JSON + Segnaposto Globali ==== -->
+<script>
+(function(){
+  // Safe helpers (use existing functions if present, else no-op)
+  const NOP = function(){};
+  const has = (n)=> typeof window[n] === 'function';
+  const call = (n, ...args)=> has(n) ? window[n](...args) : undefined;
+  const ensure = (n, fn)=> { if(!has(n)) window[n]=fn; };
+
+  // Fallback stubs (won't override your real ones)
+  ensure('instrumentWords', NOP);
+  ensure('annotateKeywordWords', NOP);
+  ensure('buildGlossary', NOP);
+  ensure('applyPrefs', NOP);
+  ensure('renderQuizList', NOP);
+  ensure('applySectionTitles', function(titles){
+    if(!titles) return;
+    const map = {
+      attivazione:'#attivazione>h2', primer:'#primer>h2', percorso:'#percorso>h2',
+      schema:'#schema>h2', attivita:'#attivita>h2', quiz:'#quiz>h2',
+      immagine:'#immagine>h2', glossario:'#glossario>h2', docente:'#docente>h2'
+    };
+    for(const k in titles){
+      const sel = map[k]; if(!sel) continue;
+      const h2 = document.querySelector(sel); if(!h2) continue;
+      const icon = h2.querySelector('i')?.outerHTML || '';
+      h2.innerHTML = icon + ' ' + titles[k];
+    }
+  });
+  ensure('applyImage', function(img){
+    const fig = document.querySelector('#immagine figure');
+    const im = fig?.querySelector('img');
+    const cap = fig?.querySelector('figcaption');
+    if(im && img.src) im.src = img.src;
+    const alt = img.ALT || img.alt;
+    if(im && alt){ im.alt = alt; im.title = alt; }
+    if(cap){
+      const a = cap.querySelector('a');
+      if(typeof img.caption === 'string'){ cap.firstChild && (cap.firstChild.nodeValue = img.caption + ' '); }
+      if(a && img.creditUrl){ a.href = img.creditUrl; a.textContent = img.creditUrl; }
+    }
+  });
+  ensure('applyMermaid', function(diagram){
+    const el = document.getElementById('mermaidMap');
+    if(!el) return;
+    el.textContent = diagram || '';
+    if(window.mermaid){ try{ mermaid.run({querySelector:'#mermaidMap'}); }catch(e){ console.warn(e); } }
+  });
+  ensure('applyGlossary', function(entries){
+    if(!Array.isArray(entries)||!entries.length) return;
+    const dl = document.querySelector('#glossario dl'); if(!dl) return;
+    dl.innerHTML='';
+    entries.forEach(({term,def})=>{
+      const dt=document.createElement('dt'); dt.innerHTML='<strong>'+escapeHTML(term)+'</strong>';
+      const dd=document.createElement('dd'); dd.textContent=def;
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+  });
+  ensure('escapeHTML', function(s){return String(s).replace(/[&<>\"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;'}[m]));});
+
+  // --- Placeholders globali su tutta la pagina ---
+  function makeKeyRegex(key){ return new RegExp('\\['+ key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&') +'\\]','g'); }
+  function replaceInString(str,map){ if(typeof str!=='string') return str; let out=str; for(const k of Object.keys(map)){ out=out.replace(makeKeyRegex(k), String(map[k])); } return out; }
+
+  function applyGlobalPlaceholders(map){
+    if(!map || !Object.keys(map).length) return;
+    if(document.title) document.title = replaceInString(document.title, map);
+    const metaDesc=document.querySelector('meta[name="description"]');
+    if(metaDesc?.content) metaDesc.content = replaceInString(metaDesc.content, map);
+
+    const ATTRS=['title','alt','aria-label','placeholder','value','role'];
+    const walker=document.createTreeWalker(document.documentElement, NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT, {
+      acceptNode(node){
+        if(node.nodeType===Node.ELEMENT_NODE){
+          const t=node.tagName;
+          if(t==='SCRIPT'||t==='STYLE') return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    let n=walker.currentNode;
+    while(n){
+      if(n.nodeType===Node.TEXT_NODE){
+        const nv=replaceInString(n.nodeValue, map);
+        if(nv!==n.nodeValue) n.nodeValue=nv;
+      }else if(n.nodeType===Node.ELEMENT_NODE){
+        for(const a of ATTRS){
+          if(n.hasAttribute(a)){
+            const v=n.getAttribute(a), nv=replaceInString(v,map);
+            if(nv!==v) n.setAttribute(a,nv);
+          }
+        }
+        for(const {name,value} of Array.from(n.attributes)){
+          if(name.startsWith('data-')){
+            const nv=replaceInString(value,map);
+            if(nv!==value) n.setAttribute(name,nv);
+          }
+        }
+      }
+      n=walker.nextNode();
+    }
+
+    call('instrumentWords', content);
+    call('annotateKeywordWords');
+    call('buildGlossary');
+    call('applyPrefs');
+    call('renderQuizList');
+    if(window.mermaid){ try{ mermaid.run(); }catch(_){} }
+  }
+
+  // --- Ingestione dati comune ---
+  function ingestData(data){
+    applyGlobalPlaceholders(data.placeholders||{});
+    call('applySectionTitles', data.sectionTitles||null);
+    if(data.image){
+      const img=Object.assign({}, data.image);
+      if(!img.ALT && data.placeholders?.ALT_IMMAGINE) img.ALT=data.placeholders.ALT_IMMAGINE;
+      if(!img.caption && data.placeholders?.DIDASCALIA_IMMAGINE) img.caption=data.placeholders.DIDASCALIA_IMMAGINE;
+      call('applyImage', img);
+    }
+    if(data.mermaid) call('applyMermaid', data.mermaid);
+    if(Array.isArray(data.glossario)) call('applyGlossary', data.glossario);
+    if(Array.isArray(data.quiz) && window.quizData){
+      window.quizData.length=0;
+      data.quiz.forEach(q=>window.quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
+      call('renderQuizList');
+    }
+  }
+
+  // --- Toolbar: aggiungi pulsanti Import/Incolla/Export in modo non intrusivo ---
+  function ensureToolbarButtons(){
+    const toolbar = document.querySelector('.toolbar, [role="toolbar"], #toolbar') || document.body;
+    if(!toolbar) return;
+
+    function mkBtn(id, icon, label, title){
+      if(document.getElementById(id)) return null;
+      const b=document.createElement('button');
+      b.id=id; b.className='btn ebtn'; b.title=title||label;
+      b.innerHTML = '<i class="'+icon+'"></i><span>'+label+'</span>';
+      return b;
+    }
+
+    const importBtn = mkBtn('tbImport','fa-solid fa-file-import','Importa','[TOOLTIP_IMPORTA]');
+    const pasteBtn  = mkBtn('tbPasteImport','fa-solid fa-paste','Incolla contenuti','[TOOLTIP_INCOLLA]');
+    const exportBtn = mkBtn('tbExport','fa-solid fa-file-export','Esporta','[TOOLTIP_ESPORTA]');
+    const file = document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
+
+    if(importBtn) toolbar.appendChild(importBtn);
+    if(pasteBtn)  toolbar.appendChild(pasteBtn);
+    if(exportBtn) toolbar.appendChild(exportBtn);
+
+    importBtn && importBtn.addEventListener('click', ()=> file.click());
+    file && file.addEventListener('change', async (e)=>{
+      const f=e.target.files?.[0]; if(!f) return;
+      try{
+        const data = JSON.parse(await f.text());
+        ingestData(data);
+        (window.announce||console.log)('Contenuti importati.');
+      }catch(err){ console.error(err); alert('Errore: JSON non valido.'); }
+      finally{ e.target.value=''; }
+    });
+
+    pasteBtn && pasteBtn.addEventListener('click', ()=>{
+      const txt = prompt('Incolla qui il JSON dei contenuti:');
+      if(!txt) return;
+      try{
+        const data=JSON.parse(txt);
+        ingestData(data);
+        (window.announce||console.log)('Contenuti incollati.');
+      }catch(err){ alert('Errore: il testo incollato non è un JSON valido.'); }
+    });
+
+    exportBtn && exportBtn.addEventListener('click', ()=>{
+      const html = '<!DOCTYPE html>\\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=(document.title||'lezione')+'.html';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', ensureToolbarButtons);
+})();
+</script>
+<!-- ==== /UPGRADE PACK ==== -->
+<input id="contentFile" type="file" accept=".json,application/json" hidden>
+
+</body>
+</html>
