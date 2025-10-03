@@ -65,6 +65,18 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
   box-shadow:var(--shadow); display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
   padding:.6rem; margin:1rem; margin-bottom:0.6rem;
 }
+.toolbar-settings{position:relative;display:flex;align-items:center}
+.toolbar-settings-menu{
+  position:absolute;top:calc(100% + .4rem);right:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  box-shadow:var(--shadow);padding:.4rem;display:flex;flex-direction:column;gap:.3rem;
+  min-width:220px;z-index:20;
+}
+.toolbar-settings-menu[hidden],
+.toolbar-settings-menu[data-open="false"]{display:none}
+.toolbar-settings-menu[data-open="true"]{display:flex}
+.toolbar-settings-menu .btn{width:100%;justify-content:flex-start}
+.toolbar-settings-menu .btn:focus{outline:3px solid var(--focus);outline-offset:2px}
 .toolbar .sep{width:1px;height:28px;background:var(--border)}
 .btn{border:1px solid var(--border); background:var(--card); color:var(--fg);
      border-radius:10px; padding:.45rem .7rem; display:inline-flex; gap:.4rem; align-items:center; cursor:pointer}
@@ -182,19 +194,26 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 <a href="#main" class="visually-hidden">Salta al contenuto principale</a>
 
 <!-- TOOLBAR -->
-
-
-  <!-- Import/Export controls -->
-  <button id="tbImport" class="btn ebtn" title="[TOOLTIP_IMPORTA]">
-    <i class="fa-solid fa-file-import"></i><span>Importa</span>
-  </button>
-  <button id="tbPasteImport" class="btn ebtn" title="[TOOLTIP_INCOLLA]">
-    <i class="fa-solid fa-paste"></i><span>Incolla contenuti</span>
-  </button>
-  <button id="tbExport" class="btn ebtn" title="[TOOLTIP_ESPORTA]">
-    <i class="fa-solid fa-file-export"></i><span>Esporta</span>
-  </button>
-
+<div class="toolbar" role="toolbar">
+  <div class="toolbar-settings">
+    <button id="tbSettings" class="btn ebtn" title="[TOOLTIP_SETTINGS]" aria-label="Impostazioni">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+    <div id="tbSettingsMenu" class="toolbar-settings-menu" role="menu" data-open="false" hidden>
+      <button id="tbImport" class="btn ebtn" role="menuitem" title="[TOOLTIP_IMPORTA]">
+        <i class="fa-solid fa-file-import"></i><span>Importa</span>
+      </button>
+      <button id="tbPasteImport" class="btn ebtn" role="menuitem" title="[TOOLTIP_INCOLLA]">
+        <i class="fa-solid fa-paste"></i><span>Incolla contenuti</span>
+      </button>
+      <button id="tbExport" class="btn ebtn" role="menuitem" title="[TOOLTIP_ESPORTA]">
+        <i class="fa-solid fa-file-export"></i><span>Esporta</span>
+      </button>
+      <button id="tbDownloadTemplate" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_MODELLO]">
+        <i class="fa-solid fa-download"></i><span>Scarica modello JSON</span>
+      </button>
+    </div>
+  </div>
   <!-- Tipografia/impaginazione (azioni non persistenti) -->
   <button id="tbFontMinus" class="btn ebtn" title="A−"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
   <button id="tbFontPlus"  class="btn ebtn" title="A+"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
@@ -1260,41 +1279,117 @@ function announce(msg){ live.textContent=msg; }
 
   // --- Toolbar: aggiungi pulsanti Import/Incolla/Export in modo non intrusivo ---
   function ensureToolbarButtons(){
-    const toolbar = document.querySelector('.toolbar, [role="toolbar"], #toolbar') || document.body;
+    const toolbar = document.querySelector('.toolbar, [role="toolbar"], #toolbar');
     if(!toolbar) return;
 
-    function mkBtn(id, icon, label, title){
-      const existing=document.getElementById(id);
-      if(existing) return {el:existing, created:false};
-      const b=document.createElement('button');
-      b.id=id; b.className='btn ebtn'; b.title=title||label;
-      b.innerHTML = '<i class="'+icon+'"></i><span>'+label+'</span>';
-      return {el:b, created:true};
-    }
+    const settingsBtn=document.getElementById('tbSettings');
+    const settingsMenu=document.getElementById('tbSettingsMenu');
+    const importBtn=document.getElementById('tbImport');
+    const pasteBtn=document.getElementById('tbPasteImport');
+    const exportBtn=document.getElementById('tbExport');
+    const downloadBtn=document.getElementById('tbDownloadTemplate');
+    const file=document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
 
-    const importBtn = mkBtn('tbImport','fa-solid fa-file-import','Importa','[TOOLTIP_IMPORTA]');
-    const pasteBtn  = mkBtn('tbPasteImport','fa-solid fa-paste','Incolla contenuti','[TOOLTIP_INCOLLA]');
-    const exportBtn = mkBtn('tbExport','fa-solid fa-file-export','Esporta','[TOOLTIP_ESPORTA]');
-    const file = document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
+    if(!settingsBtn || !settingsMenu) return;
+    if(ensureToolbarButtons._initialized) return;
+    ensureToolbarButtons._initialized=true;
 
-    if(importBtn?.created) toolbar.appendChild(importBtn.el);
-    if(pasteBtn?.created)  toolbar.appendChild(pasteBtn.el);
-    if(exportBtn?.created) toolbar.appendChild(exportBtn.el);
+    settingsBtn.setAttribute('aria-haspopup','true');
+    settingsBtn.setAttribute('aria-expanded','false');
+    settingsBtn.setAttribute('aria-controls', settingsMenu.id);
+    settingsMenu.setAttribute('aria-labelledby', settingsBtn.id);
 
-    importBtn?.el?.addEventListener('click', ()=> file.click());
-    file && file.addEventListener('change', async (e)=>{
-      const f=e.target.files?.[0]; if(!f) return;
-      try{
-        const data = JSON.parse(await f.text());
-        ingestData(data);
-        (window.announce||console.log)('Contenuti importati.');
-      }catch(err){ console.error(err); alert('Errore: JSON non valido.'); }
-      finally{ e.target.value=''; }
+    const menuState={open:false};
+    const openMenu=()=>{
+      if(menuState.open) return;
+      menuState.open=true;
+      settingsMenu.hidden=false;
+      settingsMenu.dataset.open='true';
+      settingsBtn.setAttribute('aria-expanded','true');
+      if(document.activeElement===settingsBtn){
+        const first=settingsMenu.querySelector('button');
+        if(first){ requestAnimationFrame(()=>first.focus()); }
+      }
+    };
+    const closeMenu=(focusBack=false)=>{
+      if(!menuState.open) return;
+      menuState.open=false;
+      settingsMenu.hidden=true;
+      settingsMenu.dataset.open='false';
+      settingsBtn.setAttribute('aria-expanded','false');
+      if(focusBack){ settingsBtn.focus(); }
+    };
+
+    settingsBtn.addEventListener('click', (event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      if(menuState.open){
+        closeMenu(true);
+      }else{
+        openMenu();
+      }
     });
 
-    pasteBtn?.el?.addEventListener('click', ()=>openImportDialog(pasteBtn.el));
+    settingsBtn.addEventListener('keydown', (event)=>{
+      if((event.key==='ArrowDown' || event.key==='Enter' || event.key===' ') && !menuState.open){
+        event.preventDefault();
+        openMenu();
+      }else if(event.key==='Escape' && menuState.open){
+        event.preventDefault();
+        closeMenu(true);
+      }
+    });
 
-    exportBtn?.el?.addEventListener('click', ()=>{
+    const onDocumentClick=(event)=>{
+      if(!menuState.open) return;
+      if(settingsMenu.contains(event.target) || settingsBtn.contains(event.target)) return;
+      closeMenu();
+    };
+    document.addEventListener('click', onDocumentClick);
+    document.addEventListener('keydown', (event)=>{
+      if(event.key==='Escape' && menuState.open){
+        event.preventDefault();
+        closeMenu(true);
+      }
+    });
+    settingsMenu.addEventListener('click', (event)=>event.stopPropagation());
+    settingsMenu.addEventListener('keydown', (event)=>{
+      if(event.key==='Escape'){
+        event.preventDefault();
+        closeMenu(true);
+      }
+    });
+
+    importBtn?.addEventListener('click', (event)=>{
+      event.preventDefault();
+      if(file){ file.click(); }
+      closeMenu(true);
+    });
+
+    if(file && !file.dataset.listenerAttached){
+      file.addEventListener('change', async (e)=>{
+        const f=e.target.files?.[0]; if(!f) return;
+        try{
+          const data = JSON.parse(await f.text());
+          ingestData(data);
+          (window.announce||console.log)('Contenuti importati.');
+        }catch(err){ console.error(err); alert('Errore: JSON non valido.'); }
+        finally{ e.target.value=''; }
+      });
+      file.dataset.listenerAttached='true';
+    }
+
+    pasteBtn?.addEventListener('click', (event)=>{
+      event.preventDefault();
+      if(typeof openImportDialog==='function'){
+        openImportDialog(pasteBtn);
+      }
+      closeMenu(true);
+    });
+
+    exportBtn?.addEventListener('click', (event)=>{
+      event.preventDefault();
+      closeMenu(true);
       const clonedRoot=document.documentElement.cloneNode(true);
 
       if(lastIngestedData){
@@ -1345,6 +1440,25 @@ function announce(msg){ live.textContent=msg; }
       a.download=(document.title||'lezione')+'.html';
       document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
+    });
+
+    downloadBtn?.addEventListener('click', async (event)=>{
+      event.preventDefault();
+      closeMenu(true);
+      try{
+        const response=await fetch('demo-contenuti-emozioni.json', {cache:'no-store'});
+        if(!response.ok) throw new Error('HTTP '+response.status);
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download='modello-contenuti.json';
+        document.body.appendChild(a); a.click();
+        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0);
+      }catch(err){
+        console.error('Scarica modello JSON fallito', err);
+        alert('Impossibile scaricare il modello JSON.');
+      }
     });
   }
 
