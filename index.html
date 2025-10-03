@@ -1145,15 +1145,40 @@ function announce(msg){ live.textContent=msg; }
   ensure('applySectionTitles', function(titles){
     if(!titles) return;
     const map = {
-      attivazione:'#attivazione>h2', primer:'#primer>h2', percorso:'#percorso>h2',
-      schema:'#schema>h2', attivita:'#attivita>h2', quiz:'#quiz>h2',
-      immagine:'#immagine>h2', glossario:'#glossario>h2', docente:'#docente>h2'
+      attivazione:{section:'#attivazione>h2', toc:'#toc a[href="#attivazione"]'},
+      primer:{section:'#primer>h2', toc:'#toc a[href="#primer"]'},
+      percorso:{section:'#percorso>h2', toc:'#toc a[href="#percorso"]'},
+      schema:{section:'#schema>h2', toc:'#toc a[href="#schema"]'},
+      attivita:{section:'#attivita>h2', toc:'#toc a[href="#attivita"]'},
+      quiz:{section:'#quiz>h2', toc:'#toc a[href="#quiz"]'},
+      immagine:{section:'#immagine>h2', toc:'#toc a[href="#immagine"]'},
+      glossario:{section:'#glossario>h2', toc:'#toc a[href="#glossario"]'},
+      docente:{section:'#docente>h2', toc:'#toc a[href="#docente"]'}
     };
-    for(const k in titles){
-      const sel = map[k]; if(!sel) continue;
-      const h2 = document.querySelector(sel); if(!h2) continue;
-      const icon = h2.querySelector('i')?.outerHTML || '';
-      h2.innerHTML = icon + ' ' + titles[k];
+    for(const key in titles){
+      const config = map[key];
+      if(!config) continue;
+      const newTitle = titles[key];
+
+      const heading = document.querySelector(config.section);
+      if(heading){
+        const iconHTML = heading.querySelector('i')?.outerHTML || '';
+        heading.innerHTML = iconHTML ? iconHTML + ' ' + newTitle : newTitle;
+      }
+
+      const tocLink = document.querySelector(config.toc);
+      if(tocLink){
+        let textNode = Array.from(tocLink.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim().length);
+        const needsSpace = textNode
+          ? (textNode.previousSibling && textNode.previousSibling.nodeType === Node.ELEMENT_NODE)
+          : (tocLink.lastChild && tocLink.lastChild.nodeType === Node.ELEMENT_NODE);
+        const value = (needsSpace ? ' ' : '') + newTitle;
+        if(textNode){
+          textNode.textContent = value;
+        }else{
+          tocLink.append(document.createTextNode(value));
+        }
+      }
     }
   });
   ensure('applyImage', function(img){
