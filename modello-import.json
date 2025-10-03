@@ -1,0 +1,70 @@
+{
+  "placeholders": {
+    "TITOLO_ARGOMENTO": "Inserisci il titolo sintetico della lezione (3–6 parole).",
+    "META_DESCRIZIONE": "Breve descrizione per i motori di ricerca (120–150 caratteri).",
+    "TOOLTIP_IMPORTA": "Testo per il tooltip del pulsante Importa.",
+    "TOOLTIP_INCOLLA": "Testo per il tooltip del pulsante Incolla contenuti.",
+    "TOOLTIP_ESPORTA": "Testo per il tooltip del pulsante Esporta.",
+    "TOOLTIP_MODELLO": "Testo per il tooltip di download del modello JSON.",
+    "SCOP0_IN_2_RIGHE": "Due frasi sugli obiettivi di apprendimento.",
+    "UTILITÀ_IN_2_RIGHE": "Descrivi in quale situazione reale serve la lezione.",
+    "PREREQUISITI": "Elenca 2–4 prerequisiti essenziali.",
+    "PUNTO_CALDO_1": "Titolo breve del primo punto caldo.",
+    "PUNTO_CALDO_2": "Titolo breve del secondo punto caldo.",
+    "DEFINIZIONE_OPERATIVA": "Definizione operativa del concetto chiave.",
+    "MODULO_1_TITOLO": "Titolo della prima tappa del percorso.",
+    "MODULO_1_DEFINIZIONE": "Sintesi in 1 riga della prima tappa.",
+    "MODULO_1_APPROFONDIMENTO": "Nota o link di approfondimento opzionale.",
+    "MODULO_2_TITOLO": "Titolo della seconda tappa del percorso.",
+    "MODULO_2_DEFINIZIONE": "Sintesi in 1 riga della seconda tappa.",
+    "MODULO_2_APPROFONDIMENTO": "Nota o link di approfondimento opzionale.",
+    "MODULO_3_TITOLO": "Titolo della terza tappa del percorso.",
+    "MODULO_3_DEFINIZIONE": "Sintesi in 1 riga della terza tappa.",
+    "MODULO_3_APPROFONDIMENTO": "Nota o link di approfondimento opzionale.",
+    "IMG_SRC": "URL dell'immagine di contesto.",
+    "ALT_IMMAGINE": "Descrizione accessibile dell'immagine (10–15 parole).",
+    "DIDASCALIA_IMMAGINE": "Didascalia che collega l'immagine al tema.",
+    "IMG_CREDITO_URL": "Link alla fonte o ai crediti dell'immagine.",
+    "ISTRUZIONI_COMPITO": "Testo della consegna per il compito guidato.",
+    "STEP_A": "Prima fase dell'attività.",
+    "STEP_B": "Seconda fase dell'attività.",
+    "STEP_C": "Terza fase dell'attività.",
+    "AIUTO_1": "Suggerimento leggero per lo studente.",
+    "AIUTO_2": "Secondo suggerimento opzionale.",
+    "SOLUZIONE_COMMENTATA": "Breve spiegazione della soluzione.",
+    "ISTRUZIONI_QUIZ": "Istruzioni per la sezione quiz.",
+    "CONSIGLIO_STUDIO": "Suggerimento finale dopo il quiz.",
+    "CREDITI_PAGINA": "Crediti o copyright della pagina.",
+    "NOTE_ACCESSIBILITA": "Note su accessibilità o strumenti inclusivi."
+  },
+  "sectionTitles": {
+    "attivazione": "Titolo sezione attivazione",
+    "primer": "Titolo sezione idea chiave",
+    "percorso": "Titolo sezione percorso modulare",
+    "schema": "Titolo sezione mappa",
+    "immagine": "Titolo sezione immagine",
+    "attivita": "Titolo sezione attività",
+    "quiz": "Titolo sezione quiz",
+    "glossario": "Titolo sezione glossario"
+  },
+  "image": {
+    "src": "https://esempio.it/immagine.png",
+    "ALT": "Descrivi l'immagine per chi non la vede.",
+    "caption": "Spiega in 1 riga cosa mostra l'immagine.",
+    "creditUrl": "https://esempio.it/crediti"
+  },
+  "mermaid": "Inserisci qui il diagramma Mermaid (es. flowchart).",
+  "glossario": [
+    {"term": "Termine 1", "def": "Definizione sintetica."},
+    {"term": "Termine 2", "def": "Definizione sintetica."}
+  ],
+  "quiz": [
+    {
+      "q": "Domanda a scelta multipla.",
+      "choices": ["Opzione A", "Opzione B", "Opzione C", "Opzione D"],
+      "correct": 0,
+      "hint": "Suggerimento opzionale.",
+      "explain": "Spiegazione da mostrare dopo la risposta."
+    }
+  ]
+}
