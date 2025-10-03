@@ -451,16 +451,16 @@ flowchart TD
   </aside>
 </div>
 
-<dialog id="importDialog" aria-labelledby="importDialogTitle" aria-describedby="importDialogDesc" aria-modal="true" aria-hidden="true">
-  <form method="dialog" id="importForm">
-    <h2 id="importDialogTitle"><i class="fa-solid fa-paste"></i> Importa contenuti JSON</h2>
-    <p id="importDialogDesc">Incolla o modifica il JSON dei contenuti e premi “Importa”. Premi Esc per annullare.</p>
-    <label for="importTextarea" class="visually-hidden">Contenuti in formato JSON</label>
-    <textarea id="importTextarea" name="importTextarea" rows="10" aria-describedby="importDialogDesc importError"></textarea>
-    <p id="importError" class="error" role="alert" hidden></p>
+<dialog id="importDialog" aria-labelledby="importDialogTitle" aria-describedby="importDialogDesc importError" aria-modal="true" hidden>
+  <form id="importForm" method="dialog">
+    <h2 id="importDialogTitle">Incolla JSON</h2>
+    <p id="importDialogDesc">Incolla qui il JSON esportato dalla pagina e premi “Importa” per caricarlo.</p>
+    <label class="visually-hidden" for="importTextarea">Contenuto JSON</label>
+    <textarea id="importTextarea" name="importTextarea" rows="10" spellcheck="false" aria-describedby="importDialogDesc importError"></textarea>
+    <p id="importError" class="error" role="alert" aria-live="assertive" hidden></p>
     <div class="actions">
       <button type="button" id="importCancel">Annulla</button>
-      <button type="button" id="importConfirm" class="primary">Importa</button>
+      <button type="submit" id="importConfirm" class="primary">Importa</button>
     </div>
   </form>
 </dialog>
@@ -495,103 +495,6 @@ const state=Object.assign({
   savedStepId:'orientamento'
 }, JSON.parse(localStorage.getItem(PREF)||'{}'));
 const save=()=>localStorage.setItem(PREF,JSON.stringify(state));
-
-/* Dialog per incolla/import JSON */
-const importDialog=$('#importDialog');
-const importTextarea=$('#importTextarea');
-const importError=$('#importError');
-const importConfirm=$('#importConfirm');
-const importCancel=$('#importCancel');
-let importReturnFocus=null;
-
-function setImportError(msg){
-  if(!importError) return;
-  importError.textContent=msg||'';
-  importError.hidden=!msg;
-}
-
-function resetImportDialog(){
-  if(importTextarea) importTextarea.value='';
-  setImportError('');
-}
-
-function openImportDialog(trigger){
-  if(!importDialog) return;
-  importReturnFocus=trigger||document.activeElement;
-  resetImportDialog();
-  importDialog.setAttribute('aria-hidden','false');
-  if(typeof importDialog.showModal==='function'){
-    if(!importDialog.open) importDialog.showModal();
-  }else{
-    importDialog.setAttribute('open','true');
-    importDialog.removeAttribute('hidden');
-  }
-  requestAnimationFrame(()=>importTextarea?.focus());
-}
-
-function closeImportDialog(){
-  if(!importDialog) return;
-  if(typeof importDialog.close==='function' && importDialog.open){
-    importDialog.close();
-  }else{
-    importDialog.removeAttribute('open');
-    importDialog.setAttribute('aria-hidden','true');
-    resetImportDialog();
-    if(importReturnFocus?.focus) importReturnFocus.focus();
-    importReturnFocus=null;
-  }
-}
-
-if(importDialog){
-  importDialog.addEventListener('close',()=>{
-    resetImportDialog();
-    importDialog.setAttribute('aria-hidden','true');
-    if(importReturnFocus?.focus) importReturnFocus.focus();
-    importReturnFocus=null;
-  });
-  importDialog.addEventListener('cancel',event=>{
-    event.preventDefault();
-    closeImportDialog();
-  });
-  if(typeof importDialog.showModal!=='function'){
-    importDialog.addEventListener('keydown',event=>{
-      if(event.key==='Escape'){
-        event.preventDefault();
-        closeImportDialog();
-      }
-    });
-  }
-}
-
-importConfirm?.addEventListener('click',()=>{
-  if(!importTextarea) return;
-  const txt=importTextarea.value.trim();
-  if(!txt){
-    setImportError('Inserisci il JSON da importare.');
-    importTextarea.focus();
-    return;
-  }
-  let data;
-  try{
-    data=JSON.parse(txt);
-  }catch(err){
-    console.error(err);
-    setImportError('Il testo inserito non è un JSON valido.');
-    importTextarea.focus();
-    return;
-  }
-  try{
-    ingestData(data);
-    (window.announce||console.log)('Contenuti incollati.');
-    closeImportDialog();
-  }catch(err){
-    console.error(err);
-    setImportError('Importazione non riuscita: verifica la struttura del JSON.');
-    importTextarea.focus();
-  }
-});
-
-importCancel?.addEventListener('click',()=>closeImportDialog());
 
 /* Temi sfondo (no nero) + font */
 const BG=[
@@ -1094,6 +997,124 @@ function announce(msg){ live.textContent=msg; }
   const has = (n)=> typeof window[n] === 'function';
   const call = (n, ...args)=> has(n) ? window[n](...args) : undefined;
   const ensure = (n, fn)=> { if(!has(n)) window[n]=fn; };
+
+  const importDialog=document.getElementById('importDialog');
+  const importForm=importDialog?.querySelector('#importForm');
+  const importTextarea=importDialog?.querySelector('#importTextarea');
+  const importError=importDialog?.querySelector('#importError');
+  const importCancelBtn=importDialog?.querySelector('#importCancel');
+  let importDialogLastFocus=null;
+
+  function resetImportDialog(){
+    if(importTextarea){ importTextarea.value=''; importTextarea.removeAttribute('aria-invalid'); }
+    if(importError){ importError.textContent=''; importError.hidden=true; }
+  }
+
+  function showImportError(message){
+    if(!importError) return;
+    importError.textContent=message;
+    importError.hidden=false;
+    importTextarea?.setAttribute('aria-invalid','true');
+  }
+
+  function openImportDialog(triggerBtn){
+    if(!importDialog) return;
+    importDialogLastFocus = triggerBtn || document.activeElement;
+    resetImportDialog();
+    if(typeof importDialog.showModal==='function'){
+      if(!importDialog.open) importDialog.showModal();
+    }else{
+      importDialog.setAttribute('open','');
+      importDialog.removeAttribute('hidden');
+    }
+    requestAnimationFrame(()=>{ importTextarea?.focus(); });
+  }
+
+  function closeImportDialog(result){
+    if(!importDialog) return;
+    if(typeof importDialog.close==='function'){
+      if(importDialog.open) importDialog.close(result||'close');
+      else{
+        resetImportDialog();
+        const target=importDialogLastFocus;
+        importDialogLastFocus=null;
+        if(target && typeof target.focus==='function'){ target.focus(); }
+      }
+    }else{
+      importDialog.removeAttribute('open');
+      importDialog.setAttribute('hidden','');
+      resetImportDialog();
+      const target=importDialogLastFocus;
+      importDialogLastFocus=null;
+      if(target && typeof target.focus==='function'){ target.focus(); }
+    }
+  }
+
+  if(importCancelBtn){
+    importCancelBtn.addEventListener('click', ()=>{ closeImportDialog('cancel'); });
+  }
+
+  if(importForm){
+    importForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!importDialog || !importTextarea) return;
+      const raw=importTextarea.value.trim();
+      if(!raw){
+        showImportError('Incolla del contenuto JSON prima di importare.');
+        importTextarea.focus();
+        return;
+      }
+      if(importError){
+        importError.textContent='';
+        importError.hidden=true;
+      }
+      importTextarea.removeAttribute('aria-invalid');
+      let data;
+      try{
+        data=JSON.parse(raw);
+      }catch(err){
+        console.error(err);
+        showImportError('Errore: JSON non valido.');
+        importTextarea.focus();
+        importTextarea.select();
+        return;
+      }
+      try{
+        ingestData(data);
+        (window.announce||console.log)('Contenuti importati.');
+        closeImportDialog('success');
+      }catch(err){
+        console.error(err);
+        showImportError('Importazione non riuscita: verifica la struttura del JSON.');
+        importTextarea.focus();
+      }
+    });
+  }
+
+  if(importDialog){
+    importDialog.addEventListener('cancel', (e)=>{
+      e.preventDefault();
+      closeImportDialog('cancel');
+    });
+    importDialog.addEventListener('close', ()=>{
+      resetImportDialog();
+      importDialog.setAttribute('hidden','');
+      const target=importDialogLastFocus;
+      importDialogLastFocus=null;
+      if(target && typeof target.focus==='function'){ target.focus(); }
+    });
+    if(typeof importDialog.showModal!=='function'){
+      importDialog.addEventListener('keydown', (e)=>{
+        if(e.key==='Escape'){
+          e.preventDefault();
+          closeImportDialog('cancel');
+        }
+      });
+    }
+  }
+
+  window.openImportDialog=openImportDialog;
+  window.closeImportDialog=closeImportDialog;
 
   // Fallback stubs (won't override your real ones)
   ensure('instrumentWords', NOP);
