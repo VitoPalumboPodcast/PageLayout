@@ -1332,6 +1332,24 @@ function announce(msg){ live.textContent=msg; }
       quizData.length=0;
       payload.quiz.forEach(q=>quizData.push({q:q.q,choices:q.choices,correct:q.correct,hint:q.hint||'',explain:q.explain||''}));
       call('renderQuizList');
+      if(quizData.length>0){
+        const nextIndex = (qi>=0 && qi<quizData.length) ? qi : 0;
+        quizIntroSpoken=false;
+        attempts=0;
+        if(btnNext) btnNext.disabled=true;
+        if(btnHint) btnHint.style.display='none';
+        if(btnShowSolution) btnShowSolution.style.display='none';
+        resetQuizFeedback();
+        if(typeof announce==='function'){ announce(`Domanda ${nextIndex+1}/${quizData.length}`); }
+        setActiveQuestion(nextIndex);
+      }else{
+        qi=0;
+        attempts=0;
+        resetQuizFeedback();
+        if(btnNext) btnNext.disabled=true;
+        if(btnHint) btnHint.style.display='none';
+        if(btnShowSolution) btnShowSolution.style.display='none';
+      }
     }
     initGuidedTask();
   }
