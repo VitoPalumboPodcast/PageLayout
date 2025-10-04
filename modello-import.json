@@ -1,7 +1,7 @@
 {
   "_meta": {
     "howToUse": "1. Dichiarare subito l'ARGOMENTO_SPECIFICO e il target per contestualizzare la generazione.\n2. Sostituire ogni campo obbligatorio e facoltativo con contenuti coerenti all'argomento scelto, senza lasciare placeholder.\n3. Mantenere tono, livello, formato e vincoli indicati nel template in ogni sezione.\n4. Personalizzare coerentemente anche sectionTitles, image, mermaid, glossario e quiz con i dati del nuovo argomento.\n5. Proporre titoli originali e descrittivi per ogni voce di sectionTitles.",
-    "displayNotes": "Le stringhe vengono sostituite ovunque il markup contiene [NOME_PLACEHOLDER], inclusi testi, attributi e dati. Usa frasi brevi e inclusive.",
+    "displayNotes": "Le stringhe vengono sostituite ovunque il markup contiene [NOME_PLACEHOLDER], inclusi testi, attributi e dati. Usa frasi brevi e inclusive. Ricorda di adattare il diagramma mermaid al nuovo argomento.",
     "quizReminder": "Nel blocco 'quiz' indica quale indice della risposta è corretto (0 = prima opzione).",
     "contextInstructions": "Considera tutti i segnaposto come variabili da riempire integralmente: replica la struttura del template, sostituisci ogni campo con testi definitivi e adatta titoli di sezione, immagini, diagrammi, glossario e quiz all'argomento dichiarato."
   },
@@ -109,7 +109,7 @@
     "caption": "Didascalia mostrata sotto l'immagine per collegarla a [SOTTO_TEMA].",
     "creditUrl": "URL con i crediti dell'immagine e riferimenti a [FONTE]."
   },
-  "mermaid": "Inserisci qui il diagramma Mermaid adattato a [SOTTO_TEMA] (es. flowchart generico).",
+  "mermaid": "flowchart TD\n    %% Adatta ogni nodo e collegamento al nuovo argomento prima dell'import\n    start([Definisci ARGOMENTO_SPECIFICO e pubblico]) --> moduli{Mappa i moduli principali}\n    moduli -->|Modulo 1| modulo1[[Sostituisci con titolo del modulo 1]]\n    moduli -->|Modulo 2| modulo2[[Sostituisci con titolo del modulo 2]]\n    moduli -->|Modulo 3| modulo3[[Sostituisci con titolo del modulo 3]]\n    modulo1 --> risorsa1[/Inserisci esempio pratico o caso studio/]\n    modulo2 --> risorsa2[/Aggiungi attività guidata pertinente/]\n    modulo3 --> risorsa3[/Evidenzia collegamenti avanzati/]\n    %% Duplica i nodi se servono ulteriori passaggi o verifiche personalizzate\n",
   "glossario": [
     {
       "term": "[TERMINE_CHIAVE] collegato a [ARGOMENTO_SPECIFICO]",
