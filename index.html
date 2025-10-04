@@ -577,12 +577,15 @@ document.addEventListener('mousemove',e=>{
    KARAOKE / SINTESI VOCALE (Leggi ≠ Karaoke)
    ========================================================= */
 const EXCLUDE_WRAP='script,style,code,pre,.mermaid,.kw-pop,button,.btn,[role="button"],input,select,textarea,.choice-list,.concept-icon';
+const PLACEHOLDER_REGEX=/\[[A-Z0-9_]+(?::[^\]]*)?\]/;
+const PLACEHOLDER_OPEN_REGEX=/\[[A-Z0-9_]+(?::[^\]]*)?$/;
 function instrumentWords(root){
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
   const toWrap=[]; let node;
   while(node=walker.nextNode()){
     const t=node.nodeValue; if(!t || !t.trim()) continue;
     if(node.parentElement.closest(EXCLUDE_WRAP)) continue;
+    if(PLACEHOLDER_REGEX.test(t) || PLACEHOLDER_OPEN_REGEX.test(t)) continue;
     toWrap.push(node);
   }
   toWrap.forEach(n=>{
