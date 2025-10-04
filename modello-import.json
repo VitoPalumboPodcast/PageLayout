@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "howToUse": "1. Dichiarare subito l'ARGOMENTO_SPECIFICO e il target per contestualizzare la generazione.\n2. Sostituire ogni campo obbligatorio e facoltativo con contenuti coerenti all'argomento scelto, senza lasciare placeholder.\n3. Mantenere tono, livello, formato e vincoli indicati nel template in ogni sezione.\n4. Personalizzare coerentemente anche sectionTitles, image, mermaid, glossario e quiz con i dati del nuovo argomento.",
+    "howToUse": "1. Dichiarare subito l'ARGOMENTO_SPECIFICO e il target per contestualizzare la generazione.\n2. Sostituire ogni campo obbligatorio e facoltativo con contenuti coerenti all'argomento scelto, senza lasciare placeholder.\n3. Mantenere tono, livello, formato e vincoli indicati nel template in ogni sezione.\n4. Personalizzare coerentemente anche sectionTitles, image, mermaid, glossario e quiz con i dati del nuovo argomento.\n5. Proporre titoli originali e descrittivi per ogni voce di sectionTitles.",
     "displayNotes": "Le stringhe vengono sostituite ovunque il markup contiene [NOME_PLACEHOLDER], inclusi testi, attributi e dati. Usa frasi brevi e inclusive.",
     "quizReminder": "Nel blocco 'quiz' indica quale indice della risposta è corretto (0 = prima opzione).",
     "contextInstructions": "Considera tutti i segnaposto come variabili da riempire integralmente: replica la struttura del template, sostituisci ogni campo con testi definitivi e adatta titoli di sezione, immagini, diagrammi, glossario e quiz all'argomento dichiarato."
@@ -94,14 +94,14 @@
     "CONSIGLIO_STUDIO": "Obbligatorio. Messaggio finale dopo il quiz. Es.: 'Continua a esercitarti con [ATTIVITÀ_AUTONOMA] legata a [ARGOMENTO_SPECIFICO]'."
   },
   "sectionTitles": {
-    "attivazione": "Titolo della micro-attivazione adattato a [ARGOMENTO_SPECIFICO] e al gruppo classe.",
-    "primer": "Titolo per la sezione Primer rapido dedicata a [CONCETTO_CHIAVE].",
-    "percorso": "Titolo per la sezione Percorso modulare centrata su [SOTTO_TEMA].",
-    "schema": "Titolo per la sezione Mappa/diagramma riferita a [ARGOMENTO_SPECIFICO].",
-    "immagine": "Titolo per la sezione immagine contestuale che introduce [DETTagLIO_VISIVO].",
-    "attivita": "Titolo per la sezione Attività guidata collegata a [ATTIVITÀ_GUIDATA].",
-    "quiz": "Titolo per la sezione Verifica formativa su [CONCETTO_CHIAVE].",
-    "glossario": "Titolo per la sezione Glossario dedicato ai termini di [ARGOMENTO_SPECIFICO]."
+    "attivazione": "Sostituisci con un titolo originale per la micro-attivazione collegata a [ARGOMENTO_SPECIFICO] e al gruppo classe.",
+    "primer": "Sostituisci con un titolo originale per il Primer rapido dedicato a [CONCETTO_CHIAVE].",
+    "percorso": "Sostituisci con un titolo originale per la sezione Percorso modulare centrata su [SOTTO_TEMA].",
+    "schema": "Sostituisci con un titolo originale per la sezione Mappa o diagramma riferita a [ARGOMENTO_SPECIFICO].",
+    "immagine": "Sostituisci con un titolo originale per la sezione immagine contestuale che introduce [DETTagLIO_VISIVO].",
+    "attivita": "Sostituisci con un titolo originale per la sezione Attività guidata collegata a [ATTIVITÀ_GUIDATA].",
+    "quiz": "Sostituisci con un titolo originale per la sezione Verifica formativa su [CONCETTO_CHIAVE].",
+    "glossario": "Sostituisci con un titolo originale per la sezione Glossario dedicato ai termini di [ARGOMENTO_SPECIFICO]."
   },
   "image": {
     "src": "URL assoluto o relativo dell'immagine di contesto legata a [ARGOMENTO_SPECIFICO].",
