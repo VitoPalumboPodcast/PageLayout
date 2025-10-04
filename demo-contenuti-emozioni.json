@@ -103,7 +103,7 @@
     "caption": "Schema ispirato alla ruota di Plutchik.",
     "creditUrl": "https://mastercoachitalia.com/"
   },
-  "mermaid": "flowchart TD; Stimolo[Stimolo]-->Amigdala[Allarme rapido]; Stimolo-->Corteccia[Valutazione consapevole]; Amigdala-->Corpo[Risposta fisiologica]; Corteccia-->Piano[Strategia consapevole]; Corpo-->Feedback[Segnale che torna al cervello]; Piano-->Azione[Azione regolata];",
+  "mermaid": "flowchart TD; Stimolo[Riconoscimento dello stimolo]; Stimolo-->Valutazione[Componenti: valutazione cognitiva]; Valutazione-->Circuito[Circuito cervello-corpo integra segnali]; Circuito-->Risposta[Componenti: risposta corporea]; Risposta-->Regolazione[Regolazione consapevole: strategie]; Regolazione-->Esito[Esiti comportamentali intenzionali];",
   "glossario": [
     {
       "term": "Emozione di base",
