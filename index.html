@@ -1522,7 +1522,7 @@ function announce(msg){ live.textContent=msg; }
         }
       }
 
-      const html = '<!DOCTYPE html>\\n' + clonedRoot.outerHTML;
+      const html = '<!DOCTYPE html>' + clonedRoot.outerHTML;
       const blob = new Blob([html], {type:'text/html;charset=utf-8'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
