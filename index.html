@@ -1234,7 +1234,12 @@ function announce(msg){ live.textContent=msg; }
     const el = document.getElementById('mermaidMap');
     if(!el) return;
     el.textContent = diagram || '';
-    if(window.mermaid){ try{ mermaid.run({querySelector:'#mermaidMap'}); }catch(e){ console.warn(e); } }
+    if(window.mermaid){
+      try{
+        el.removeAttribute('data-processed');
+        mermaid.run({nodes:[el]});
+      }catch(e){ console.warn(e); }
+    }
   });
   ensure('applyGlossary', function(entries){
     if(!Array.isArray(entries)||!entries.length) return;
