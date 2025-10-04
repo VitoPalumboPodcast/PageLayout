@@ -1,8 +1,9 @@
 {
   "_meta": {
-    "howToUse": "Compila tutte le chiavi sotto 'placeholders' con i testi da mostrare. I campi segnati come 'Facoltativo' possono restare vuoti, ma lascia comunque la chiave con stringa vuota per evitare placeholder visibili.",
+    "howToUse": "1. Dichiarare subito l'ARGOMENTO_SPECIFICO e il target per contestualizzare la generazione.\n2. Sostituire ogni campo obbligatorio e facoltativo con contenuti coerenti all'argomento scelto, senza lasciare placeholder.\n3. Mantenere tono, livello, formato e vincoli indicati nel template in ogni sezione.\n4. Personalizzare coerentemente anche sectionTitles, image, mermaid, glossario e quiz con i dati del nuovo argomento.",
     "displayNotes": "Le stringhe vengono sostituite ovunque il markup contiene [NOME_PLACEHOLDER], inclusi testi, attributi e dati. Usa frasi brevi e inclusive.",
-    "quizReminder": "Nel blocco 'quiz' indica quale indice della risposta è corretto (0 = prima opzione)."
+    "quizReminder": "Nel blocco 'quiz' indica quale indice della risposta è corretto (0 = prima opzione).",
+    "contextInstructions": "Considera tutti i segnaposto come variabili da riempire integralmente: replica la struttura del template, sostituisci ogni campo con testi definitivi e adatta titoli di sezione, immagini, diagrammi, glossario e quiz all'argomento dichiarato."
   },
   "placeholders": {
     "TITOLO_ARGOMENTO": "Obbligatorio. Titolo principale (H1) mostrato in testa alla pagina. Es.: 'Circuiti elettrici in serie (2ª media)'.",
