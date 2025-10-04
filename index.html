@@ -1264,11 +1264,13 @@ function announce(msg){ live.textContent=msg; }
   function escapeForJsLiteral(value){
     if(value===null || value===undefined) return null;
     try{
-      return JSON.stringify(String(value)).slice(1,-1);
+      const jsonEncoded=JSON.stringify(String(value));
+      const withoutQuotes=jsonEncoded.slice(1,-1);
+      return withoutQuotes.replace(/[\'`]/g, ch=>'\\'+ch);
     }catch(_){
       const raw=String(value);
-      const replacements={"\\":"\\\\","\"":"\\\"","'":"\\'","\n":"\\n","\r":"\\r","\u2028":"\\u2028","\u2029":"\\u2029"};
-      return raw.replace(/[\\"'\n\r\u2028\u2029]/g, ch=>replacements[ch]||ch);
+      const replacements={"\\":"\\\\","\"":"\\\"","'":"\\'","`":"\\`","\n":"\\n","\r":"\\r","\u2028":"\\u2028","\u2029":"\\u2029"};
+      return raw.replace(/[\\"'`\n\r\u2028\u2029]/g, ch=>replacements[ch]||ch);
     }
   }
   function replaceInString(str,map){ if(typeof str!=='string') return str; let out=str; for(const k of Object.keys(map)){ out=out.replace(makeKeyRegex(k), String(map[k])); } return out; }
