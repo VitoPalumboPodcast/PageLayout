@@ -1261,6 +1261,16 @@ function announce(msg){ live.textContent=msg; }
     const escaped=key.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&');
     return new RegExp('\\['+ escaped +'(?::[^\\]]*)?\\]','g');
   }
+  function escapeForJsLiteral(value){
+    if(value===null || value===undefined) return null;
+    try{
+      return JSON.stringify(String(value)).slice(1,-1);
+    }catch(_){
+      const raw=String(value);
+      const replacements={"\\":"\\\\","\"":"\\\"","'":"\\'","\n":"\\n","\r":"\\r","\u2028":"\\u2028","\u2029":"\\u2029"};
+      return raw.replace(/[\\"'\n\r\u2028\u2029]/g, ch=>replacements[ch]||ch);
+    }
+  }
   function replaceInString(str,map){ if(typeof str!=='string') return str; let out=str; for(const k of Object.keys(map)){ out=out.replace(makeKeyRegex(k), String(map[k])); } return out; }
 
   function applyGlobalPlaceholders(map){
@@ -1486,11 +1496,20 @@ function announce(msg){ live.textContent=msg; }
         const scriptCloseRe=new RegExp('</'+'script>','gi');
         const scripts=Array.from(clonedRoot.querySelectorAll('script'));
         if(Object.keys(placeholders).length){
-          scripts.forEach(scr=>{
-            if(scr.textContent){
-              scr.textContent=replaceInString(scr.textContent, placeholders);
+          const scriptSafePlaceholders={};
+          for(const [key,value] of Object.entries(placeholders)){
+            const escaped=escapeForJsLiteral(value);
+            if(typeof escaped==='string'){
+              scriptSafePlaceholders[key]=escaped;
             }
-          });
+          }
+          if(Object.keys(scriptSafePlaceholders).length){
+            scripts.forEach(scr=>{
+              if(scr.textContent){
+                scr.textContent=replaceInString(scr.textContent, scriptSafePlaceholders);
+              }
+            });
+          }
         }
 
         if(Array.isArray(lastIngestedData.quiz) && lastIngestedData.quiz.length){
