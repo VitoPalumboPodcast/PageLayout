@@ -88,14 +88,14 @@
     "CONSIGLIO_STUDIO": "Annota per una settimana le tue emozioni con intensità e strategie usate, poi confronta i risultati."
   },
   "sectionTitles": {
-    "attivazione": "Micro-attivazione",
-    "primer": "Primer rapido",
-    "percorso": "Percorso modulare",
-    "schema": "Mappa dell'argomento",
-    "immagine": "Immagine di contesto",
-    "attivita": "Compito guidato",
-    "quiz": "Verifica formativa",
-    "glossario": "Glossario essenziale"
+    "attivazione": "Domande per iniziare",
+    "primer": "Idee al volo",
+    "percorso": "Tre tappe del percorso",
+    "schema": "Una mappa per orientarti",
+    "immagine": "Immagini per riconoscersi",
+    "attivita": "Allenati passo passo",
+    "quiz": "Metti alla prova ciò che sai",
+    "glossario": "Parole da tenere a mente"
   },
   "image": {
     "src": "https://mastercoachitalia.com/wp-content/uploads/2023/08/ruota-emozioni.png",
