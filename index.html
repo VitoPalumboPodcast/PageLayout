@@ -867,12 +867,15 @@ function renderQuizList(){
     quizListEl.appendChild(wrap);
   });
 }
-function setActiveQuestion(idx){
+function setActiveQuestion(idx, opts){
+  let shouldScroll=true;
+  if(typeof opts==='boolean'){ shouldScroll=opts; }
+  else if(opts && typeof opts==='object' && 'scroll' in opts){ shouldScroll=opts.scroll; }
   qi=idx; attempts=0; resetQuizFeedback(); btnNext.disabled=true;
   $$('.quiz-item').forEach(el=>el.classList.toggle('active', Number(el.dataset.index)===qi));
   instrumentSubtree($('.quiz-item.active'));
   updateQuizState();
-  $('.quiz-item.active').scrollIntoView({behavior:'smooth',block:'center'});
+  if(shouldScroll!==false){ $('.quiz-item.active').scrollIntoView({behavior:'smooth',block:'center'}); }
 }
 function updateQuizState(){ quizState.textContent=`Domanda ${qi+1}/${quizData.length}`; }
 function resetQuizFeedback(){
@@ -1031,7 +1034,7 @@ buildGlossary();
 instrumentWords(content);
 annotateKeywordWords();
 renderQuizList();
-setActiveQuestion(0);
+setActiveQuestion(0,false);
 applyPrefs();
 
 /* TOC: aggiorna passo su click */
