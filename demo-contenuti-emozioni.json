@@ -10,7 +10,6 @@
     "TOOLTIP_MODELLO": "Apri elenco campi disponibili",
     "SCOP0_IN_2_RIGHE": "Riconoscere le componenti di un'emozione.\nDistinguere emozione, sentimento e umore.",
     "UTILITÀ_IN_2_RIGHE": "Ti aiuta a interpretare le tue reazioni e a scegliere strategie di autoregolazione efficaci.",
-    "PREREQUISITI": "Conosci il sistema nervoso di base e sai fare esempi di stati emotivi quotidiani.",
     "ALT_IMMAGINE": "Studentessa osserva una ruota delle emozioni colorata in classe",
     "DIDASCALIA_IMMAGINE": "La ruota delle emozioni aiuta a nominare intensità e sfumature del vissuto.",
     "ISTRUZIONI_BREVI": "Riscalda la mente con due domande veloci sulle emozioni di base.",
@@ -86,7 +85,8 @@
     "Q3_OPZ_4": "Aumentare volontariamente il battito cardiaco.",
     "Q3_HINT": "Combina corpo e cognizione per guidare il comportamento.",
     "Q3_SPEGAZIONE": "Respirazione e ristrutturazione cognitiva riducono la carica emotiva e riportano la mente su pensieri utili. Questa combinazione trasforma l'energia dell'emozione in concentrazione sulla prestazione. Usarla con costanza rende più gestibili interrogazioni, gare o conversazioni difficili.",
-    "CONSIGLIO_STUDIO": "Annota per una settimana le tue emozioni con intensità e strategie usate, poi confronta i risultati."
+    "CONSIGLIO_STUDIO": "Annota per una settimana le tue emozioni con intensità e strategie usate, poi confronta i risultati.",
+    "PRIMA_DI_INIZIARE": "Prima di iniziare devi sapere che: Conosci il sistema nervoso di base e sai fare esempi di stati emotivi quotidiani."
   },
   "sectionTitles": {
     "attivazione": "Domande per iniziare",
