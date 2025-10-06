@@ -111,6 +111,10 @@ body:not(.mode-simplified) .semplificata{display:none}
 #immagine figure:not(.is-svg) img{width:100%;height:auto;max-height:clamp(220px,45vh,360px);object-fit:cover;border-radius:12px}
 #immagine figure.is-svg{background:var(--surface);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;align-items:stretch}
 #immagine figure.is-svg img{display:block;width:auto;max-width:100%;height:auto;max-height:clamp(220px,55vh,420px);object-fit:contain;border-radius:10px;margin:0 auto}
+#immagine figure[data-has-inline-svg="true"]{gap:1rem}
+#immagine figure [data-role="inline-svg"]{border:1px solid var(--border);border-radius:10px;padding:1rem;background:var(--surface);overflow:auto}
+#immagine figure [data-role="inline-svg"][hidden]{display:none!important}
+#immagine figure [data-role="inline-svg"] svg{width:100%;height:auto}
 #immagine figcaption{width:100%;display:flex;flex-direction:column;gap:.25rem;font-size:.95rem}
 #immagine figcaption [data-role="credit-wrapper"]{display:inline-flex;flex-wrap:wrap;gap:.25rem;align-items:baseline}
 #immagine figcaption a{font-size:.9rem;word-break:break-word}
@@ -220,6 +224,9 @@ body:not(.mode-simplified) .semplificata{display:none}
       <button id="tbDownloadTemplate" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_MODELLO]">
         <i class="fa-solid fa-download"></i><span>Scarica modello JSON</span>
       </button>
+      <button id="tbDownloadSvgDemo" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_DEMO_SVG]">
+        <i class="fa-solid fa-vector-square"></i><span>Scarica demo SVG</span>
+      </button>
     </div>
   </div>
   <!-- Tipografia/impaginazione (azioni non persistenti) -->
@@ -283,6 +290,7 @@ body:not(.mode-simplified) .semplificata{display:none}
         <h2><i class="fa-solid fa-image"></i> Immagine di contesto</h2>
         <figure>
           <img src="https://picsum.photos/seed/argomento/1200/600" alt="[ALT_IMMAGINE: descrizione funzionale, 10–15 parole che connettono l’immagine al concetto]">
+          <div data-role="inline-svg" hidden aria-hidden="true"></div>
           <figcaption>
             <span data-role="caption-text">[DIDASCALIA_IMMAGINE: 1 riga che collega l’immagine al nucleo della lezione].</span>
             <span data-role="credit-wrapper">Fonte: <a data-role="credit-link" href="https://picsum.photos/" target="_blank" rel="noopener">https://picsum.photos/</a></span>
@@ -1231,22 +1239,63 @@ function announce(msg){ live.textContent=msg; }
   ensure('applyImage', function(img){
     const fig = document.querySelector('#immagine figure');
     const im = fig?.querySelector('img');
+    const inlineHolder = fig?.querySelector('[data-role="inline-svg"]');
     const cap = fig?.querySelector('figcaption');
     const captionSpan = cap?.querySelector('[data-role="caption-text"]');
     const creditWrapper = cap?.querySelector('[data-role="credit-wrapper"]');
     const creditLink = cap?.querySelector('[data-role="credit-link"]');
 
+    const src = typeof img.src === 'string' ? img.src.trim() : '';
+    const hasSrc = Boolean(src);
+    const altRaw = img.ALT || img.alt;
+    const alt = (typeof altRaw === 'string' ? altRaw : '').trim();
+    const inlineSvg = typeof img.inlineSvg === 'string' ? img.inlineSvg.trim() : '';
+    const hasInline = inlineSvg.length > 0;
+    const inlineAltRaw = typeof img.inlineAlt === 'string' ? img.inlineAlt : '';
+    const inlineAlt = inlineAltRaw.trim();
+
     if(im){
-      if(img.src){ im.src = img.src; }
-      if('loading' in im){ im.loading = img.loading || 'lazy'; }
-      const alt = img.ALT || img.alt;
-      if(typeof alt === 'string' && alt.trim()){
-        im.alt = alt.trim();
-        im.title = alt.trim();
+      if(hasSrc){
+        if(im.src !== src){ im.src = src; }
+        im.hidden = false;
+        im.removeAttribute('aria-hidden');
+      }else{
+        im.hidden = true;
+        im.setAttribute('aria-hidden','true');
+        if(im.hasAttribute('src')) im.removeAttribute('src');
       }
-      const src = (img.src || '').trim();
+      if('loading' in im){ im.loading = img.loading || 'lazy'; }
+      if(alt){
+        im.alt = alt;
+        im.title = alt;
+      }
+    }
+
+    if(inlineHolder){
+      inlineHolder.innerHTML = '';
+      if(hasInline){
+        inlineHolder.innerHTML = inlineSvg;
+        inlineHolder.hidden = false;
+        inlineHolder.removeAttribute('aria-hidden');
+        inlineHolder.setAttribute('role','img');
+        const label = inlineAlt || alt || 'Illustrazione vettoriale';
+        inlineHolder.setAttribute('aria-label', label);
+      }else{
+        inlineHolder.hidden = true;
+        inlineHolder.setAttribute('aria-hidden','true');
+        inlineHolder.removeAttribute('role');
+        inlineHolder.removeAttribute('aria-label');
+      }
+    }
+
+    if(fig){
       const isSvg = /\.svg(\?|#|$)/i.test(src) || /^data:image\/svg\+xml/i.test(src);
-      if(fig){ fig.classList.toggle('is-svg', Boolean(isSvg)); }
+      fig.classList.toggle('is-svg', Boolean(isSvg || hasInline));
+      if(hasInline){
+        fig.dataset.hasInlineSvg = 'true';
+      }else{
+        fig.removeAttribute('data-has-inline-svg');
+      }
     }
 
     if(captionSpan){
@@ -1460,6 +1509,7 @@ function announce(msg){ live.textContent=msg; }
     const pasteBtn=document.getElementById('tbPasteImport');
     const exportBtn=document.getElementById('tbExport');
     const downloadBtn=document.getElementById('tbDownloadTemplate');
+    const svgDemoBtn=document.getElementById('tbDownloadSvgDemo');
     const file=document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
 
     if(!settingsBtn || !settingsMenu) return;
@@ -1623,6 +1673,9 @@ function announce(msg){ live.textContent=msg; }
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },0);
     });
 
+    if(downloadBtn){ downloadBtn.dataset.bindDownload='true'; }
+    if(svgDemoBtn){ svgDemoBtn.dataset.bindDownload='true'; }
+
     downloadBtn?.addEventListener('click', async (event)=>{
       event.preventDefault();
       closeMenu(true);
@@ -1641,31 +1694,54 @@ function announce(msg){ live.textContent=msg; }
         alert('Impossibile scaricare il modello JSON.');
       }
     });
+
+    svgDemoBtn?.addEventListener('click', async (event)=>{
+      event.preventDefault();
+      closeMenu(true);
+      try{
+        const response=await fetch('demo-contenuti-svg.json', {cache:'no-store'});
+        if(!response.ok) throw new Error('HTTP '+response.status);
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download='demo-contenuti-svg.json';
+        document.body.appendChild(a); a.click();
+        setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0);
+      }catch(err){
+        console.error('Scarica demo SVG fallito', err);
+        alert('Impossibile scaricare il demo SVG.');
+      }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', ensureToolbarButtons);
-  document.addEventListener('DOMContentLoaded', function(){
-    const trigger=document.getElementById('tbDownloadTemplate');
-    if(!trigger || trigger.dataset.bindDownload==='true') return;
-    trigger.dataset.bindDownload='true';
-    if(!trigger.getAttribute('title')){
-      trigger.setAttribute('title','[TOOLTIP_MODELLO]');
-    }
-    if(trigger.tagName==='A'){
-      trigger.setAttribute('href','modello-import.json');
-      trigger.setAttribute('download','modello-import.json');
-    }else{
-      trigger.addEventListener('click', function(){
-        const link=document.createElement('a');
-        link.href='modello-import.json';
-        link.download='modello-import.json';
-        link.hidden=true;
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(()=>link.remove(),0);
-      });
-    }
-  });
+  function setupStaticDownloadTrigger(id, href, filename, fallbackTitle){
+    document.addEventListener('DOMContentLoaded', function(){
+      const trigger=document.getElementById(id);
+      if(!trigger || trigger.dataset.bindDownload==='true') return;
+      trigger.dataset.bindDownload='true';
+      if(fallbackTitle && !trigger.getAttribute('title')){
+        trigger.setAttribute('title', fallbackTitle);
+      }
+      if(trigger.tagName==='A'){
+        trigger.setAttribute('href', href);
+        trigger.setAttribute('download', filename);
+      }else{
+        trigger.addEventListener('click', function(){
+          const link=document.createElement('a');
+          link.href=href;
+          link.download=filename;
+          link.hidden=true;
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(()=>link.remove(),0);
+        });
+      }
+    });
+  }
+  setupStaticDownloadTrigger('tbDownloadTemplate','modello-import.json','modello-import.json','[TOOLTIP_MODELLO]');
+  setupStaticDownloadTrigger('tbDownloadSvgDemo','demo-contenuti-svg.json','demo-contenuti-svg.json','[TOOLTIP_SCARICA_DEMO_SVG]');
 })();
 </script>
 <!-- ==== /UPGRADE PACK ==== -->

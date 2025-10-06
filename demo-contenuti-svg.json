@@ -1,0 +1,163 @@
+{
+  "placeholders": {
+    "TITOLO_ARGOMENTO": "Impero romano nel III secolo (2ª liceo)",
+    "TOOLTIP_SETTINGS": "Apri impostazioni rapide",
+    "TOOLTIP_IMPORTA": "Importa contenuti da file JSON",
+    "TOOLTIP_INCOLLA": "Incolla JSON dagli appunti",
+    "TOOLTIP_ESPORTA": "Esporta la pagina in JSON",
+    "TOOLTIP_SCARICA_MODELLO": "Scarica il modello di compilazione",
+    "TOOLTIP_SCARICA_DEMO_SVG": "Scarica l'esempio con SVG",
+    "TOOLTIP_MODELLO": "Apri elenco campi disponibili",
+    "SCOP0_IN_2_RIGHE": "Leggere una carta storica del 230 d.C. per localizzare province e frontiere.\nCollegare eventi politici e militari a cause e conseguenze sulle comunità provinciali.",
+    "UTILITÀ_IN_2_RIGHE": "Ti aiuta a interpretare mappe e timeline della crisi del III secolo.\nCosì puoi spiegare come le decisioni imperiali ricadono sulla vita quotidiana nelle province.",
+    "PREREQUISITI": "Sai leggere una carta tematica e ricordi le fasi principali della Repubblica e del Principato.",
+    "ALT_IMMAGINE": "Carta dell'Impero romano nel 230 d.C. con province e confini evidenziati",
+    "DIDASCALIA_IMMAGINE": "La combinazione di mappa e timeline evidenzia pressioni esterne e risposte interne.",
+    "ISTRUZIONI_BREVI": "Riscalda la memoria con due domande sulla crisi del III secolo.",
+    "DOMANDA_RIATTIVAZIONE_1": "Quale fattore mette in crisi l'equilibrio del III secolo?",
+    "OPZIONE_A": "Frontiere lunghe e attacchi simultanei.",
+    "OPZIONE_B": "Una pace stabile con i Persiani.",
+    "DOMANDA_RIATTIVAZIONE_2": "Nel 238 d.C. il Senato nomina più imperatori per contenere l'anarchia militare.",
+    "FALSO_AMICO_1": "Pensare che l'impero crolli già nel 230: dura altri decenni grazie a riforme e nuove alleanze.",
+    "FALSO_AMICO_2": "Confondere tutte le invasioni con il medioevo: nel III secolo Roma riorganizza l'esercito e mantiene il controllo.",
+    "DEFINIZIONE_OPERATIVA": "La crisi del III secolo intreccia pressioni militari, instabilità politica e riforme di emergenza che trasformano l'impero.",
+    "ESEMPIO_PULITO": "Analizzi la carta del 230 d.C. per spiegare perché l'avanzata persiana costringe Roma a spostare legioni dal Danubio e a rafforzare il limes orientale.",
+    "MODULO_1_TITOLO": "Frontiere sotto pressione",
+    "MODULO_1_DEFINIZIONE": "Nel 230 d.C. l'esercito romano difende confini lunghissimi contro Sasanidi e popolazioni germaniche; leggere la mappa rivela dove si concentrano le legioni e perché alcuni settori restano fragili.",
+    "MODULO_1_ESEMPIO": "Osservando la carta noti che la Mesopotamia è un'area critica: l'avanzata persiana costringe Roma a rinforzare il limes orientale sottraendo truppe al Danubio.",
+    "MODULO_1_CONTROESEMPIO": "Ignorare la distribuzione delle guarnigioni e pensare che ogni provincia riceva lo stesso numero di legioni porta a sottovalutare le aree di crisi.",
+    "MODULO_1_TITOLO_SEMPLIFICATO": "Dove il confine è fragile",
+    "MODULO_1_RISCRITTURA_SEMPLICE": "Confronta la mappa: certe frontiere hanno più soldati perché i nemici sono più pericolosi.",
+    "MODULO_1_APPROFONDIMENTO": "Consulta le iscrizioni del limes siriaco per capire come cambiavano gli stanziamenti delle truppe dopo ogni campagna persiana.",
+    "MODULO_2_TITOLO": "Cambi di potere rapidi",
+    "MODULO_2_DEFINIZIONE": "Tra 235 e 238 d.C. l'esercito proclama più imperatori: collegare timeline e carta mostra come i fronti aperti impediscano una successione stabile.",
+    "MODULO_2_ESEMPIO": "La timeline evidenzia l'ascesa di Massimino Trace nel 235: proveniva dalle frontiere danubiane e spostò il baricentro del potere verso i generali di confine.",
+    "MODULO_2_CONTROESEMPIO": "Se immagini che il Senato controlli da solo la successione, dimentichi che senza il sostegno delle legioni i decreti restano lettera morta.",
+    "MODULO_2_TITOLO_SEMPLIFICATO": "Troppe incoronazioni",
+    "MODULO_2_RISCRITTURA_SEMPLICE": "Nel giro di pochi anni i soldati scelgono nuovi imperatori perché ogni fronte vuole qualcuno che lo difenda subito.",
+    "MODULO_2_APPROFONDIMENTO": "Leggi l'Historia Augusta confrontando Massimino e i Gordiani per vedere come reagiscono le élite provinciali.",
+    "MODULO_3_TITOLO": "Risposte e riforme",
+    "MODULO_3_DEFINIZIONE": "Per arginare la crisi, gli imperatori avviano riforme fiscali e militari; capire l'ordine degli interventi spiega la sopravvivenza dell'impero fino a Diocleziano.",
+    "MODULO_3_ESEMPIO": "Il rafforzamento del comando mobile di Gallieno separa incarichi civili e militari nelle province più esposte, rendendo più rapido l'invio di rinforzi.",
+    "MODULO_3_CONTROESEMPIO": "Pensare che l'impero crolli subito cancella le strategie di adattamento, come la creazione di nuove unità di cavalleria.",
+    "MODULO_3_TITOLO_SEMPLIFICATO": "Come Roma reagisce",
+    "MODULO_3_RISCRITTURA_SEMPLICE": "Gli imperatori sperimentano tasse e generali diversi per tenere insieme territori lontani.",
+    "MODULO_3_APPROFONDIMENTO": "Confronta le riforme di Gallieno e Aureliano usando le schede cronologiche del manuale per cogliere continuità e cambi di passo.",
+    "ISTRUZIONI_COMPITO": "Ordina i passaggi per spiegare a un compagno come leggere mappa e timeline di un evento del III secolo.",
+    "STEP_A": "Individua sulla carta la provincia coinvolta.",
+    "STEP_B": "Collega la data della timeline all'evento militare o politico.",
+    "STEP_C": "Descrivi la conseguenza amministrativa o sociale nella provincia.",
+    "AIUTO_1": "Inizia dalla geografia: un confine minacciato cambia subito la priorità dell'impero.",
+    "AIUTO_2": "Controlla se la timeline segnala un imperatore militare o una riforma economica: cambia la tua spiegazione finale.",
+    "SOLUZIONE_COMMENTATA": "1) Provincia: chiarisci il luogo per dare contesto. 2) Data: collega l'evento alla cronologia per capire chi governa. 3) Conseguenza: spiega come la decisione cambia la vita nella provincia.",
+    "SPIEGAZIONE_SUCCINTA": "Ottimo: hai intrecciato spazio, tempo e decisione politica per raccontare la crisi.",
+    "INDIZIO_DIAGNOSTICO": "Ricontrolla se hai scelto la provincia giusta: senza luogo preciso, la timeline non basta a capire l'effetto.",
+    "ISTRUZIONI_QUIZ": "Rispondi alle domande e usa gli aiuti per collegare carta e timeline.",
+    "CRITERIO_1": "Individua sulle mappe le province coinvolte dagli eventi del III secolo.",
+    "CRITERIO_2": "Collega eventi politici e militari a cause e conseguenze per il territorio.",
+    "CRITERIO_3": "Usa fonti e timeline per spiegare le riforme adottate dagli imperatori.",
+    "VARIANTE_BASE": "Fornisci la carta muta dell'impero e chiedi di etichettare le frontiere più esposte.",
+    "VARIANTE_INTERMEDIA": "Assegna gruppi di lavoro: ognuno ricostruisce una crisi provinciale combinando mappe e cronologie.",
+    "VARIANTE_AVANZATA": "Fai confrontare la crisi del III secolo con quella del V secolo usando dossier di fonti contrapposte.",
+    "TERMINE_1": "Limes",
+    "DEFINIZIONE_1": "Linea di difesa fortificata che separava l'impero da territori non romanizzati.",
+    "TERMINE_2": "Anarchia militare",
+    "DEFINIZIONE_2": "Periodo in cui gli eserciti eleggono e depongono rapidamente gli imperatori.",
+    "TERMINE_3": "Sasanidi",
+    "DEFINIZIONE_3": "Dinastia persiana che sfida Roma nel III secolo con campagne aggressive.",
+    "Q1_TESTO": "Quale fu l'effetto principale dell'Editto di Caracalla del 212 d.C.?",
+    "Q1_OPZ_1": "Concesse la cittadinanza a tutti gli uomini liberi, rafforzando il legame fiscale con le province.",
+    "Q1_OPZ_2": "Divise l'impero in due stati indipendenti.",
+    "Q1_OPZ_3": "Abolì l'esercito permanente romano.",
+    "Q1_OPZ_4": "Trasferì la capitale a Costantinopoli.",
+    "Q1_HINT": "Pensa al rapporto fra cittadinanza e tasse.",
+    "Q1_SPEGAZIONE": "L'estensione della cittadinanza consolida la base fiscale e crea un senso di appartenenza comune utile nelle crisi successive.",
+    "Q2_TESTO": "Perché l'ascesa di Massimino Trace nel 235 d.C. segnala il peso delle frontiere danubiane?",
+    "Q2_OPZ_1": "Perché fu scelto dalle legioni di confine che volevano un comandante energico.",
+    "Q2_OPZ_2": "Perché era un senatore nominato dal Senato romano.",
+    "Q2_OPZ_3": "Perché proveniva dall'aristocrazia africana fedele ai Gordiani.",
+    "Q2_OPZ_4": "Perché abolì subito le campagne militari sul Danubio.",
+    "Q2_HINT": "Guarda la timeline e ricorda dove comandava prima di essere acclamato.",
+    "Q2_SPEGAZIONE": "Massimino era generale sul Danubio: la sua nomina mostra che gli eserciti di frontiera possono imporre il loro capo a tutto l'impero.",
+    "Q3_TESTO": "Quale riforma attribuita a Gallieno migliora la gestione delle province minacciate?",
+    "Q3_OPZ_1": "Separare il comando civile da quello militare creando duces specializzati.",
+    "Q3_OPZ_2": "Abolire la moneta d'argento per usare solo baratto.",
+    "Q3_OPZ_3": "Restituire al Senato il controllo diretto delle legioni.",
+    "Q3_OPZ_4": "Trasformare ogni provincia in municipio autonomo.",
+    "Q3_HINT": "Pensa alle nuove cariche affidate a generali professionisti.",
+    "Q3_SPEGAZIONE": "Gallieno affida il comando militare a ufficiali dedicati, così le province possono reagire più velocemente agli attacchi.",
+    "CONSIGLIO_STUDIO": "Crea una scheda per ogni evento chiave con luogo, data, protagonista e conseguenza: ti aiuta a ripassare incrociando mappa e timeline."
+  },
+  "sectionTitles": {
+    "attivazione": "Domande lampo sulla crisi del III secolo",
+    "primer": "Collega eventi e luoghi",
+    "percorso": "Tre nodi per capire la crisi imperiale",
+    "schema": "Mappa e timeline del III secolo",
+    "immagine": "Cartografia e cronologia a confronto",
+    "attivita": "Allena la lettura delle fonti",
+    "quiz": "Verifica rapida sulla crisi imperiale",
+    "glossario": "Parole chiave del III secolo"
+  },
+  "image": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/c/c4/230_CE%2C_Europe.svg",
+    "ALT": "Carta dell'impero romano nel 230 d.C. con province colorate e frontiere marcate",
+    "caption": "La carta di Wikimedia Commons e la timeline mostrano come eventi ravvicinati stressano più fronti contemporaneamente.",
+    "creditUrl": "https://commons.wikimedia.org/wiki/File:230_CE,_Europe.svg",
+    "creditLabel": "Wikimedia Commons",
+    "inlineSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 820 220\">\n  <title>Timeline crisi del III secolo</title>\n  <style>\n    text{font-family:'Atkinson Hyperlegible',sans-serif;}\n    .axis{stroke:#1f2328;stroke-width:3;}\n    .marker{stroke:#0b5fff;stroke-width:2;fill:#dfe9ff;}\n    .label{font-size:16px;fill:#1f2328;}\n    .year{font-size:18px;font-weight:700;fill:#0b5fff;}\n  </style>\n  <line class=\"axis\" x1=\"80\" y1=\"170\" x2=\"740\" y2=\"170\"/>\n  <circle class=\"marker\" cx=\"160\" cy=\"170\" r=\"24\"/>\n  <circle class=\"marker\" cx=\"320\" cy=\"170\" r=\"24\"/>\n  <circle class=\"marker\" cx=\"520\" cy=\"170\" r=\"24\"/>\n  <circle class=\"marker\" cx=\"700\" cy=\"170\" r=\"24\"/>\n  <text class=\"year\" x=\"160\" y=\"162\" text-anchor=\"middle\">212</text>\n  <text class=\"label\" x=\"160\" y=\"206\" text-anchor=\"middle\">Editto di Caracalla</text>\n  <text class=\"year\" x=\"320\" y=\"162\" text-anchor=\"middle\">224</text>\n  <text class=\"label\" x=\"320\" y=\"206\" text-anchor=\"middle\">Pressione sasanide</text>\n  <text class=\"year\" x=\"520\" y=\"162\" text-anchor=\"middle\">235</text>\n  <text class=\"label\" x=\"520\" y=\"206\" text-anchor=\"middle\">Ascesa di Massimino</text>\n  <text class=\"year\" x=\"700\" y=\"162\" text-anchor=\"middle\">238</text>\n  <text class=\"label\" x=\"700\" y=\"206\" text-anchor=\"middle\">Crisi dei sei imperatori</text>\n</svg>",
+    "inlineAlt": "Timeline degli eventi principali fra 212 e 238 d.C. con indicazione di editto, invasioni e cambi di imperatore"
+  },
+  "mermaid": "flowchart TD\n  crisi[Crisi del III secolo] --> frontiere[Pressioni ai confini]\n  crisi --> politica[Instabilità politica]\n  crisi --> economia[Bisogno di riforme fiscali]\n  frontiere --> riforme1[Nuove unità mobili]\n  politica --> riforme2[Imperatori militari]\n  economia --> esito[Provvedimenti di Gallieno e Aureliano]\n  riforme1 --> esito\n  riforme2 --> esito\n",
+  "glossario": [
+    {
+      "term": "Limes",
+      "def": "Linea di difesa fortificata che separava l'impero da territori non romanizzati."
+    },
+    {
+      "term": "Anarchia militare",
+      "def": "Periodo in cui gli eserciti eleggono e depongono rapidamente gli imperatori."
+    },
+    {
+      "term": "Sasanidi",
+      "def": "Dinastia persiana che sfida Roma nel III secolo con campagne aggressive."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Quale fu l'effetto principale dell'Editto di Caracalla del 212 d.C.?",
+      "choices": [
+        "Concesse la cittadinanza a tutti gli uomini liberi, rafforzando il legame fiscale con le province.",
+        "Divise l'impero in due stati indipendenti.",
+        "Abolì l'esercito permanente romano.",
+        "Trasferì la capitale a Costantinopoli."
+      ],
+      "correct": 0,
+      "hint": "Pensa al rapporto fra cittadinanza e tasse.",
+      "explain": "L'estensione della cittadinanza consolida la base fiscale e crea un senso di appartenenza comune utile nelle crisi successive."
+    },
+    {
+      "q": "Perché l'ascesa di Massimino Trace nel 235 d.C. segnala il peso delle frontiere danubiane?",
+      "choices": [
+        "Perché fu scelto dalle legioni di confine che volevano un comandante energico.",
+        "Perché era un senatore nominato dal Senato romano.",
+        "Perché proveniva dall'aristocrazia africana fedele ai Gordiani.",
+        "Perché abolì subito le campagne militari sul Danubio."
+      ],
+      "correct": 0,
+      "hint": "Guarda la timeline e ricorda dove comandava prima di essere acclamato.",
+      "explain": "Massimino era generale sul Danubio: la sua nomina mostra che gli eserciti di frontiera possono imporre il loro capo a tutto l'impero."
+    },
+    {
+      "q": "Quale riforma attribuita a Gallieno migliora la gestione delle province minacciate?",
+      "choices": [
+        "Separare il comando civile da quello militare creando duces specializzati.",
+        "Abolire la moneta d'argento per usare solo baratto.",
+        "Restituire al Senato il controllo diretto delle legioni.",
+        "Trasformare ogni provincia in municipio autonomo."
+      ],
+      "correct": 0,
+      "hint": "Pensa alle nuove cariche affidate a generali professionisti.",
+      "explain": "Gallieno affida il comando militare a ufficiali dedicati, così le province possono reagire più velocemente agli attacchi."
+    }
+  ]
+}
