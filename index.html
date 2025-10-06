@@ -107,8 +107,13 @@ body:not(.mode-simplified) .semplificata{display:none}
 .notice{border-left:6px solid var(--accent);background:var(--accent-weak);padding:.8rem 1rem;border-radius:6px}
 
 /* Immagine di contesto */
-#immagine img{width:100%;height:auto;max-height:clamp(220px,45vh,360px);object-fit:cover;border-radius:12px}
-#immagine figcaption a{font-size:.9rem}
+#immagine figure{margin:0}
+#immagine figure:not(.is-svg) img{width:100%;height:auto;max-height:clamp(220px,45vh,360px);object-fit:cover;border-radius:12px}
+#immagine figure.is-svg{background:var(--surface);border-radius:12px;padding:1rem;display:flex;flex-direction:column;gap:.6rem;align-items:stretch}
+#immagine figure.is-svg img{display:block;width:auto;max-width:100%;height:auto;max-height:clamp(220px,55vh,420px);object-fit:contain;border-radius:10px;margin:0 auto}
+#immagine figcaption{width:100%;display:flex;flex-direction:column;gap:.25rem;font-size:.95rem}
+#immagine figcaption [data-role="credit-wrapper"]{display:inline-flex;flex-wrap:wrap;gap:.25rem;align-items:baseline}
+#immagine figcaption a{font-size:.9rem;word-break:break-word}
 
 /* Blocchi concetto */
 .concept{display:flex;align-items:flex-start;gap:.8rem;margin:.7rem 0}
@@ -279,8 +284,8 @@ body:not(.mode-simplified) .semplificata{display:none}
         <figure>
           <img src="https://picsum.photos/seed/argomento/1200/600" alt="[ALT_IMMAGINE: descrizione funzionale, 10–15 parole che connettono l’immagine al concetto]">
           <figcaption>
-            [DIDASCALIA_IMMAGINE: 1 riga che collega l’immagine al nucleo della lezione].
-            Fonte: <a href="https://picsum.photos/" target="_blank" rel="noopener">https://picsum.photos/</a>
+            <span data-role="caption-text">[DIDASCALIA_IMMAGINE: 1 riga che collega l’immagine al nucleo della lezione].</span>
+            <span data-role="credit-wrapper">Fonte: <a data-role="credit-link" href="https://picsum.photos/" target="_blank" rel="noopener">https://picsum.photos/</a></span>
           </figcaption>
         </figure>
       </section>
@@ -1227,13 +1232,73 @@ function announce(msg){ live.textContent=msg; }
     const fig = document.querySelector('#immagine figure');
     const im = fig?.querySelector('img');
     const cap = fig?.querySelector('figcaption');
-    if(im && img.src) im.src = img.src;
-    const alt = img.ALT || img.alt;
-    if(im && alt){ im.alt = alt; im.title = alt; }
-    if(cap){
-      const a = cap.querySelector('a');
-      if(typeof img.caption === 'string'){ cap.firstChild && (cap.firstChild.nodeValue = img.caption + ' '); }
-      if(a && img.creditUrl){ a.href = img.creditUrl; a.textContent = img.creditUrl; }
+    const captionSpan = cap?.querySelector('[data-role="caption-text"]');
+    const creditWrapper = cap?.querySelector('[data-role="credit-wrapper"]');
+    const creditLink = cap?.querySelector('[data-role="credit-link"]');
+
+    if(im){
+      if(img.src){ im.src = img.src; }
+      if('loading' in im){ im.loading = img.loading || 'lazy'; }
+      const alt = img.ALT || img.alt;
+      if(typeof alt === 'string' && alt.trim()){
+        im.alt = alt.trim();
+        im.title = alt.trim();
+      }
+      const src = (img.src || '').trim();
+      const isSvg = /\.svg(\?|#|$)/i.test(src) || /^data:image\/svg\+xml/i.test(src);
+      if(fig){ fig.classList.toggle('is-svg', Boolean(isSvg)); }
+    }
+
+    if(captionSpan){
+      if(typeof img.caption === 'string' && img.caption.trim()){
+        captionSpan.textContent = img.caption.trim();
+        captionSpan.hidden = false;
+      }else{
+        captionSpan.textContent = '';
+        captionSpan.hidden = true;
+      }
+    }else if(cap && typeof img.caption === 'string' && img.caption.trim()){
+      const text = img.caption.trim() + ' ';
+      if(cap.firstChild && cap.firstChild.nodeType === Node.TEXT_NODE){
+        cap.firstChild.nodeValue = text;
+      }else{
+        cap.insertBefore(document.createTextNode(text), cap.firstChild || null);
+      }
+    }
+
+    const hasCreditUrl = typeof img.creditUrl === 'string' && img.creditUrl.trim();
+    const creditUrl = hasCreditUrl ? img.creditUrl.trim() : '';
+    if(creditLink){
+      if(hasCreditUrl){
+        creditLink.href = creditUrl;
+        creditLink.textContent = (img.creditLabel && img.creditLabel.trim()) || creditUrl;
+        creditLink.target = '_blank';
+        creditLink.rel = 'noopener';
+        creditLink.hidden = false;
+        if(creditWrapper){ creditWrapper.hidden = false; }
+      }else{
+        creditLink.removeAttribute('href');
+        creditLink.removeAttribute('target');
+        creditLink.removeAttribute('rel');
+        creditLink.hidden = true;
+        if(creditWrapper){ creditWrapper.hidden = true; }
+      }
+    }else if(cap && hasCreditUrl){
+      const wrapper = creditWrapper || document.createElement('span');
+      wrapper.dataset.role = wrapper.dataset.role || 'credit-wrapper';
+      if(!creditWrapper){
+        wrapper.setAttribute('data-role','credit-wrapper');
+        wrapper.textContent = 'Fonte: ';
+        cap.appendChild(wrapper);
+      }
+      const link = document.createElement('a');
+      link.setAttribute('data-role','credit-link');
+      link.href = creditUrl;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = (img.creditLabel && img.creditLabel.trim()) || creditUrl;
+      wrapper.appendChild(link);
+      if(wrapper.hidden) wrapper.hidden = false;
     }
   });
   ensure('applyMermaid', function(diagram){

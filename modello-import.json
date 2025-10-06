@@ -104,10 +104,11 @@
     "glossario": "Sostituisci con un titolo originale per la sezione Glossario dedicato ai termini di [ARGOMENTO_SPECIFICO]."
   },
   "image": {
-    "src": "URL assoluto o relativo dell'immagine di contesto legata a [ARGOMENTO_SPECIFICO].",
+    "src": "URL assoluto o relativo dell'immagine di contesto legata a [ARGOMENTO_SPECIFICO] (supporta PNG/JPG/SVG, anche data URI e link HTTPS esterni come file da Commons).",
     "ALT": "Testo alternativo (sovrascritto da ALT_IMMAGINE se presente) che descrive [DETTagLIO_VISIVO].",
     "caption": "Didascalia mostrata sotto l'immagine per collegarla a [SOTTO_TEMA].",
-    "creditUrl": "URL con i crediti dell'immagine e riferimenti a [FONTE]."
+    "creditUrl": "URL con i crediti dell'immagine e riferimenti a [FONTE].",
+    "creditLabel": "Facoltativo. Testo da mostrare per il link di credito al posto dell'URL, es.: 'Wikimedia Commons'."
   },
   "mermaid": "flowchart TD\n    %% Adatta ogni nodo e collegamento al nuovo argomento prima dell'import\n    start([Definisci ARGOMENTO_SPECIFICO e pubblico]) --> moduli{Mappa i moduli principali}\n    moduli -->|Modulo 1| modulo1[[Sostituisci con titolo del modulo 1]]\n    moduli -->|Modulo 2| modulo2[[Sostituisci con titolo del modulo 2]]\n    moduli -->|Modulo 3| modulo3[[Sostituisci con titolo del modulo 3]]\n    modulo1 --> risorsa1[/Inserisci esempio pratico o caso studio/]\n    modulo2 --> risorsa2[/Aggiungi attività guidata pertinente/]\n    modulo3 --> risorsa3[/Evidenzia collegamenti avanzati/]\n    %% Duplica i nodi se servono ulteriori passaggi o verifiche personalizzate\n",
   "glossario": [
