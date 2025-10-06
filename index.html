@@ -1083,6 +1083,7 @@ function announce(msg){ live.textContent=msg; }
     importDialogLastFocus = triggerBtn || document.activeElement;
     resetImportDialog();
     if(typeof importDialog.showModal==='function'){
+      importDialog.removeAttribute('hidden');
       if(!importDialog.open) importDialog.showModal();
     }else{
       importDialog.setAttribute('open','');
