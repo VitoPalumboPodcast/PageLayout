@@ -928,18 +928,41 @@ function positionKwPopover(anchor, pop){
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
 /* Sanitizzazione HTML controllata + utility segnaposto condivise */
-const ALLOWED_HTML_TAGS=new Set(['BR','STRONG','EM','B','I','U','MARK','SMALL','SUP','SUB','UL','OL','LI','P','SPAN','A']);
-const ALLOWED_GLOBAL_ATTRS=new Set(['title']);
+const ALLOWED_HTML_TAGS=new Set([
+  'A','ABBR','ARTICLE','ASIDE','B','BLOCKQUOTE','BR','CODE','DD','DIV','DL','DT','EM','FIGCAPTION','FIGURE','FOOTER','H1','H2','H3','H4','H5','H6','HEADER','HR','I','IMG','KBD','LI','MARK','OL','P','PRE','SECTION','SMALL','SPAN','STRONG','SUB','SUP','TABLE','TBODY','TD','TH','THEAD','TR','U','UL'
+]);
+const ALLOWED_GLOBAL_ATTRS=new Set(['title','class','id','lang','dir','tabindex','role']);
 const ALLOWED_ATTRS_BY_TAG={
-  A:new Set(['href','title','target','rel'])
+  A:new Set(['href','title','target','rel']),
+  IMG:new Set(['src','srcset','alt','title','loading','width','height']),
+  TD:new Set(['colspan','rowspan','headers','scope','abbr']),
+  TH:new Set(['colspan','rowspan','headers','scope','abbr'])
 };
-function isSafeHref(url){
+function isSafeUrl(url,{allowDataImage=false}={}){
   if(typeof url!=='string') return false;
   const trimmed=url.trim();
   if(!trimmed) return false;
   const lower=trimmed.toLowerCase();
-  if(lower.startsWith('javascript:')||lower.startsWith('data:')||lower.startsWith('vbscript:')) return false;
+  if(lower.startsWith('javascript:')||lower.startsWith('vbscript:')) return false;
+  if(lower.startsWith('data:')){
+    if(!allowDataImage) return false;
+    if(!/^data:image\//i.test(trimmed)) return false;
+  }
   return true;
+}
+function isSafeHref(url){
+  return isSafeUrl(url,{allowDataImage:false});
+}
+function sanitizeSrcSet(value){
+  if(typeof value!=='string') return '';
+  const candidates=value.split(',').map(part=>part.trim()).filter(Boolean);
+  const safeParts=[];
+  candidates.forEach(part=>{
+    const spaceIndex=part.search(/\s/);
+    const url=spaceIndex>=0 ? part.slice(0,spaceIndex) : part;
+    if(isSafeUrl(url,{allowDataImage:true})) safeParts.push(part);
+  });
+  return safeParts.join(', ');
 }
 function sanitizeAllowedHTML(html){
   const template=document.createElement('template');
@@ -957,17 +980,35 @@ function sanitizeAllowedHTML(html){
         el.removeAttribute(attr.name);
         return;
       }
-      if(ALLOWED_GLOBAL_ATTRS.has(name) || (ALLOWED_ATTRS_BY_TAG[tag]?.has(name))){
-        if(tag==='A' && name==='href' && !isSafeHref(attr.value)){
+      const allowed = ALLOWED_GLOBAL_ATTRS.has(name)
+        || (ALLOWED_ATTRS_BY_TAG[tag]?.has(name))
+        || name.startsWith('data-')
+        || name.startsWith('aria-');
+      if(!allowed){
+        el.removeAttribute(attr.name);
+        return;
+      }
+      if(tag==='A' && name==='href'){
+        if(!isSafeHref(attr.value)){
           el.removeAttribute(attr.name);
           return;
         }
-        if(tag==='A' && name==='href'){
-          if(!el.hasAttribute('rel')) el.setAttribute('rel','noopener');
-          if(!el.hasAttribute('target')) el.setAttribute('target','_blank');
+        if(!el.hasAttribute('rel')) el.setAttribute('rel','noopener');
+        if(!el.hasAttribute('target')) el.setAttribute('target','_blank');
+      }
+      if(tag==='IMG'){
+        if(name==='src' && !isSafeUrl(attr.value,{allowDataImage:true})){
+          el.removeAttribute(attr.name);
+          return;
         }
-      }else{
-        el.removeAttribute(attr.name);
+        if(name==='srcset'){
+          const sanitizedSrcSet=sanitizeSrcSet(attr.value);
+          if(sanitizedSrcSet){
+            el.setAttribute(attr.name, sanitizedSrcSet);
+          }else{
+            el.removeAttribute(attr.name);
+          }
+        }
       }
     });
   });
