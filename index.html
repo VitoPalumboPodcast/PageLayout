@@ -78,6 +78,24 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 .toolbar-settings-menu[data-open="true"]{display:flex}
 .toolbar-settings-menu .btn{width:100%;justify-content:flex-start}
 .toolbar-settings-menu .btn:focus{outline:3px solid var(--focus);outline-offset:2px}
+.toolbar-settings-menu .legend-hint{
+  border-top:1px solid var(--border);
+  margin-top:.4rem;
+  padding-top:.4rem;
+  font-size:.85rem;
+  color:var(--muted);
+  display:flex;
+  flex-direction:column;
+  gap:.35rem;
+}
+.toolbar-settings-menu .legend-hint ul{
+  margin:0;
+  padding-left:1.1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+}
+.toolbar-settings-menu .legend-hint li{list-style:disc}
 .toolbar .sep{width:1px;height:28px;background:var(--border)}
 .btn{border:1px solid var(--border); background:var(--card); color:var(--fg);
      border-radius:10px; padding:.45rem .7rem; display:inline-flex; gap:.4rem; align-items:center; cursor:pointer}
@@ -227,6 +245,13 @@ body:not(.mode-simplified) .semplificata{display:none}
       <button id="tbDownloadSvgDemo" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_DEMO_SVG]">
         <i class="fa-solid fa-vector-square"></i><span>Scarica demo SVG</span>
       </button>
+      <div class="legend-hint" role="group" aria-labelledby="legendHintTitle">
+        <p id="legendHintTitle"><strong><i class="fa-solid fa-map"></i> Legenda icone</strong></p>
+        <ul>
+          <li><i class="fa-solid fa-key"></i> Parola chiave • <i class="fa-solid fa-lightbulb"></i> Suggerimento • <i class="fa-solid fa-triangle-exclamation"></i> Avviso</li>
+          <li><i class="fa-solid fa-book-open"></i> Definizione • <i class="fa-solid fa-image"></i> Esempio • <i class="fa-solid fa-ban"></i> Controesempio</li>
+        </ul>
+      </div>
     </div>
   </div>
   <!-- Tipografia/impaginazione (azioni non persistenti) -->
@@ -276,13 +301,6 @@ body:not(.mode-simplified) .semplificata{display:none}
         <p class="notice"><strong>Che cosa imparerai.</strong> [SCOP0_IN_2_RIGHE: linguaggio semplice (CEFR B1), 1 frase per riga, 1–3 abilità misurabili.]</p>
         <p class="notice"><strong>A che ti servirà.</strong> [UTILITÀ_IN_2_RIGHE: contesto autentico in cui applicare il concetto.]</p>
         <p><strong>Prima di iniziare devi sapere che…</strong> [PRIMA_DI_INIZIARE: breve recap narrativo con informazioni di base utili agli studenti.]</p>
-        <section class="card" id="legenda">
-          <h2><i class="fa-solid fa-map"></i> Legenda icone</h2>
-          <ul>
-            <li><i class="fa-solid fa-key"></i> Parola chiave • <i class="fa-solid fa-lightbulb"></i> Suggerimento • <i class="fa-solid fa-triangle-exclamation"></i> Avviso</li>
-            <li><i class="fa-solid fa-book-open"></i> Definizione • <i class="fa-solid fa-image"></i> Esempio • <i class="fa-solid fa-ban"></i> Controesempio</li>
-          </ul>
-        </section>
       </header>
 
       <!-- IMMAGINE DI CONTESTO -->
