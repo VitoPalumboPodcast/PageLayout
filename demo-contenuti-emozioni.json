@@ -6,7 +6,7 @@
     "TOOLTIP_INCOLLA": "Incolla JSON dagli appunti",
     "TOOLTIP_ESPORTA": "Esporta la pagina in JSON",
     "TOOLTIP_SCARICA_MODELLO": "Scarica il modello di compilazione",
-    "TOOLTIP_SCARICA_DEMO_SVG": "Scarica l'esempio con SVG",
+    "TOOLTIP_SCARICA_DEMO_JSON": "Scarica il file di esempio JSON",
     "TOOLTIP_MODELLO": "Apri elenco campi disponibili",
     "SCOP0_IN_2_RIGHE": "Riconoscere le componenti di un'emozione.\nDistinguere emozione, sentimento e umore.",
     "UTILITÀ_IN_2_RIGHE": "Ti aiuta a interpretare le tue reazioni e a scegliere strategie di autoregolazione efficaci.",

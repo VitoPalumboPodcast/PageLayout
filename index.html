@@ -247,8 +247,8 @@ body:not(.mode-simplified) .semplificata{display:none}
       <button id="tbDownloadTemplate" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_MODELLO]">
         <i class="fa-solid fa-download"></i><span>Scarica modello JSON</span>
       </button>
-      <button id="tbDownloadSvgDemo" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_DEMO_SVG]">
-        <i class="fa-solid fa-vector-square"></i><span>Scarica demo SVG</span>
+      <button id="tbDownloadExample" class="btn ebtn" role="menuitem" title="[TOOLTIP_SCARICA_DEMO_JSON]">
+        <i class="fa-solid fa-file-arrow-down"></i><span>Scarica JSON di esempio</span>
       </button>
       <div class="legend-hint" role="group" aria-labelledby="legendHintTitle">
         <p id="legendHintTitle"><strong><i class="fa-solid fa-map"></i> Legenda icone</strong></p>
@@ -1815,7 +1815,7 @@ function announce(msg){ live.textContent=msg; }
     const pasteBtn=document.getElementById('tbPasteImport');
     const exportBtn=document.getElementById('tbExport');
     const downloadBtn=document.getElementById('tbDownloadTemplate');
-    const svgDemoBtn=document.getElementById('tbDownloadSvgDemo');
+    const exampleDemoBtn=document.getElementById('tbDownloadExample');
     const file=document.getElementById('contentFile') || (function(){ const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json'; i.id='contentFile'; i.hidden=true; document.body.appendChild(i); return i; })();
 
     if(!settingsBtn || !settingsMenu) return;
@@ -1980,7 +1980,7 @@ function announce(msg){ live.textContent=msg; }
     });
 
     if(downloadBtn){ downloadBtn.dataset.bindDownload='true'; }
-    if(svgDemoBtn){ svgDemoBtn.dataset.bindDownload='true'; }
+    if(exampleDemoBtn){ exampleDemoBtn.dataset.bindDownload='true'; }
 
     downloadBtn?.addEventListener('click', async (event)=>{
       event.preventDefault();
@@ -2001,22 +2001,22 @@ function announce(msg){ live.textContent=msg; }
       }
     });
 
-    svgDemoBtn?.addEventListener('click', async (event)=>{
+    exampleDemoBtn?.addEventListener('click', async (event)=>{
       event.preventDefault();
       closeMenu(true);
       try{
-        const response=await fetch('demo-contenuti-svg.json', {cache:'no-store'});
+        const response=await fetch('demo-crisi-repubblicana.json', {cache:'no-store'});
         if(!response.ok) throw new Error('HTTP '+response.status);
         const blob=await response.blob();
         const url=URL.createObjectURL(blob);
         const a=document.createElement('a');
         a.href=url;
-        a.download='demo-contenuti-svg.json';
+        a.download='demo-crisi-repubblicana.json';
         document.body.appendChild(a); a.click();
         setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0);
       }catch(err){
-        console.error('Scarica demo SVG fallito', err);
-        alert('Impossibile scaricare il demo SVG.');
+        console.error('Scarica JSON di esempio fallito', err);
+        alert('Impossibile scaricare il JSON di esempio.');
       }
     });
   }
@@ -2047,7 +2047,7 @@ function announce(msg){ live.textContent=msg; }
     });
   }
   setupStaticDownloadTrigger('tbDownloadTemplate','modello-import.json','modello-import.json','[TOOLTIP_MODELLO]');
-  setupStaticDownloadTrigger('tbDownloadSvgDemo','demo-contenuti-svg.json','demo-contenuti-svg.json','[TOOLTIP_SCARICA_DEMO_SVG]');
+  setupStaticDownloadTrigger('tbDownloadExample','demo-crisi-repubblicana.json','demo-crisi-repubblicana.json','[TOOLTIP_SCARICA_DEMO_JSON]');
 })();
 </script>
 <!-- ==== /UPGRADE PACK ==== -->
