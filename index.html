@@ -642,6 +642,65 @@ function instrumentWords(root){
 function instrumentSubtree(el){ instrumentWords(el); annotateKeywordWords(el); }
 
 const synth=window.speechSynthesis; let voices=[]; let utter=null; let paused=false;
+const LETTER_RE=/[A-Za-zÀ-ÖØ-öø-ÿ]/;
+const SPEECH_RULES=[
+  (text, index)=>{
+    const slice=text.slice(index);
+    const match=slice.match(/^a\.\s*c\./i);
+    if(!match) return null;
+    const prev=text[index-1]||'';
+    const next=text[index+match[0].length]||'';
+    if(LETTER_RE.test(prev) || LETTER_RE.test(next)) return null;
+    return {length:match[0].length,replacement:'Avanti Cristo'};
+  },
+  (text, index)=>{
+    if(text.length-index<9) return null;
+    const candidate=text.slice(index,index+9);
+    if(candidate.toLowerCase()!=='optimates') return null;
+    const prev=text[index-1]||'';
+    const next=text[index+9]||'';
+    if(LETTER_RE.test(prev) || LETTER_RE.test(next)) return null;
+    let replacement;
+    if(candidate===candidate.toUpperCase()) replacement='OPTIMÀTES';
+    else if(candidate[0]===candidate[0].toUpperCase()) replacement='Optimàtes';
+    else replacement='optimàtes';
+    return {length:9,replacement};
+  }
+];
+function prepareSpeechText(text){
+  if(!text) return {speechText:'', mapSpeechToOriginal:[], mapOriginalToSpeech:[]};
+  let speechText='';
+  const mapSpeechToOriginal=[];
+  const mapOriginalToSpeech=new Array(text.length+1).fill(null);
+  let i=0;
+  while(i<text.length){
+    if(mapOriginalToSpeech[i]===null) mapOriginalToSpeech[i]=speechText.length;
+    let matched=false;
+    for(const rule of SPEECH_RULES){
+      const res=rule(text,i);
+      if(res){
+        const {length,replacement}=res;
+        const span=length||1;
+        for(let k=0;k<replacement.length;k++){
+          const progress=span?Math.min(span, Math.round(((k+1)*span)/replacement.length)):0;
+          mapSpeechToOriginal.push(i+progress);
+        }
+        speechText+=replacement;
+        i+=length;
+        if(mapOriginalToSpeech[i]===null) mapOriginalToSpeech[i]=speechText.length;
+        matched=true;
+        break;
+      }
+    }
+    if(matched) continue;
+    const ch=text[i];
+    speechText+=ch;
+    mapSpeechToOriginal.push(i);
+    i++;
+  }
+  if(mapOriginalToSpeech[i]===null) mapOriginalToSpeech[i]=speechText.length;
+  return {speechText,mapSpeechToOriginal,mapOriginalToSpeech};
+}
 
 /* Precarica voci, predefinita: Diego se disponibile (in italiano) */
 function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
@@ -688,14 +747,18 @@ function buildTextAndRanges(root){
 function speakBundle(){
   if(!karaokeBundle || !karaokeBundle.text.trim()) return;
   stopTTS(true);
-  utter=new SpeechSynthesisUtterance(karaokeBundle.text);
+  const speechPrep=prepareSpeechText(karaokeBundle.text);
+  karaokeBundle.mapSpeechToOriginal=speechPrep.mapSpeechToOriginal;
+  utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
   const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
 
   let ptr=-1;
   const act=(ci)=>{
     if(!state.karaoke || !karaokeBundle.ranges.length) return;
-    while(ptr+1<karaokeBundle.ranges.length && ci>=karaokeBundle.ranges[ptr+1].start) ptr++;
+    const map=karaokeBundle.mapSpeechToOriginal;
+    const idx=map?.length ? map[Math.min(Math.max(ci,0), map.length-1)] ?? ci : ci;
+    while(ptr+1<karaokeBundle.ranges.length && idx>=karaokeBundle.ranges[ptr+1].start) ptr++;
     const target=karaokeBundle.ranges[Math.max(0,ptr)];
     if(!target) return;
     const prev=$('#content .word.active'); if(prev) prev.classList.remove('active');
@@ -727,7 +790,8 @@ function getSelectedOrAll(){
 function speakPlain(el){
   stopTTS(true);
   const bundle=buildTextAndRanges(el); // riuso estrazione testo ma senza boundary/hl
-  utter=new SpeechSynthesisUtterance(bundle.text);
+  const speechPrep=prepareSpeechText(bundle.text);
+  utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
   const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
   utter.onstart=()=>{ $('#pillStateTop').textContent='In lettura…'; };
