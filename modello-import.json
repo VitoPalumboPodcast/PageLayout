@@ -95,11 +95,11 @@
     "CONSIGLIO_STUDIO": "Obbligatorio. Messaggio finale dopo il quiz. Es.: 'Continua a esercitarti con [ATTIVITÀ_AUTONOMA] legata a [ARGOMENTO_SPECIFICO]'."
   },
   "sectionTitles": {
+    "immagine": "Sostituisci con un titolo originale per la sezione immagine o cartografia che introduce [DETTagLIO_VISIVO].",
+    "percorso": "Sostituisci con un titolo originale per la sezione Percorso modulare centrata su [SOTTO_TEMA].",
     "attivazione": "Sostituisci con un titolo originale per la micro-attivazione collegata a [ARGOMENTO_SPECIFICO] e al gruppo classe.",
     "primer": "Sostituisci con un titolo originale per il Primer rapido dedicato a [CONCETTO_CHIAVE].",
-    "percorso": "Sostituisci con un titolo originale per la sezione Percorso modulare centrata su [SOTTO_TEMA].",
     "schema": "Sostituisci con un titolo originale per la sezione Mappa o diagramma riferita a [ARGOMENTO_SPECIFICO].",
-    "immagine": "Sostituisci con un titolo originale per la sezione immagine contestuale che introduce [DETTagLIO_VISIVO].",
     "attivita": "Sostituisci con un titolo originale per la sezione Attività guidata collegata a [ATTIVITÀ_GUIDATA].",
     "quiz": "Sostituisci con un titolo originale per la sezione Verifica formativa su [CONCETTO_CHIAVE].",
     "glossario": "Sostituisci con un titolo originale per la sezione Glossario dedicato ai termini di [ARGOMENTO_SPECIFICO]."
