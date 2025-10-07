@@ -1413,6 +1413,52 @@ function announce(msg){ live.textContent=msg; }
   }
   function replaceInString(str,map){ if(typeof str!=='string') return str; let out=str; for(const k of Object.keys(map)){ out=out.replace(makeKeyRegex(k), String(map[k])); } return out; }
 
+  const ALLOWED_HTML_TAGS=new Set(['BR','STRONG','EM','B','I','U','MARK','SMALL','SUP','SUB','UL','OL','LI','P','SPAN','A']);
+  const ALLOWED_GLOBAL_ATTRS=new Set(['title']);
+  const ALLOWED_ATTRS_BY_TAG={
+    A:new Set(['href','title','target','rel'])
+  };
+  function isSafeHref(url){
+    if(typeof url!=='string') return false;
+    const trimmed=url.trim();
+    if(!trimmed) return false;
+    const lower=trimmed.toLowerCase();
+    if(lower.startsWith('javascript:')||lower.startsWith('data:')||lower.startsWith('vbscript:')) return false;
+    return true;
+  }
+  function sanitizeAllowedHTML(html){
+    const template=document.createElement('template');
+    template.innerHTML=html;
+    const elements=template.content.querySelectorAll('*');
+    elements.forEach(el=>{
+      const tag=el.tagName;
+      if(!ALLOWED_HTML_TAGS.has(tag)){
+        el.replaceWith(...Array.from(el.childNodes));
+        return;
+      }
+      Array.from(el.attributes).forEach(attr=>{
+        const name=attr.name.toLowerCase();
+        if(name.startsWith('on')){
+          el.removeAttribute(attr.name);
+          return;
+        }
+        if(ALLOWED_GLOBAL_ATTRS.has(name) || (ALLOWED_ATTRS_BY_TAG[tag]?.has(name))){
+          if(tag==='A' && name==='href' && !isSafeHref(attr.value)){
+            el.removeAttribute(attr.name);
+            return;
+          }
+          if(tag==='A' && name==='href'){
+            if(!el.hasAttribute('rel')) el.setAttribute('rel','noopener');
+            if(!el.hasAttribute('target')) el.setAttribute('target','_blank');
+          }
+        }else{
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return template.innerHTML;
+  }
+
   function applyGlobalPlaceholders(map){
     if(!map || !Object.keys(map).length) return;
     if(document.title) document.title = replaceInString(document.title, map);
@@ -1429,27 +1475,56 @@ function announce(msg){ live.textContent=msg; }
         return NodeFilter.FILTER_ACCEPT;
       }
     });
-    let n=walker.currentNode;
-    while(n){
-      if(n.nodeType===Node.TEXT_NODE){
-        const nv=replaceInString(n.nodeValue, map);
-        if(nv!==n.nodeValue) n.nodeValue=nv;
-      }else if(n.nodeType===Node.ELEMENT_NODE){
-        for(const a of ATTRS){
-          if(n.hasAttribute(a)){
-            const v=n.getAttribute(a), nv=replaceInString(v,map);
-            if(nv!==v) n.setAttribute(a,nv);
-          }
+    const textNodes=[];
+    const elementNodes=[];
+    let cursor=walker.currentNode;
+    while(cursor){
+      if(cursor.nodeType===Node.TEXT_NODE){
+        textNodes.push(cursor);
+      }else if(cursor.nodeType===Node.ELEMENT_NODE){
+        elementNodes.push(cursor);
+      }
+      cursor=walker.nextNode();
+    }
+
+    textNodes.forEach(node=>{
+      if(!node.isConnected) return;
+      const original=node.nodeValue;
+      const replaced=replaceInString(original, map);
+      if(replaced===original) return;
+      if(/<\/?[a-zA-Z]/.test(replaced)){
+        const parent=node.parentNode;
+        if(!parent){
+          node.nodeValue=replaced;
+          return;
         }
-        for(const {name,value} of Array.from(n.attributes)){
-          if(name.startsWith('data-')){
-            const nv=replaceInString(value,map);
-            if(nv!==value) n.setAttribute(name,nv);
-          }
+        const sanitized=sanitizeAllowedHTML(replaced);
+        const range=document.createRange();
+        range.selectNode(parent);
+        const fragment=range.createContextualFragment(sanitized);
+        parent.replaceChild(fragment, node);
+        range.detach?.();
+      }else{
+        node.nodeValue=replaced;
+      }
+    });
+
+    elementNodes.forEach(el=>{
+      if(!el.isConnected) return;
+      for(const a of ATTRS){
+        if(el.hasAttribute(a)){
+          const v=el.getAttribute(a);
+          const nv=replaceInString(v, map);
+          if(nv!==v) el.setAttribute(a,nv);
         }
       }
-      n=walker.nextNode();
-    }
+      Array.from(el.attributes).forEach(({name,value})=>{
+        if(name.startsWith('data-')){
+          const nv=replaceInString(value,map);
+          if(nv!==value) el.setAttribute(name,nv);
+        }
+      });
+    });
 
     call('instrumentWords', content);
     call('annotateKeywordWords');
