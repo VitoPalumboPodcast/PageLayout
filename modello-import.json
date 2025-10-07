@@ -12,7 +12,7 @@
     "TOOLTIP_INCOLLA": "Obbligatorio. Tooltip del pulsante 'Incolla contenuti'. Es.: 'Incolla JSON dagli appunti'.",
     "TOOLTIP_ESPORTA": "Obbligatorio. Tooltip del pulsante 'Esporta'. Es.: 'Scarica il pacchetto JSON della pagina'.",
     "TOOLTIP_SCARICA_MODELLO": "Obbligatorio. Tooltip del pulsante 'Scarica modello JSON'. Es.: 'Ottieni il file di esempio'.",
-    "TOOLTIP_SCARICA_DEMO_SVG": "Facoltativo ma consigliato. Tooltip del pulsante che scarica il demo con esempi SVG. Es.: 'Scarica esempio con grafici vettoriali'.",
+    "TOOLTIP_SCARICA_DEMO_JSON": "Facoltativo ma consigliato. Tooltip del pulsante che scarica il file di esempio JSON. Es.: 'Scarica il file di esempio'.",
     "TOOLTIP_MODELLO": "Obbligatorio. Tooltip dei trigger che richiamano il modello rapido. Es.: 'Mostra i campi disponibili'.",
     "SCOP0_IN_2_RIGHE": "Obbligatorio. Due frasi sugli obiettivi operativi (CEFR B1). Es.: '[OBIETTIVO_1] presentato con parole inclusive. [OBIETTIVO_2] collegato a [CONTESTO_REALE]'.",
     "UTILITÀ_IN_2_RIGHE": "Obbligatorio. Descrive perché serve l'argomento nella vita reale. Es.: 'Comprendere [ARGOMENTO_SPECIFICO] aiuta a [APPLICAZIONE_PRATICA] in [SCENARIO_QUOTIDIANO]'.",
