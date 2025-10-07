@@ -7,3 +7,10 @@
 3. Importa il file completo tramite il pulsante **Importa** oppure incolla il JSON nel dialog dedicato.
 
 Il modello riproduce la struttura attesa dalla funzione `ingestData`, quindi ogni campo verrà applicato automaticamente alla pagina.
+
+## Suggerimenti su encoding e HTML inline
+
+Se il JSON contiene testo HTML (per esempio per grassetti o liste) assicurati che il file sia salvato in UTF-8 senza BOM. In caso
+contrario gli accenti o altri caratteri speciali potrebbero apparire rovinati perché interpretati come ISO-8859-1, e i tag HTML
+verrebbero caricati come semplice testo dal browser anziché essere renderizzati. Se noti questo problema, apri il file con un
+editor che permetta di cambiare la codifica e risalvalo esplicitamente in UTF-8 prima di importarlo.
