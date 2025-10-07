@@ -324,44 +324,6 @@ body:not(.mode-simplified) .semplificata{display:none}
         </figure>
       </section>
 
-      <!-- MICRO-ATTIVAZIONE -->
-      <section id="attivazione" class="card">
-        <h2><i class="fa-solid fa-bolt"></i> Micro-attivazione</h2>
-        <p>[ISTRUZIONI_BREVI: 1 riga per spiegare che seguono 2 stimoli a basso sforzo.]</p>
-        <div class="microqa">
-          <div class="item" data-correct="A">
-            <p>[DOMANDA_RIATTIVAZIONE_1: chiusa a 2 opzioni, 1 riga.]</p>
-            <div class="choices">
-              <button data-choice="A">[OPZIONE_A: corretta]</button>
-              <button data-choice="B">[OPZIONE_B: distrattore tipico]</button>
-            </div>
-            <div class="feedback"></div>
-          </div>
-          <div class="item" data-correct="Vero">
-            <p>[DOMANDA_RIATTIVAZIONE_2: vero/falso, sul nucleo.]</p>
-            <div class="choices">
-              <button data-choice="Vero">Vero</button>
-              <button data-choice="Falso">Falso</button>
-            </div>
-            <div class="feedback"></div>
-          </div>
-        </div>
-        <aside class="card sticky-note" aria-label="Falsi amici">
-          <h3><i class="fa-solid fa-triangle-exclamation"></i> Falsi amici</h3>
-          <ul>
-            <li>[FALSO_AMICO_1: formula comune ma errata + correzione breve.]</li>
-            <li>[FALSO_AMICO_2: misunderstanding atteso + chiarimento operativo.]</li>
-          </ul>
-        </aside>
-      </section>
-
-      <!-- PRIMER -->
-      <section id="primer" class="card">
-        <h2><i class="fa-solid fa-rocket"></i> Primer rapido</h2>
-        <p><i class="fa-solid fa-book-open"></i> <strong>Idea chiave.</strong> [DEFINIZIONE_OPERATIVA].</p>
-        <p><i class="fa-solid fa-image"></i> <strong>Esempio concreto.</strong> [ESEMPIO_PULITO].</p>
-      </section>
-
       <!-- PERCORSO MODULARE -->
       <section id="percorso" class="card">
         <h2><i class="fa-solid fa-layer-group"></i> Percorso modulare</h2>
@@ -401,6 +363,44 @@ body:not(.mode-simplified) .semplificata{display:none}
             <details class="details-lite"><summary>Approfondisci <span class="tag">+</span></summary><p>[MODULO_3_APPROFONDIMENTO].</p></details>
           </div>
         </div>
+      </section>
+
+      <!-- MICRO-ATTIVAZIONE -->
+      <section id="attivazione" class="card">
+        <h2><i class="fa-solid fa-bolt"></i> Micro-attivazione</h2>
+        <p>[ISTRUZIONI_BREVI: 1 riga per spiegare che seguono 2 stimoli a basso sforzo.]</p>
+        <div class="microqa">
+          <div class="item" data-correct="A">
+            <p>[DOMANDA_RIATTIVAZIONE_1: chiusa a 2 opzioni, 1 riga.]</p>
+            <div class="choices">
+              <button data-choice="A">[OPZIONE_A: corretta]</button>
+              <button data-choice="B">[OPZIONE_B: distrattore tipico]</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+          <div class="item" data-correct="Vero">
+            <p>[DOMANDA_RIATTIVAZIONE_2: vero/falso, sul nucleo.]</p>
+            <div class="choices">
+              <button data-choice="Vero">Vero</button>
+              <button data-choice="Falso">Falso</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <aside class="card sticky-note" aria-label="Falsi amici">
+          <h3><i class="fa-solid fa-triangle-exclamation"></i> Falsi amici</h3>
+          <ul>
+            <li>[FALSO_AMICO_1: formula comune ma errata + correzione breve.]</li>
+            <li>[FALSO_AMICO_2: misunderstanding atteso + chiarimento operativo.]</li>
+          </ul>
+        </aside>
+      </section>
+
+      <!-- PRIMER -->
+      <section id="primer" class="card">
+        <h2><i class="fa-solid fa-rocket"></i> Primer rapido</h2>
+        <p><i class="fa-solid fa-book-open"></i> <strong>Idea chiave.</strong> [DEFINIZIONE_OPERATIVA].</p>
+        <p><i class="fa-solid fa-image"></i> <strong>Esempio concreto.</strong> [ESEMPIO_PULITO].</p>
       </section>
 
       <!-- MAPPA (MERMAID) -->
@@ -500,9 +500,9 @@ flowchart TD
     <ol id="toc">
       <li><a href="#orientamento">Orientamento</a></li>
       <li><a href="#immagine">Immagine di contesto</a></li>
+      <li><a href="#percorso">Percorso modulare</a></li>
       <li><a href="#attivazione">Micro-attivazione</a></li>
       <li><a href="#primer">Primer</a></li>
-      <li><a href="#percorso">Percorso modulare</a></li>
       <li><a href="#schema">Mappa (Mermaid)</a></li>
       <li><a href="#attivita">Attività guidata</a></li>
       <li><a href="#quiz">Verifica formativa</a></li>
@@ -1055,7 +1055,7 @@ btnShowSolution.addEventListener('click', revealSolution);
 /* =========================================================
    INDICATORE DI PASSO
    ========================================================= */
-const STEPS=['orientamento','immagine','attivazione','primer','percorso','schema','attivita','quiz'];
+const STEPS=['orientamento','immagine','percorso','attivazione','primer','schema','attivita','quiz'];
 let currentStepIndex=0;
 function setStepById(id){
   const i=STEPS.indexOf(id); if(i>=0){ currentStepIndex=i; updateStepperUI(); state.savedStepId=id; save(); }
