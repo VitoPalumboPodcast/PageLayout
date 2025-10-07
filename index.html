@@ -991,17 +991,17 @@ $('#taskOrder').addEventListener('click',e=>{
   if(selectedOrder.length===orderGoal.length){
     const ok=selectedOrder.every((v,i)=>v===orderGoal[i]);
     const help=$('#taskHelp'); help.style.display='block';
-    const successText=guidedTaskTexts.success ? ` ${escapeHTML(guidedTaskTexts.success)}` : '';
-    const retryText=guidedTaskTexts.retry ? `Rifletti: ${escapeHTML(guidedTaskTexts.retry)}` : 'Rifletti.';
+    const successText=guidedTaskTexts.success ? ` ${toSafeHTML(guidedTaskTexts.success)}` : '';
+    const retryText=guidedTaskTexts.retry ? `Rifletti: ${toSafeHTML(guidedTaskTexts.retry)}` : toSafeHTML('Rifletti.');
     help.innerHTML = ok
       ? `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div>${successText}`
       : retryText;
   }
 });
 $('#btnResetOrder').addEventListener('click',()=>{ selectedOrder=[]; updateOrderOut(); const h=$('#taskHelp'); h.style.display='none'; h.textContent=''; });
-$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent=(guidedTaskTexts.help1||'[AIUTO_1]'); });
-$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.textContent=(guidedTaskTexts.help2||'[AIUTO_2]'); });
-$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; const txt=guidedTaskTexts.help3||'[SOLUZIONE_COMMENTATA]'; h.innerHTML=`<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> ${escapeHTML(txt)}`; });
+$('#btnHelp1').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.innerHTML=toSafeHTML(guidedTaskTexts.help1||'[AIUTO_1]'); });
+$('#btnHelp2').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; h.innerHTML=toSafeHTML(guidedTaskTexts.help2||'[AIUTO_2]'); });
+$('#btnHelp3').addEventListener('click',()=>{ const h=$('#taskHelp'); h.style.display='block'; const txt=guidedTaskTexts.help3||'[SOLUZIONE_COMMENTATA]'; h.innerHTML=`<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione.</div> ${toSafeHTML(txt)}`; });
 
 /* =========================================================
    QUIZ UNIFICATO
@@ -1027,11 +1027,13 @@ function renderQuizList(){
   quizData.forEach((q,idx)=>{
     const wrap=document.createElement('div'); wrap.className='quiz-item'; wrap.dataset.index=idx;
     const qEl=document.createElement('div'); qEl.className='qtext'; qEl.style.fontWeight='700'; qEl.style.marginBottom='.5rem';
-    qEl.textContent=`Domanda ${idx+1}/${quizData.length}. ${q.q}`; wrap.appendChild(qEl);
+    const questionHtml=toSafeHTML(q.q);
+    qEl.innerHTML=`Domanda ${idx+1}/${quizData.length}. ${questionHtml}`; wrap.appendChild(qEl);
     const ul=document.createElement('ul'); ul.className='choice-list'; ul.setAttribute('role','radiogroup');
     q.choices.forEach((txt,i)=>{
       const li=document.createElement('li'); li.className='choice'; li.setAttribute('role','radio'); li.setAttribute('aria-checked','false'); li.tabIndex=0;
-      li.innerHTML=`<label style="display:block;cursor:pointer">${txt}</label>`;
+      const choiceHtml=toSafeHTML(txt);
+      li.innerHTML=`<label style="display:block;cursor:pointer">${choiceHtml}</label>`;
       li.addEventListener('click',()=>grade(idx,i,li));
       li.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); grade(idx,i,li);} });
       ul.appendChild(li);
@@ -1054,6 +1056,7 @@ function updateQuizState(){ quizState.textContent=`Domanda ${qi+1}/${quizData.le
 function resetQuizFeedback(){
   quizHintEl.style.display='none'; quizExplainEl.style.display='none';
   quizHintEl.textContent=''; quizExplainEl.textContent='';
+  delete quizHintEl.dataset.baseHint;
   btnHint.style.display='none'; btnShowSolution.style.display='none';
 }
 function lockActiveChoices(){ $$('.quiz-item.active .choice').forEach(c=>c.style.pointerEvents='none'); }
@@ -1064,7 +1067,7 @@ function grade(qIndex, choiceIndex, li){
   li.classList.add('selected'); li.setAttribute('aria-checked','true');
   if(choiceIndex===q.correct){
     li.classList.add('correct'); lockActiveChoices();
-    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> ${escapeHTML(q.explain)}`;
+    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-check"></i> Ben fatto.</div> ${toSafeHTML(q.explain)}`;
     quizExplainEl.style.display='block';
     btnNext.disabled=false; btnHint.style.display='none'; btnShowSolution.style.display='none';
     // Leggi feedback in voce "plain"
@@ -1072,7 +1075,10 @@ function grade(qIndex, choiceIndex, li){
   }else{
     li.classList.add('wrong'); li.style.pointerEvents='none';
     attempts++;
-    quizHintEl.textContent = q.hint || 'Riprova: individua il passaggio davvero importante nella domanda.';
+    const defaultHint='Riprova: individua il passaggio davvero importante nella domanda.';
+    const hintText=q.hint || defaultHint;
+    quizHintEl.dataset.baseHint=hintText;
+    quizHintEl.innerHTML = toSafeHTML(hintText);
     quizHintEl.style.display='block';
     btnHint.style.display='inline-block'; btnShowSolution.style.display='inline-block';
     const tmp=document.createElement('div'); tmp.textContent=quizHintEl.textContent; speakPlain(tmp);
@@ -1080,15 +1086,16 @@ function grade(qIndex, choiceIndex, li){
 }
 function showExtraHint(){
   const q=quizData[qi];
-  const extra=`Rileggi con calma: ${q.q} Elimina i distrattori che non rispettano la definizione.`;
-  quizHintEl.innerHTML = `${escapeHTML(quizHintEl.textContent)}<br>${escapeHTML(extra)}`;
+  const baseHint=quizHintEl.dataset.baseHint || quizHintEl.textContent || '';
+  const extra=`Rileggi con calma: ${toPlainText(q.q)} Elimina i distrattori che non rispettano la definizione.`;
+  quizHintEl.innerHTML = `${toSafeHTML(baseHint)}<br>${toSafeHTML(extra)}`;
   quizHintEl.style.display='block';
   const tmp=document.createElement('div'); tmp.textContent=quizHintEl.textContent; speakPlain(tmp);
 }
 function revealSolution(){
   const q=quizData[qi];
   $$('.quiz-item.active .choice').forEach((c,idx)=>{ if(idx===q.correct) c.classList.add('correct'); c.style.pointerEvents='none'; });
-  quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione commentata.</div> ${escapeHTML(q.explain)}`;
+  quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-bolt"></i> Soluzione commentata.</div> ${toSafeHTML(q.explain)}`;
   quizExplainEl.style.display='block';
   btnNext.disabled=false;
   const tmp=document.createElement('div'); tmp.textContent=quizExplainEl.textContent; speakPlain(tmp);
@@ -1096,7 +1103,8 @@ function revealSolution(){
 function nextQuestion(){
   if(qi<quizData.length-1){ setActiveQuestion(qi+1); }
   else{
-    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-flag-checkered"></i> Verifica completata.</div> [CONSIGLIO_STUDIO].`;
+    const finale=getPlaceholderValue('CONSIGLIO_STUDIO','[CONSIGLIO_STUDIO].');
+    quizExplainEl.innerHTML = `<div class="good"><i class="fa-solid fa-flag-checkered"></i> Verifica completata.</div> ${toSafeHTML(finale)}`;
     quizExplainEl.style.display='block';
     btnNext.disabled=true; btnHint.style.display='none'; btnShowSolution.style.display='none';
     const tmp=document.createElement('div'); tmp.textContent=quizExplainEl.textContent; speakPlain(tmp);
@@ -1376,7 +1384,8 @@ function announce(msg){ live.textContent=msg; }
       const heading = document.querySelector(config.section);
       if(heading){
         const iconHTML = heading.querySelector('i')?.outerHTML || '';
-        heading.innerHTML = iconHTML ? iconHTML + ' ' + newTitle : newTitle;
+        const safeTitle = toSafeHTML(newTitle);
+        heading.innerHTML = iconHTML ? iconHTML + ' ' + safeTitle : safeTitle;
       }
 
       const tocLink = document.querySelector(config.toc);
@@ -1385,7 +1394,7 @@ function announce(msg){ live.textContent=msg; }
         const needsSpace = textNode
           ? (textNode.previousSibling && textNode.previousSibling.nodeType === Node.ELEMENT_NODE)
           : (tocLink.lastChild && tocLink.lastChild.nodeType === Node.ELEMENT_NODE);
-        const value = (needsSpace ? ' ' : '') + newTitle;
+        const value = (needsSpace ? ' ' : '') + toPlainText(newTitle);
         if(textNode){
           textNode.textContent = value;
         }else{
@@ -1458,14 +1467,14 @@ function announce(msg){ live.textContent=msg; }
 
     if(captionSpan){
       if(typeof img.caption === 'string' && img.caption.trim()){
-        captionSpan.textContent = img.caption.trim();
+        captionSpan.innerHTML = toSafeHTML(img.caption.trim());
         captionSpan.hidden = false;
       }else{
-        captionSpan.textContent = '';
+        captionSpan.innerHTML = '';
         captionSpan.hidden = true;
       }
     }else if(cap && typeof img.caption === 'string' && img.caption.trim()){
-      const text = img.caption.trim() + ' ';
+      const text = toPlainText(img.caption.trim()) + ' ';
       if(cap.firstChild && cap.firstChild.nodeType === Node.TEXT_NODE){
         cap.firstChild.nodeValue = text;
       }else{
@@ -1524,8 +1533,11 @@ function announce(msg){ live.textContent=msg; }
     const dl = document.querySelector('#glossario dl'); if(!dl) return;
     dl.innerHTML='';
     entries.forEach(({term,def})=>{
-      const dt=document.createElement('dt'); dt.innerHTML='<strong>'+escapeHTML(term)+'</strong>';
-      const dd=document.createElement('dd'); dd.textContent=def;
+      const dt=document.createElement('dt');
+      const safeTerm=toSafeHTML(term);
+      dt.innerHTML=safeTerm ? `<strong>${safeTerm}</strong>` : '';
+      const dd=document.createElement('dd');
+      dd.innerHTML=toSafeHTML(def);
       dl.appendChild(dt); dl.appendChild(dd);
     });
   });
@@ -1597,6 +1609,22 @@ function announce(msg){ live.textContent=msg; }
       });
     });
     return template.innerHTML;
+  }
+
+  function toSafeHTML(value){
+    if(value===null || value===undefined) return '';
+    const str=String(value);
+    if(!/<\/?[a-zA-Z]/.test(str)){
+      return escapeHTML(str);
+    }
+    return sanitizeAllowedHTML(str);
+  }
+
+  function toPlainText(value){
+    if(value===null || value===undefined) return '';
+    const tmp=document.createElement('div');
+    tmp.innerHTML=toSafeHTML(value);
+    return tmp.textContent||'';
   }
 
   function applyGlobalPlaceholders(map){
