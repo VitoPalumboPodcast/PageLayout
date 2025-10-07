@@ -104,54 +104,98 @@
     "caption": "Mondo romano nel 56 a.C.: province, alleati e aree d’influenza.",
     "creditUrl": "https://upload.wikimedia.org/wikipedia/commons/5/58/Mondo_romano_nel_56_aC_al_tempo_del_primo_triumvirato.png",
     "creditLabel": "Wikipedia",
-    "inlineSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1200 300\" role=\"img\" aria-labelledby=\"t\">\n  <title id=\"t\">Timeline della tarda Repubblica (con anni)</title>\n  <style>\n    text{font-family:'Atkinson Hyperlegible',sans-serif}\n    .axis{stroke:#1f2328;stroke-width:3}\n    .marker{stroke:#b91c1c;stroke-width:2;fill:#fde68a}\n    .label{font-size:14px;fill:#1f2328}\n    .year{font-size:18px;font-weight:700;fill:#b91c1c}\n  </style>\n  <line class=\"axis\" x1=\"80\" y1=\"210\" x2=\"1120\" y2=\"210\"/>\n  <circle class=\"marker\" cx=\"120\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"120\" y=\"170\" text-anchor=\"middle\">133 a.C.</text>\n  <text class=\"label\" x=\"120\" y=\"260\" text-anchor=\"middle\">Riforme dei Gracchi</text>\n  <circle class=\"marker\" cx=\"240\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"240\" y=\"170\" text-anchor=\"middle\">82 a.C.</text>\n  <text class=\"label\" x=\"240\" y=\"260\" text-anchor=\"middle\">Dittatura di Silla</text>\n  <circle class=\"marker\" cx=\"360\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"360\" y=\"170\" text-anchor=\"middle\">73\u201371 a.C.</text>\n  <text class=\"label\" x=\"360\" y=\"260\" text-anchor=\"middle\">Rivolta di Spartaco</text>\n  <circle class=\"marker\" cx=\"480\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"480\" y=\"170\" text-anchor=\"middle\">67 a.C.</text>\n  <text class=\"label\" x=\"480\" y=\"260\" text-anchor=\"middle\">Pompeo contro i pirati</text>\n  <circle class=\"marker\" cx=\"600\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"600\" y=\"170\" text-anchor=\"middle\">66 a.C.</text>\n  <text class=\"label\" x=\"600\" y=\"260\" text-anchor=\"middle\">Comando in Oriente</text>\n  <circle class=\"marker\" cx=\"720\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"720\" y=\"170\" text-anchor=\"middle\">63 a.C.</text>\n  <text class=\"label\" x=\"720\" y=\"260\" text-anchor=\"middle\">Congiura di Catilina</text>\n  <circle class=\"marker\" cx=\"840\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"840\" y=\"170\" text-anchor=\"middle\">60 a.C.</text>\n  <text class=\"label\" x=\"840\" y=\"260\" text-anchor=\"middle\">Primo triumvirato</text>\n  <circle class=\"marker\" cx=\"960\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"960\" y=\"170\" text-anchor=\"middle\">56 a.C.</text>\n  <text class=\"label\" x=\"960\" y=\"260\" text-anchor=\"middle\">Accordi di Lucca</text>\n  <circle class=\"marker\" cx=\"1080\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"1080\" y=\"170\" text-anchor=\"middle\">52 a.C.</text>\n  <text class=\"label\" x=\"1080\" y=\"260\" text-anchor=\"middle\">Alesia</text>\n</svg>",
+    "inlineSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1200 300\" role=\"img\" aria-labelledby=\"t\">\n  <title id=\"t\">Timeline della tarda Repubblica (con anni)</title>\n  <style>\n    text{font-family:'Atkinson Hyperlegible',sans-serif}\n    .axis{stroke:#1f2328;stroke-width:3}\n    .marker{stroke:#b91c1c;stroke-width:2;fill:#fde68a}\n    .label{font-size:14px;fill:#1f2328}\n    .year{font-size:18px;font-weight:700;fill:#b91c1c}\n  </style>\n  <line class=\"axis\" x1=\"80\" y1=\"210\" x2=\"1120\" y2=\"210\"/>\n  <circle class=\"marker\" cx=\"120\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"120\" y=\"170\" text-anchor=\"middle\">133 a.C.</text>\n  <text class=\"label\" x=\"120\" y=\"260\" text-anchor=\"middle\">Riforme dei Gracchi</text>\n  <circle class=\"marker\" cx=\"240\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"240\" y=\"170\" text-anchor=\"middle\">82 a.C.</text>\n  <text class=\"label\" x=\"240\" y=\"260\" text-anchor=\"middle\">Dittatura di Silla</text>\n  <circle class=\"marker\" cx=\"360\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"360\" y=\"170\" text-anchor=\"middle\">73–71 a.C.</text>\n  <text class=\"label\" x=\"360\" y=\"260\" text-anchor=\"middle\">Rivolta di Spartaco</text>\n  <circle class=\"marker\" cx=\"480\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"480\" y=\"170\" text-anchor=\"middle\">67 a.C.</text>\n  <text class=\"label\" x=\"480\" y=\"260\" text-anchor=\"middle\">Pompeo contro i pirati</text>\n  <circle class=\"marker\" cx=\"600\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"600\" y=\"170\" text-anchor=\"middle\">66 a.C.</text>\n  <text class=\"label\" x=\"600\" y=\"260\" text-anchor=\"middle\">Comando in Oriente</text>\n  <circle class=\"marker\" cx=\"720\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"720\" y=\"170\" text-anchor=\"middle\">63 a.C.</text>\n  <text class=\"label\" x=\"720\" y=\"260\" text-anchor=\"middle\">Congiura di Catilina</text>\n  <circle class=\"marker\" cx=\"840\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"840\" y=\"170\" text-anchor=\"middle\">60 a.C.</text>\n  <text class=\"label\" x=\"840\" y=\"260\" text-anchor=\"middle\">Primo triumvirato</text>\n  <circle class=\"marker\" cx=\"960\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"960\" y=\"170\" text-anchor=\"middle\">56 a.C.</text>\n  <text class=\"label\" x=\"960\" y=\"260\" text-anchor=\"middle\">Accordi di Lucca</text>\n  <circle class=\"marker\" cx=\"1080\" cy=\"210\" r=\"24\"/>\n  <text class=\"year\" x=\"1080\" y=\"170\" text-anchor=\"middle\">52 a.C.</text>\n  <text class=\"label\" x=\"1080\" y=\"260\" text-anchor=\"middle\">Alesia</text>\n</svg>",
     "inlineAlt": "Timeline con anni: Gracchi (133), Silla (82), Spartaco (73–71), Gabinia (67), Manilia (66), Catilina (63), Triumvirato (60), Lucca (56), Alesia (52)."
   },
   "mermaid": "flowchart TD\n  crisi[Crisi della tarda Repubblica] --> fazioni[Optimates vs Populares]\n  crisi --> eserciti[Legioni fedeli ai generali]\n  crisi --> emergenze[Poteri straordinari e crisi sociali]\n  fazioni --> triumvirato[Accordo privato tra Cesare, Pompeo, Crasso]\n  eserciti --> guerra[Guerre civili]\n  emergenze --> guerra\n  triumvirato --> esito[Fine dell'equilibrio repubblicano]\n  guerra --> esito",
   "glossario": [
+    {
+      "term": "Monarchia",
+      "def": "Prima fase di Roma, con re affiancati dal Senato aristocratico tra il 753 e il 509 a.C."
+    },
+    {
+      "term": "Repubblica",
+      "def": "Ordinamento in cui magistrature annuali, Senato e assemblee popolari condividono potere e responsabilità."
+    },
+    {
+      "term": "Impero",
+      "def": "Età avviata da Augusto con il principato, che concentra autorità su princeps, esercito e province."
+    },
+    {
+      "term": "Senato",
+      "def": "Assemblea permanente di ex magistrati che orientava politica, diplomazia e finanze della Repubblica."
+    },
+    {
+      "term": "Magistrature",
+      "def": "Uffici pubblici annuali con poteri esecutivi o giudiziari, bilanciati da collegialità e durata limitata."
+    },
+    {
+      "term": "Consoli",
+      "def": "I due magistrati supremi della Repubblica che comandano le legioni e presiedono il Senato."
+    },
+    {
+      "term": "Tribuni",
+      "def": "Magistrati plebei inviolabili con diritto di veto per difendere cittadini dagli abusi patrizi."
+    },
     {
       "term": "Optimates",
       "def": "Fazione aristocratica e conservatrice, sostenuta da Silla, che difendeva il potere del Senato."
     },
     {
       "term": "Populares",
-      "def": "Fazione favorevole al popolo e agli Equites, sostenuta da Mario e poi da Cesare."
+      "def": "Fazione che cercava sostegno di plebei ed equites promuovendo riforme popolari tramite i tribuni."
     },
     {
       "term": "Equites",
-      "def": "Classe sociale intermedia di cavalieri, dedita al commercio e agli affari pubblici."
+      "def": "Classe sociale intermedia di cavalieri impegnati in affari, commercio e appalti dello Stato romano."
     },
     {
-      "term": "Liste di proscrizione",
-      "def": "Elenchi di nemici politici da eliminare, introdotti da Silla durante la dittatura."
+      "term": "Publicani",
+      "def": "Appaltatori privati delle imposte e dei lavori pubblici, spesso appartenenti all'ordine equestre."
+    },
+    {
+      "term": "Legioni",
+      "def": "Unità militari di cittadini-soldati guidate dai generali, decisive nella politica tardo-repubblicana."
     },
     {
       "term": "Dittatura",
-      "def": "Magistratura straordinaria con pieni poteri per massimo sei mesi, spesso forzata in età tardo-repubblicana."
+      "def": "Magistratura straordinaria con poteri concentrati e temporanei, prorogata da Silla oltre il limite tradizionale."
+    },
+    {
+      "term": "Proscrizione",
+      "def": "Confisca e condanna dei nemici politici tramite elenchi pubblici; strumento di terrore sillano."
+    },
+    {
+      "term": "Proconsolato",
+      "def": "Comando prorogato di un console nelle province, con esercito e poteri civili estesi."
+    },
+    {
+      "term": "Senatus consultum ultimum",
+      "def": "Decreto d'emergenza del Senato che autorizza i magistrati a usare ogni mezzo per salvare lo Stato."
     },
     {
       "term": "Lex Aurelia",
-      "def": "Legge che introdusse giurie miste (senatori, equites e tribuni dell’erario)."
+      "def": "Legge del 70 a.C. che istituì giurie miste di senatori, equites e tribuni dell'erario."
     },
     {
-      "term": "Lex Gabinia / Lex Manilia",
-      "def": "Leggi che attribuirono a Pompeo poteri straordinari contro i pirati e Mitridate."
+      "term": "Lex Gabinia",
+      "def": "Legge del 67 a.C. che concesse a Pompeo poteri straordinari contro i pirati mediterranei."
     },
     {
-      "term": "Senatoconsulto ultimo",
-      "def": "Decreto del Senato che autorizzava misure eccezionali in situazioni d’emergenza."
+      "term": "Lex Manilia",
+      "def": "Legge del 66 a.C. che affidò a Pompeo il comando della guerra contro Mitridate VI."
     },
     {
       "term": "Primo Triumvirato",
-      "def": "Alleanza politica privata tra Cesare, Pompeo e Crasso (60 a.C.)."
+      "def": "Accordo privato del 60 a.C. tra Cesare, Pompeo e Crasso per aggirare l'opposizione del Senato."
     },
     {
       "term": "De Bello Gallico",
-      "def": "Opera di Cesare che racconta la conquista della Gallia (58–52 a.C.)."
+      "def": "Opera commentaria in cui Cesare racconta la conquista della Gallia dal 58 al 52 a.C."
     },
     {
       "term": "Alesia",
-      "def": "Località della Gallia dove Cesare sconfisse Vercingetorige (52 a.C.)."
+      "def": "Fortezza gallica assediata e conquistata da Cesare nel 52 a.C., simbolo della sua vittoria."
     }
   ],
   "quiz": [
