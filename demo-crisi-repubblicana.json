@@ -1,0 +1,152 @@
+{
+  "placeholders": {
+    "ARGOMENTO_SPECIFICO": "Crisi della Repubblica romana",
+    "LIVELLO": "studenti del triennio liceale",
+    "PRIMA_DI_INIZIARE": "<p><strong>Obiettivo:</strong> capire perché l’equilibrio repubblicano si spezza.</p><ul><li><em>Fratelli Gracchi</em> e riforme agrarie</li><li>Nuove tensioni tra <strong>optimates</strong> e <strong>populares</strong></li><li>Ascesa dei capi militari come <u>Mario</u> e <u>Silla</u></li></ul>",
+    "SCOP0_IN_2_RIGHE": "Ripercorrere la crisi della Repubblica tra Gracchi e Cesare.<br>Collegare eventi, tensioni sociali e trasformazioni politiche.",
+    "UTILITÀ_IN_2_RIGHE": "Comprendere la <strong>crisi repubblicana</strong> aiuta a leggere l’evoluzione delle istituzioni.<br>Collega le dinamiche storiche ai dibattiti politici contemporanei.",
+    "ALT_IMMAGINE": "Ricostruzione artistica del Foro romano affollato durante un comizio dei populares.",
+    "DIDASCALIA_IMMAGINE": "Il Foro come arena politica: riforme agrarie e tensioni sociali all’apice.<br><em>Le assemblee popolari diventano decisive.</em>",
+    "ISTRUZIONI_BREVI": "Rispondi alle due domande per riattivare ciò che sai sulla crisi della Repubblica romana.",
+    "DOMANDA_RIATTIVAZIONE_1": "Quale riforma dei Gracchi mirava a riequilibrare la distribuzione delle terre pubbliche?",
+    "OPZIONE_A": "La legge agraria che limitava l’uso privato dell’ager publicus e redistribuiva le terre ai piccoli contadini.",
+    "OPZIONE_B": "Il decreto che aumentava le terre controllate dai senatori per finanziare nuove colonie romane.",
+    "DOMANDA_RIATTIVAZIONE_2": "Vero o falso: l’ascesa politica di Mario si basa sul sostegno degli equites contro il Senato tradizionale?",
+    "FALSO_AMICO_1": "Confondere i <strong>populares</strong> con un partito moderno: erano una rete di alleanze fluide, non un’organizzazione stabile.",
+    "FALSO_AMICO_2": "Pensare che i <em>latifundia</em> fossero sempre efficienti: spesso generavano crisi sociali e disoccupazione urbana.",
+    "DEFINIZIONE_OPERATIVA": "La crisi repubblicana è l’insieme di conflitti istituzionali e sociali che indeboliscono il potere del Senato.",
+    "ESEMPIO_PULITO": "Il tribunato di Tiberio Gracco mostra come l’uso delle assemblee popolari potesse sfidare i senatori.",
+    "MODULO_1_TITOLO": "Dalle riforme dei Gracchi alle violenze politiche",
+    "MODULO_1_DEFINIZIONE": "<p>Analizza le proposte agrarie di Tiberio e Gaio Gracco, le resistenze del Senato e l’escalation verso la violenza.</p>",
+    "MODULO_1_ESEMPIO": "La <strong>Lex Sempronia</strong> di Tiberio crea commissioni di distribuzione che incontrano l’opposizione dei latifondisti.",
+    "MODULO_1_CONTROESEMPIO": "L’alleanza con il Senato che promette riforme fiscali ma non affronta la povertà rurale.",
+    "MODULO_1_TITOLO_SEMPLIFICATO": "Perché i Gracchi spaventano il Senato",
+    "MODULO_1_RISCRITTURA_SEMPLICE": "I Gracchi vogliono ridare terra ai poveri e questo crea scontri duri con i nobili.",
+    "MODULO_2_TITOLO": "L’ascesa dei generali-politici",
+    "MODULO_2_DEFINIZIONE": "<p>Studia come <strong>Mario</strong> e <strong>Silla</strong> usano il sostegno militare per ottenere potere civile e modificare le istituzioni.</p>",
+    "MODULO_2_ESEMPIO": "Le riforme mariane sull’arruolamento volontario trasformano gli eserciti in forze fedeli al generale.<br>",
+    "MODULO_2_CONTROESEMPIO": "Il ritorno all’antico sistema centuriato senza premi ai veterani, che non ottiene consenso.",
+    "MODULO_2_TITOLO_SEMPLIFICATO": "Quando gli eserciti seguono il loro capo",
+    "MODULO_2_RISCRITTURA_SEMPLICE": "I soldati legano il loro futuro a Mario o Silla perché ricevono terre e ricompense.",
+    "MODULO_3_TITOLO": "Dalla guerra civile a Cesare",
+    "MODULO_3_DEFINIZIONE": "<p>Ripercorri gli eventi che portano dalla dittatura sillana alla fine della Repubblica con Cesare e Ottaviano.</p>",
+    "MODULO_3_ESEMPIO": "Il primo triumvirato tra Cesare, Pompeo e Crasso usa accordi privati per superare gli ostacoli senatoriali.",
+    "MODULO_3_CONTROESEMPIO": "Il tentativo di Catone di ripristinare la concordia ordinum ignorando le tensioni sociali profonde.",
+    "MODULO_3_TITOLO_SEMPLIFICATO": "Dalla dittatura di Silla a Cesare imperatore",
+    "MODULO_3_RISCRITTURA_SEMPLICE": "La guerra civile mostra che senza compromessi il Senato perde contro i generali più popolari.",
+    "ISTRUZIONI_COMPITO": "Metti in ordine gli eventi che spiegano il crollo della Repubblica romana.",
+    "STEP_A": "Tiberio e Gaio Gracco propongono leggi agrarie e vengono uccisi in scontri politici.",
+    "STEP_B": "Mario riforma l’esercito e Silla marcia su Roma imponendo la dittatura.",
+    "STEP_C": "Cesare attraversa il Rubicone, vince Pompeo e avvia il processo che porta all’Impero.",
+    "AIUTO_1": "Ricorda quali riforme agrarie e quale violenza politica aprono il ciclo di crisi.",
+    "AIUTO_2": "Pensa a come i generali trasformano l’esercito in uno strumento personale di potere.",
+    "SOLUZIONE_COMMENTATA": "1) Gracchi, 2) Mario e Silla, 3) Cesare: ogni fase aumenta lo scontro tra Senato e capi militari.",
+    "SPIEGAZIONE_SUCCINTA": "Ottimo: hai colto la progressione dagli scontri sociali alla guerra civile.",
+    "INDIZIO_DIAGNOSTICO": "Controlla se hai inserito prima le riforme dei Gracchi e poi l’intervento dei generali.",
+    "ISTRUZIONI_QUIZ": "Scegli la risposta corretta per ogni domanda e collega gli eventi alla crisi della Repubblica.",
+    "CRITERIO_1": "Lo studente descrive le riforme dei Gracchi con linguaggio storico preciso.",
+    "CRITERIO_2": "Lo studente collega l’ascesa di Mario e Silla alle trasformazioni dell’esercito.",
+    "CRITERIO_3": "Lo studente interpreta la guerra civile tra Cesare e Pompeo come crisi finale del sistema repubblicano.",
+    "VARIANTE_BASE": "Fornisci fonti guidate sui Gracchi e chiedi un confronto con le fonti senatoriali.",
+    "VARIANTE_INTERMEDIA": "Organizza un dibattito in classe tra optimates e populares con dossier assegnati.",
+    "VARIANTE_AVANZATA": "Invita la classe a progettare un percorso museale digitale sulla crisi repubblicana.",
+    "TERMINE_1": "<strong>Optimates</strong>",
+    "DEFINIZIONE_1": "Aristocrazia senatoria che difende il controllo del Senato e le proprietà nobiliari.",
+    "TERMINE_2": "<em>Populares</em>",
+    "DEFINIZIONE_2": "Leader politici che cercano consenso tramite assemblee popolari e riforme sociali.",
+    "TERMINE_3": "Proscriptiones",
+    "DEFINIZIONE_3": "Liste di cittadini condannati senza processo durante la dittatura di Silla.",
+    "Q1_TESTO": "Qual era lo scopo principale della riforma agraria di Tiberio Gracco?",
+    "Q1_OPZ_1": "Redistribuire l’ager publicus ai cittadini poveri per rafforzare l’esercito romano.",
+    "Q1_OPZ_2": "Favorire la vendita delle terre pubbliche alle élite e finanziare le guerre puniche.",
+    "Q1_OPZ_3": "Accrescere il potere dei cavalieri creando nuove province fiscali.",
+    "Q1_OPZ_4": "Trasformare il tribunato in una magistratura a vita con potere militare.",
+    "Q1_HINT": "Confronta i bisogni dei piccoli proprietari e la difesa del ceto medio rurale.",
+    "Q1_SPEGAZIONE": "La redistribuzione delle terre mira a rafforzare il ceto contadino, base del reclutamento militare.",
+    "Q2_TESTO": "Perché l’esercito di Mario diventa un fattore politico decisivo?",
+    "Q2_OPZ_1": "Perché i soldati volontari dipendono dal generale per terre e bottino dopo il servizio.",
+    "Q2_OPZ_2": "Perché il Senato vieta ai veterani di tornare a Roma senza permesso.",
+    "Q2_OPZ_3": "Perché gli equites controllano la paga dei legionari tramite banche private.",
+    "Q2_OPZ_4": "Perché le province orientali forniscono rinforzi illimitati fedeli al Senato.",
+    "Q2_HINT": "Pensa a chi garantisce premi e terre ai soldati dopo la campagna.",
+    "Q2_SPEGAZIONE": "Mario ricompensa i veterani con terre e denaro, creando legioni fedeli alla sua persona.",
+    "Q3_TESTO": "Quale evento segna il passaggio alla guerra civile tra Cesare e Pompeo?",
+    "Q3_OPZ_1": "Il passaggio del Rubicone da parte di Cesare con la XIII legione.",
+    "Q3_OPZ_2": "La riforma di Druso sulla cittadinanza agli italici.",
+    "Q3_OPZ_3": "La battaglia di Azio con la flotta di Ottaviano.",
+    "Q3_OPZ_4": "La fondazione della colonia di Narbona in Gallia Narbonense.",
+    "Q3_HINT": "Ricorda il gesto simbolico che viola l’ordine del Senato.",
+    "Q3_SPEGAZIONE": "Attraversando il Rubicone, Cesare sfida l’autorità senatoria e apre la guerra civile.",
+    "CONSIGLIO_STUDIO": "Approfondisci con una tabella comparativa tra optimates e populares per fissare differenze e alleanze."
+  },
+  "sectionTitles": {
+    "immagine": "Il Foro in fermento",
+    "percorso": "Dalle riforme ai triumviri",
+    "attivazione": "Riattiva le tue conoscenze storiche",
+    "primer": "Concetti chiave della crisi",
+    "schema": "Mappa cronologica della Repubblica",
+    "attivita": "Ordina gli snodi della crisi",
+    "quiz": "Verifica la crisi repubblicana",
+    "glossario": "Lessico della tarda Repubblica"
+  },
+  "image": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Foro_Romano_panorama.jpg",
+    "ALT": "Fotografia panoramica del Foro romano con resti archeologici e colli circostanti.",
+    "caption": "Il cuore politico della Repubblica, teatro di comizi e scontri tra fazioni.",
+    "creditUrl": "https://commons.wikimedia.org/wiki/File:Foro_Romano_panorama.jpg",
+    "creditLabel": "Wikimedia Commons"
+  },
+  "mermaid": "flowchart TD\n    start([Crisi della Repubblica romana]) --> gracchi{Riforme dei Gracchi}\n    gracchi --> violenze[Conflitti e violenze a Roma]\n    violenze --> esercito[Mario riforma l'esercito]\n    esercito --> silla[Silla conquista Roma]\n    silla --> triumvirato[Primo triumvirato]\n    triumvirato --> guerra[Guerra civile]\n    guerra --> cesare[Cesare consolida il potere]\n    cesare --> augusto[Ottaviano avvia il Principato]\n",
+  "glossario": [
+    {
+      "term": "Optimates",
+      "def": "Gruppo senatorio conservatore che difende privilegi e potere del Senato."
+    },
+    {
+      "term": "Populares",
+      "def": "Leader che cercano consenso plebeo tramite tribunato e assemblee popolari."
+    },
+    {
+      "term": "Triumvirato",
+      "def": "Alleanza politica informale tra tre figure di spicco per controllare la Repubblica."
+    }
+  ],
+  "quiz": [
+    {
+      "q": "Qual era lo scopo principale della riforma agraria di Tiberio Gracco?",
+      "choices": [
+        "Redistribuire l’ager publicus ai cittadini poveri per rafforzare l’esercito romano.",
+        "Favorire la vendita delle terre pubbliche alle élite e finanziare le guerre puniche.",
+        "Accrescere il potere dei cavalieri creando nuove province fiscali.",
+        "Trasformare il tribunato in una magistratura a vita con potere militare."
+      ],
+      "correct": 0,
+      "hint": "Confronta i bisogni dei piccoli proprietari e la difesa del ceto medio rurale.",
+      "explain": "La redistribuzione dell’ager publicus mira a rafforzare il ceto contadino, base del reclutamento militare."
+    },
+    {
+      "q": "Perché l’esercito di Mario diventa un fattore politico decisivo?",
+      "choices": [
+        "Perché i soldati volontari dipendono dal generale per terre e bottino dopo il servizio.",
+        "Perché il Senato vieta ai veterani di tornare a Roma senza permesso.",
+        "Perché gli equites controllano la paga dei legionari tramite banche private.",
+        "Perché le province orientali forniscono rinforzi illimitati fedeli al Senato."
+      ],
+      "correct": 0,
+      "hint": "Pensa a chi garantisce premi e terre ai soldati dopo la campagna.",
+      "explain": "Mario ricompensa i veterani con terre e denaro, creando legioni fedeli alla sua persona."
+    },
+    {
+      "q": "Quale evento segna il passaggio alla guerra civile tra Cesare e Pompeo?",
+      "choices": [
+        "Il passaggio del Rubicone da parte di Cesare con la XIII legione.",
+        "La riforma di Druso sulla cittadinanza agli italici.",
+        "La battaglia di Azio con la flotta di Ottaviano.",
+        "La fondazione della colonia di Narbona in Gallia Narbonense."
+      ],
+      "correct": 0,
+      "hint": "Ricorda il gesto simbolico che viola l’ordine del Senato.",
+      "explain": "Attraversando il Rubicone, Cesare sfida l’autorità senatoria e apre la guerra civile."
+    }
+  ]
+}
