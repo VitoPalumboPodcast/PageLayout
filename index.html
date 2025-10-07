@@ -803,14 +803,32 @@ function speakPlain(el){
 /* =========================================================
    RICERCA PAROLE CHIAVE (POPOVER ANCHE NEL TESTO)
    ========================================================= */
-const KW={map:new Map(), norm:new Map()};
+const KW={map:new Map(), norm:new Map(), phrases:[], singles:new Map()};
 const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const KW_EDGE_CLEAN=/^[^A-Za-z0-9À-ÖØ-öø-ÿ]+|[^A-Za-z0-9À-ÖØ-öø-ÿ]+$/g;
+const KW_TOKEN_SPLIT=/[^A-Za-z0-9À-ÖØ-öø-ÿ]+/g;
+function cleanKwCandidate(text){
+  return (text||'').trim().replace(KW_EDGE_CLEAN,'');
+}
+function tokenizeKwTerm(term){
+  return norm(term).split(KW_TOKEN_SPLIT).filter(Boolean);
+}
 function buildGlossary(){
-  KW.map.clear(); KW.norm.clear();
+  KW.map.clear(); KW.norm.clear(); KW.phrases=[]; KW.singles=new Map();
   $$('#glossario dt').forEach(dt=>{
     const term=(dt.textContent||'').trim(); const dd=dt.nextElementSibling?.textContent?.trim()||'';
-    if(term){ KW.map.set(term.toLowerCase(), dd); KW.norm.set(norm(term), dd); }
+    if(!term) return;
+    const normalized=norm(term);
+    KW.map.set(term.toLowerCase(), dd);
+    KW.norm.set(normalized, dd);
+    const tokens=tokenizeKwTerm(term);
+    if(tokens.length>1){
+      KW.phrases.push({term, tokens});
+    }else if(tokens.length===1){
+      KW.singles.set(tokens[0], term);
+    }
   });
+  KW.phrases.sort((a,b)=>b.tokens.length-a.tokens.length);
   const list=$('#kwList'); list.innerHTML='';
   for(const term of KW.map.keys()){
     const b=document.createElement('button'); b.className='kw-pill'; b.type='button'; b.textContent=term;
@@ -818,7 +836,57 @@ function buildGlossary(){
     list.appendChild(b);
   }
 }
-function annotateKeywordWords(root=document){ $$('#content .word').forEach(w=>{ const t=norm(w.textContent||''); if(KW.norm.has(t)){ w.classList.add('kw-word'); w.tabIndex=0; w.dataset.term=(w.textContent||'').trim().toLowerCase(); }}); }
+function annotateKeywordWords(root=document){
+  const nodes=$$('#content .word');
+  const cleaned=nodes.map(node=>{
+    const raw=node.textContent||'';
+    const clean=cleanKwCandidate(raw);
+    return {node, clean, norm:clean?norm(clean):''};
+  });
+  cleaned.forEach(({node})=>{
+    node.classList.remove('kw-word');
+    node.removeAttribute('data-term');
+    node.removeAttribute('tabindex');
+  });
+  const used=new Array(cleaned.length).fill(false);
+  for(let i=0;i<cleaned.length;i++){
+    const item=cleaned[i];
+    if(!item?.clean || used[i]) continue;
+    for(const phrase of KW.phrases){
+      if(phrase.tokens[0]!==item.norm) continue;
+      let ok=true;
+      const consumed=[i];
+      for(let j=1;j<phrase.tokens.length;j++){
+        const next=cleaned[i+j];
+        if(!next?.clean || next.norm!==phrase.tokens[j]){ ok=false; break; }
+        consumed.push(i+j);
+      }
+      if(ok){
+        consumed.forEach(idx=>{
+          const target=cleaned[idx];
+          target.node.classList.add('kw-word');
+          target.node.tabIndex=0;
+          target.node.dataset.term=phrase.term;
+          used[idx]=true;
+        });
+        i+=phrase.tokens.length-1;
+        break;
+      }
+    }
+  }
+  for(let i=0;i<cleaned.length;i++){
+    if(used[i]) continue;
+    const item=cleaned[i];
+    if(!item?.clean) continue;
+    const canonical=KW.singles.get(item.norm);
+    if(canonical){
+      item.node.classList.add('kw-word');
+      item.node.tabIndex=0;
+      item.node.dataset.term=canonical;
+      used[i]=true;
+    }
+  }
+}
 
 let kwPop=null, kwAnchor=null, kwLastFocus=null;
 function showKwPopover(term, anchor){
