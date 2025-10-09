@@ -705,24 +705,38 @@ function prepareSpeechText(text){
 /* Precarica voci privilegiando automaticamente le migliori voci italiane (online se presenti). */
 function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
 // Ordina le voci italiane dando priorità a quelle online di qualità elevata.
+const ITALIAN_LANG_CODES=['it','it-it','it-ch','it-sm','it-va'];
+const ITALIAN_NAME_HINTS=[/italiano/,/italian/,/italia/];
+const ITALIAN_PRIORITY_PATTERNS=[
+  {pattern:/google (italiano|italian)/, bonus:60},
+  {pattern:/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca|diego|luca|paolo)/, bonus:45},
+  {pattern:/voispeed|readspeaker|nuance/, bonus:35},
+  {pattern:/neural|natural|studio|premium/, bonus:25},
+  {pattern:/campus|colab|azure/, bonus:20},
+];
+const ITALIAN_COMMON_NAMES=['alice','chiara','caterina','luca','paolo','giorgio','silvia','carla','federica','matteo','vittoria','giulia','marco','sofia','andrea'];
+function normalizeLang(lang=''){ return lang.toLowerCase().replace(/_/g,'-'); }
+function isItalianLangTag(lang=''){
+  const norm=normalizeLang(lang);
+  return ITALIAN_LANG_CODES.some(code=>norm===code || norm.startsWith(code+'-'));
+}
 function scoreVoice(v){
-  const name=`${v.name} ${v.voiceURI}`.toLowerCase();
+  const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
+  const lang=normalizeLang(v.lang||'');
   let score=0;
-  if(/it-|ital/.test(v.lang)) score+=120; else score-=120;
-  if(/online/.test(name) || !v.localService) score+=60;
-  if(/natural|neural/.test(name)) score+=25;
-  if(/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca)/.test(name)) score+=35;
-  if(/google italiano/.test(name)) score+=40;
-  if(/diego/.test(name)) score+=30;
-  if(/(alice|chiara|caterina|luca|paolo|giorgio|silvia|carla|federica)/.test(name)) score+=15;
-  if(/\bit-?it\b/.test(v.lang.toLowerCase())) score+=20;
+  if(isItalianLangTag(lang)) score+=160; else score-=160;
+  if(/online|cloud/.test(name) || !v.localService) score+=60;
+  ITALIAN_PRIORITY_PATTERNS.forEach(({pattern,bonus})=>{ if(pattern.test(name)) score+=bonus; });
+  ITALIAN_COMMON_NAMES.forEach(common=>{ if(name.includes(common)) score+=18; });
+  if(/\bit-?it\b/.test(lang)) score+=25;
   return score;
 }
 function isItalianVoice(v){
-  const lang=(v.lang||'').toLowerCase();
-  if(lang.startsWith('it') || lang.includes('ital')) return true;
+  if(!v) return false;
+  if(isItalianLangTag(v.lang||'')) return true;
   const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
-  return /italiano|italian/.test(name);
+  if(ITALIAN_NAME_HINTS.some(re=>re.test(name))) return true;
+  return ITALIAN_COMMON_NAMES.some(common=>name.includes(common));
 }
 async function setupVoices(){
   let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
