@@ -765,7 +765,13 @@ const scheduleVoiceRetry=()=>{
   voiceRetryCount++;
   voiceRetryTimer=setTimeout(()=>{voiceRetryTimer=null; setupVoices(true);}, 900*voiceRetryCount);
 };
-const signatureFor=list=>list.map(v=>`${v.voiceURI||''}::${v.name||''}::${v.lang||''}`).join('|');
+const signatureFor=list=>list.map(v=>[
+  v.voiceURI||'',
+  v.name||'',
+  v.lang||'',
+  String(!!v.localService),
+  String(!!v.default)
+].join('::')).join('|');
 async function setupVoices(force=false){
   let allVoices=synth.getVoices();
   if(!allVoices.length || force) allVoices=await waitForVoices();
