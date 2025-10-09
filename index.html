@@ -773,7 +773,14 @@ async function setupVoices(){
   if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
   else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
 }
-if('speechSynthesis' in window){ setupVoices(); speechSynthesis.onvoiceschanged=setupVoices; }
+if('speechSynthesis' in window){
+  setupVoices();
+  if(typeof speechSynthesis.addEventListener==='function'){
+    speechSynthesis.addEventListener('voiceschanged', setupVoices);
+  }else{
+    speechSynthesis.onvoiceschanged=setupVoices;
+  }
+}
 const getSelVoice=()=>voices.find(v=>v.voiceURI===$('#voiceSel').value)||null;
 
 let karaokeBundle=null, afterSpeak=null;
