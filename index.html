@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lexend:wght@400;600;700&family=Readex+Pro:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="js/italian-voices.js"></script>
 
 <style>
 /* =========================================================
@@ -642,6 +643,12 @@ function instrumentWords(root){
 function instrumentSubtree(el){ instrumentWords(el); annotateKeywordWords(el); }
 
 const synth=window.speechSynthesis; let voices=[]; let utter=null; let paused=false;
+const voiceUtils=window.ItalianVoices||globalThis.ItalianVoices||{};
+const scoreVoice=voiceUtils.scoreVoice||(v=>{const lang=(v?.lang||'').toLowerCase();return lang.startsWith('it')?10:0;});
+const isItalianVoice=voiceUtils.isItalianVoice||(v=>(v?.lang||'').toLowerCase().startsWith('it'));
+const signatureFor=voiceUtils.signatureFor||(list=>Array.isArray(list)?list.map(v=>`${v.voiceURI||''}::${v.name||''}::${v.lang||''}`).join('|'):'' );
+const compareVoices=voiceUtils.compareVoices||((a,b)=>{const diff=scoreVoice(b)-scoreVoice(a);return diff!==0?diff:String(a?.name||'').localeCompare(String(b?.name||''));});
+const filterItalianVoices=voiceUtils.filterItalianVoices||(list=>Array.isArray(list)?list.filter(isItalianVoice):[]);
 const LETTER_RE=/[A-Za-zÀ-ÖØ-öø-ÿ]/;
 const SPEECH_RULES=[
   (text, index)=>{
@@ -703,7 +710,7 @@ function prepareSpeechText(text){
 }
 
 /* Precarica voci privilegiando automaticamente le migliori voci italiane (online se presenti). */
-function waitForVoices({timeout=7000,settle=300}={}){
+function waitForVoices({timeout=12000,settle=500}={}){
   return new Promise(res=>{
     const step=120;
     let elapsed=0;
@@ -729,53 +736,19 @@ function waitForVoices({timeout=7000,settle=300}={}){
     check();
   });
 }
-// Ordina le voci italiane dando priorità a quelle online di qualità elevata.
-function scoreVoice(v){
-  const name=`${v.name} ${v.voiceURI}`.toLowerCase();
-  let score=0;
-  if(/it-|ital/.test(v.lang)) score+=120; else score-=120;
-  if(/online/.test(name) || !v.localService) score+=60;
-  if(/natural|neural/.test(name)) score+=25;
-  if(/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca)/.test(name)) score+=35;
-  if(/google italiano/.test(name)) score+=40;
-  if(/diego/.test(name)) score+=30;
-  if(/(alice|chiara|caterina|luca|paolo|giorgio|silvia|carla|federica)/.test(name)) score+=15;
-  if(/\bit-?it\b/.test(v.lang.toLowerCase())) score+=20;
-  return score;
-}
-const ITALIAN_VOICE_HINTS=[
-  'diego','elisa','elsa','isabella','valentina','gianni','andrea','bianca','lucia','luca',
-  'chiara','caterina','giorgio','silvia','paolo','federica','carla','matteo','marco','serena',
-  'giulia','noemi','riccardo','pierluigi','filippo','nicolo','nicolò','marta','sara'
-];
-function isItalianVoice(v){
-  const rawLang=(v.lang||'').toLowerCase();
-  const lang=rawLang.replace(/_/g,'-');
-  if(lang.startsWith('it') || lang.includes('ital')) return true;
-  const descriptor=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
-  if(/italiano|italian/.test(descriptor)) return true;
-  if(/\bitaly\b|\bitalia\b/.test(descriptor)) return true;
-  if(/\bit[-_]?it\b/.test(descriptor) || /\bit[-_]?ch\b/.test(descriptor)) return true;
-  return ITALIAN_VOICE_HINTS.some(hint=>descriptor.includes(hint) && !/(^|\b)(es|pt|fr|en|de)[-_]/.test(lang));
-}
 let voiceRetryTimer=null, voiceRetryCount=0, lastVoiceSignature='';
 const clearVoiceRetry=()=>{if(voiceRetryTimer){clearTimeout(voiceRetryTimer);voiceRetryTimer=null;}voiceRetryCount=0;};
 const scheduleVoiceRetry=()=>{
-  if(voiceRetryTimer||voiceRetryCount>=3) return;
+  const RETRY_DELAYS=[1200,2600,4200,6200,9200,12500];
+  if(voiceRetryTimer||voiceRetryCount>=RETRY_DELAYS.length) return;
+  const delay=RETRY_DELAYS[voiceRetryCount];
   voiceRetryCount++;
-  voiceRetryTimer=setTimeout(()=>{voiceRetryTimer=null; setupVoices(true);}, 900*voiceRetryCount);
+  voiceRetryTimer=setTimeout(()=>{voiceRetryTimer=null; setupVoices(true);}, delay);
 };
-const signatureFor=list=>list.map(v=>[
-  v.voiceURI||'',
-  v.name||'',
-  v.lang||'',
-  String(!!v.localService),
-  String(!!v.default)
-].join('::')).join('|');
 async function setupVoices(force=false){
   let allVoices=synth.getVoices();
   if(!allVoices.length || force) allVoices=await waitForVoices();
-  const italianList=Array.isArray(allVoices)?allVoices.filter(isItalianVoice):[];
+  const italianList=filterItalianVoices(allVoices);
   const signature=signatureFor(italianList);
   if(!force && signature && signature===lastVoiceSignature) return;
   lastVoiceSignature=signature;
@@ -791,10 +764,7 @@ async function setupVoices(force=false){
     return;
   }
   sel.disabled=false;
-  const sorted=voices.slice().sort((a,b)=>{
-    const diff=scoreVoice(b)-scoreVoice(a);
-    return diff!==0?diff:(a.name.localeCompare(b.name));
-  });
+  const sorted=voices.slice().sort(compareVoices);
   const topScore=sorted.length?scoreVoice(sorted[0]):0;
   sorted.forEach(v=>{
     const o=document.createElement('option');
