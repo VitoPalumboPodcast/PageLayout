@@ -718,12 +718,27 @@ function scoreVoice(v){
   if(/\bit-?it\b/.test(v.lang.toLowerCase())) score+=20;
   return score;
 }
+function isItalianVoice(v){
+  const lang=(v.lang||'').toLowerCase();
+  if(lang.startsWith('it') || lang.includes('ital')) return true;
+  const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
+  return /italiano|italian/.test(name);
+}
 async function setupVoices(){
-  voices=synth.getVoices(); if(!voices.length) voices=await waitForVoices();
+  let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
+  voices=Array.isArray(allVoices)?allVoices.filter(isItalianVoice):[];
   const sel=$('#voiceSel'); sel.innerHTML='';
-  const itVoices=voices.filter(v=>/it-|ital/i.test(v.lang));
-  const list=itVoices.length?itVoices:voices;
-  const sorted=list.slice().sort((a,b)=>{
+  if(!voices.length){
+    const o=document.createElement('option');
+    o.textContent='Nessuna voce italiana disponibile';
+    o.disabled=true; o.selected=true; o.value='';
+    sel.appendChild(o);
+    sel.disabled=true;
+    if(state.voiceURI){ state.voiceURI=''; save(); }
+    return;
+  }
+  sel.disabled=false;
+  const sorted=voices.slice().sort((a,b)=>{
     const diff=scoreVoice(b)-scoreVoice(a);
     return diff!==0?diff:(a.name.localeCompare(b.name));
   });
@@ -740,7 +755,7 @@ async function setupVoices(){
   });
   const keep = voices.find(v=>v.voiceURI===state.voiceURI);
   const preferred=keep || sorted[0];
-  sel.value = (preferred?.voiceURI) || sel.value;
+  sel.value = (preferred?.voiceURI) || '';
   if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
   else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
 }
