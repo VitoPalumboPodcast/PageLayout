@@ -702,19 +702,47 @@ function prepareSpeechText(text){
   return {speechText,mapSpeechToOriginal,mapOriginalToSpeech};
 }
 
-/* Precarica voci, predefinita: Diego se disponibile (in italiano) */
+/* Precarica voci privilegiando automaticamente le migliori voci italiane (online se presenti). */
 function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
+// Ordina le voci italiane dando priorità a quelle online di qualità elevata.
+function scoreVoice(v){
+  const name=`${v.name} ${v.voiceURI}`.toLowerCase();
+  let score=0;
+  if(/it-|ital/.test(v.lang)) score+=120; else score-=120;
+  if(/online/.test(name) || !v.localService) score+=60;
+  if(/natural|neural/.test(name)) score+=25;
+  if(/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca)/.test(name)) score+=35;
+  if(/google italiano/.test(name)) score+=40;
+  if(/diego/.test(name)) score+=30;
+  if(/(alice|chiara|caterina|luca|paolo|giorgio|silvia|carla|federica)/.test(name)) score+=15;
+  if(/\bit-?it\b/.test(v.lang.toLowerCase())) score+=20;
+  return score;
+}
 async function setupVoices(){
   voices=synth.getVoices(); if(!voices.length) voices=await waitForVoices();
   const sel=$('#voiceSel'); sel.innerHTML='';
   const itVoices=voices.filter(v=>/it-|ital/i.test(v.lang));
   const list=itVoices.length?itVoices:voices;
-  // Preferisci Diego, poi it-IT qualsiasi
-  let preferred=list.find(v=>/diego/i.test(v.name)) || itVoices[0] || list[0];
-  list.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=`${v.name} – ${v.lang}`;sel.appendChild(o);});
+  const sorted=list.slice().sort((a,b)=>{
+    const diff=scoreVoice(b)-scoreVoice(a);
+    return diff!==0?diff:(a.name.localeCompare(b.name));
+  });
+  const topScore=sorted.length?scoreVoice(sorted[0]):0;
+  sorted.forEach(v=>{
+    const o=document.createElement('option');
+    const voiceScore=scoreVoice(v);
+    const badge=!v.localService?'online':'locale';
+    const star=voiceScore>=topScore-10?'⭐ ':'';
+    o.value=v.voiceURI;
+    o.textContent=`${star}${v.name} – ${v.lang} · ${badge}`;
+    o.dataset.score=String(voiceScore);
+    sel.appendChild(o);
+  });
   const keep = voices.find(v=>v.voiceURI===state.voiceURI);
-  sel.value = (keep?.voiceURI) || (preferred?.voiceURI) || sel.value;
-  if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
+  const preferred=keep || sorted[0];
+  sel.value = (preferred?.voiceURI) || sel.value;
+  if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
+  else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
 }
 if('speechSynthesis' in window){ setupVoices(); speechSynthesis.onvoiceschanged=setupVoices; }
 const getSelVoice=()=>voices.find(v=>v.voiceURI===$('#voiceSel').value)||null;
