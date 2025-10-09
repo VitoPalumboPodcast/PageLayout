@@ -726,6 +726,7 @@ function scoreVoice(v){
   let score=0;
   if(isItalianLangTag(lang)) score+=160; else score-=160;
   if(/online|cloud/.test(name) || !v.localService) score+=60;
+  if(isDiegoVoice(v)) score+=120;
   ITALIAN_PRIORITY_PATTERNS.forEach(({pattern,bonus})=>{ if(pattern.test(name)) score+=bonus; });
   ITALIAN_COMMON_NAMES.forEach(common=>{ if(name.includes(common)) score+=18; });
   if(/\bit-?it\b/.test(lang)) score+=25;
@@ -738,9 +739,15 @@ function isItalianVoice(v){
   if(ITALIAN_NAME_HINTS.some(re=>re.test(name))) return true;
   return ITALIAN_COMMON_NAMES.some(common=>name.includes(common));
 }
+function isDiegoVoice(v){
+  const name=`${v?.name||''} ${v?.voiceURI||''}`.toLowerCase();
+  return /\bdiego\b/.test(name);
+}
 async function setupVoices(){
   let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
-  voices=Array.isArray(allVoices)?allVoices.filter(isItalianVoice):[];
+  voices=Array.isArray(allVoices)
+    ? allVoices.filter(v=>isDiegoVoice(v) || (!v.localService && isItalianVoice(v)))
+    : [];
   const sel=$('#voiceSel'); sel.innerHTML='';
   if(!voices.length){
     const o=document.createElement('option');
@@ -756,14 +763,12 @@ async function setupVoices(){
     const diff=scoreVoice(b)-scoreVoice(a);
     return diff!==0?diff:(a.name.localeCompare(b.name));
   });
-  const topScore=sorted.length?scoreVoice(sorted[0]):0;
   sorted.forEach(v=>{
     const o=document.createElement('option');
     const voiceScore=scoreVoice(v);
     const badge=!v.localService?'online':'locale';
-    const star=voiceScore>=topScore-10?'⭐ ':'';
     o.value=v.voiceURI;
-    o.textContent=`${star}${v.name} – ${v.lang} · ${badge}`;
+    o.textContent=`${v.name} – ${v.lang} · ${badge}`;
     o.dataset.score=String(voiceScore);
     sel.appendChild(o);
   });
