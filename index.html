@@ -715,6 +715,190 @@ const voiceLibraryTokens=new Map();
 const voiceLibraryIdIndex=new Map();
 let voiceLibraryMatchCache=new WeakMap();
 
+// === INIZIO MODIFICA TTS ONLINE ===
+const LOCAL_VOICE_PREFIX='local::';
+const ONLINE_VOICE_PREFIX='online::';
+const ONLINE_TTS_VOICES=[
+  {
+    id:'diego-it-demo',
+    name:'Diego Italiano',
+    description:'Voce maschile calda e naturale',
+    provider:'openai-demo',
+    service:'OpenAI Text-to-Speech',
+    lang:'it-IT',
+    model:'gpt-4o-mini-tts',
+    remoteVoice:'alloy',
+    quality:'naturale',
+    style:'neutro'
+  },
+  {
+    id:'francesca-naturale',
+    name:'Francesca Naturale',
+    description:'Voce femminile espressiva per narrativa',
+    provider:'openai-demo',
+    service:'OpenAI Text-to-Speech',
+    lang:'it-IT',
+    model:'gpt-4o-mini-tts',
+    remoteVoice:'verse',
+    quality:'realistica',
+    style:'coinvolgente'
+  },
+  {
+    id:'giorgio-calmo',
+    name:'Giorgio Calmo',
+    description:'Voce maschile lenta, ideale per contenuti educativi',
+    provider:'openai-demo',
+    service:'OpenAI Text-to-Speech',
+    lang:'it-IT',
+    model:'gpt-4o-mini-tts',
+    remoteVoice:'calm',
+    quality:'naturale',
+    style:'calmo'
+  }
+];
+const ONLINE_TTS_PROVIDERS={
+  'openai-demo':{
+    id:'openai-demo',
+    label:'OpenAI Text-to-Speech (demo)',
+    async synthesize({voice,text,signal}){
+      const endpoint=voice.endpoint||'https://api.openai.com/v1/audio/speech';
+      let storedKey='';
+      try{ storedKey=localStorage.getItem('layoutInclusivo:tts:openai-demo:key')||''; }catch(_){ storedKey=''; }
+      const apiKey=(voice.apiKey||window.OPENAI_API_KEY||storedKey||'YOUR_API_KEY').trim();
+      const headers={
+        'Content-Type':'application/json'
+      };
+      if(apiKey) headers['Authorization']=`Bearer ${apiKey}`;
+      const body={
+        model:voice.model||'gpt-4o-mini-tts',
+        voice:voice.remoteVoice||voice.voiceId||'alloy',
+        input:text,
+        format:voice.format||'mp3'
+      };
+      const response=await fetch(endpoint,{
+        method:'POST',
+        headers,
+        body:JSON.stringify(body),
+        signal
+      });
+      if(!response.ok) throw new Error(`TTS online non disponibile (HTTP ${response.status})`);
+      const blob=await response.blob();
+      const url=URL.createObjectURL(blob);
+      const audio=new Audio(url);
+      const cleanup=()=>{ URL.revokeObjectURL(url); };
+      return {audio, cleanup};
+    }
+  }
+};
+let voiceSelectionIndex=new Map();
+let lastSortedVoices=[];
+let currentRemoteAudio=null;
+let currentRemoteAbort=null;
+let remoteCleanup=()=>{};
+let remotePaused=false;
+
+function encodeLocalVoiceValue(uri=''){ return uri?`${LOCAL_VOICE_PREFIX}${uri}`:''; }
+function encodeOnlineVoiceValue(id=''){ return id?`${ONLINE_VOICE_PREFIX}${id}`:''; }
+function ensureVoiceValue(value=''){ if(!value) return ''; if(value.startsWith(LOCAL_VOICE_PREFIX)||value.startsWith(ONLINE_VOICE_PREFIX)) return value; return encodeLocalVoiceValue(value); }
+function getVoiceEntry(value=''){ return voiceSelectionIndex.get(value)||null; }
+function getOnlineVoiceConfigById(id=''){ return ONLINE_TTS_VOICES.find(v=>v.id===id)||null; }
+function getPreferredLocalVoiceEntry(){
+  const candidate=lastSortedVoices.find(v=>isItalianVoice(v) && v.localService)
+    || lastSortedVoices.find(v=>v.localService)
+    || lastSortedVoices[0]
+    || null;
+  if(!candidate) return null;
+  return {type:'local', voice:candidate, value:encodeLocalVoiceValue(candidate.voiceURI)};
+}
+function safeGetSpeechVoices(){
+  try{ return synth.getVoices()||[]; }
+  catch(_){ return []; }
+}
+function pickBestVoice(list){
+  if(!Array.isArray(list) || !list.length) return null;
+  return list.find(isItalianVoice) || list[0] || null;
+}
+function findVoiceByURI(uri=''){
+  if(!uri) return null;
+  const live=safeGetSpeechVoices().find(v=>v.voiceURI===uri);
+  if(live) return live;
+  return voices.find(v=>v.voiceURI===uri)||null;
+}
+function resolveVoiceCandidate(candidate){
+  if(!candidate){
+    return pickBestVoice(safeGetSpeechVoices()) || pickBestVoice(voices) || null;
+  }
+  if(candidate.type==='local' && candidate.voice){
+    return resolveVoiceCandidate(candidate.voice);
+  }
+  const direct=candidate.voice || candidate;
+  if(direct && typeof direct.voiceURI==='string'){
+    return findVoiceByURI(direct.voiceURI) || direct;
+  }
+  return pickBestVoice(safeGetSpeechVoices()) || pickBestVoice(voices) || null;
+}
+function applyFallbackVoiceSelection(entry){
+  if(!entry) return null;
+  const sel=$('#voiceSel');
+  if(sel && voiceSelectionIndex.has(entry.value)){
+    sel.value=entry.value;
+    state.voiceURI=entry.value;
+    save();
+    updateVoiceInfoUI();
+  }
+  return entry;
+}
+async function playOnlineSpeech(text, voiceEntry, {onstart,onend,onerror}={}){
+  if(!voiceEntry) throw new Error('Voce online non configurata');
+  const provider=ONLINE_TTS_PROVIDERS[voiceEntry.provider];
+  if(!provider || typeof provider.synthesize!=='function') throw new Error('Provider TTS non supportato');
+  stopRemotePlayback();
+  const controller=new AbortController();
+  currentRemoteAbort=controller;
+  try{
+    const {audio, cleanup}=await provider.synthesize({voice:voiceEntry,text,signal:controller.signal});
+    if(controller.signal.aborted){
+      cleanup?.();
+      throw new DOMException('Riproduzione annullata','AbortError');
+    }
+    currentRemoteAudio=audio;
+    remoteCleanup=typeof cleanup==='function'?cleanup:()=>{};
+    remotePaused=false;
+    audio.addEventListener('ended',()=>{
+      stopRemotePlayback();
+      onend?.();
+    },{once:true});
+    audio.addEventListener('error',event=>{
+      stopRemotePlayback();
+      onerror?.(event);
+    },{once:true});
+    onstart?.();
+    await audio.play();
+    return audio;
+  }catch(err){
+    if(err?.name!=='AbortError') stopRemotePlayback();
+    throw err;
+  }
+}
+function stopRemotePlayback(){
+  if(currentRemoteAbort){
+    currentRemoteAbort.abort();
+    currentRemoteAbort=null;
+  }
+  if(currentRemoteAudio){
+    try{
+      currentRemoteAudio.pause();
+      currentRemoteAudio.removeAttribute('src');
+      currentRemoteAudio.load();
+    }catch(_){/* noop */}
+    currentRemoteAudio=null;
+  }
+  try{ remoteCleanup?.(); }catch(_){/* noop */}
+  remoteCleanup=()=>{};
+  remotePaused=false;
+}
+// === FINE MODIFICA TTS ONLINE ===
+
 const normalizeVoiceToken=(value='')=>String(value||'')
   .toLowerCase()
   .normalize('NFD')
@@ -1030,11 +1214,19 @@ function describeVoiceQuality(v){
   return 'di base';
 }
 
+// === INIZIO MODIFICA TTS ONLINE ===
 function renderVoiceOptions(){
   const sel=$('#voiceSel');
   if(!sel) return;
+  voiceSelectionIndex.clear();
   sel.innerHTML='';
-  if(!voices.length){
+  const sorted=voices.slice().sort((a,b)=>{
+    const diff=scoreVoice(b)-scoreVoice(a);
+    return diff!==0?diff:(a.name.localeCompare(b.name));
+  });
+  lastSortedVoices=sorted;
+  const hasRemote=ONLINE_TTS_VOICES.length>0;
+  if(!sorted.length && !hasRemote){
     const o=document.createElement('option');
     o.textContent='Nessuna voce disponibile';
     o.disabled=true; o.selected=true; o.value='';
@@ -1047,16 +1239,15 @@ function renderVoiceOptions(){
     return;
   }
   sel.disabled=false;
-  const sorted=voices.slice().sort((a,b)=>{
-    const diff=scoreVoice(b)-scoreVoice(a);
-    return diff!==0?diff:(a.name.localeCompare(b.name));
-  });
   voiceStats={
     italian: sorted.filter(v=>isItalianVoice(v)).length,
     italianOnline: sorted.filter(v=>isItalianVoice(v) && !v.localService).length
+      + ONLINE_TTS_VOICES.filter(v=>(v.lang||'').toLowerCase().startsWith('it')).length
   };
   updateVoiceAvailabilityMessage();
-  const makeOption=v=>{
+  const makeLocalOption=v=>{
+    const value=encodeLocalVoiceValue(v.voiceURI);
+    voiceSelectionIndex.set(value,{type:'local', voice:v, value});
     const o=document.createElement('option');
     const badge=!v.localService?'online':'locale';
     const quality=describeVoiceQuality(v);
@@ -1064,45 +1255,84 @@ function renderVoiceOptions(){
     const libraryMatch=getLibraryEntryForVoice(v);
     const infoParts=[v.lang, badge, quality, langHint];
     if(libraryMatch?.provider) infoParts.push(`libreria ${libraryMatch.provider}`);
-    o.value=v.voiceURI;
-    o.textContent=`${v.name} – ${infoParts.join(' · ')}`;
+    o.value=value;
+    o.textContent=`${v.name} (${badge}) – ${infoParts.join(' · ')}`;
     o.dataset.score=String(scoreVoice(v));
     o.dataset.quality=quality;
     o.dataset.online=String(!v.localService);
     o.dataset.langHint=langHint;
     o.dataset.displayName=v.name||libraryMatch?.name||'Voce';
+    o.dataset.source='local';
     if(libraryMatch){
       if(libraryMatch.id) o.dataset.libraryId=libraryMatch.id;
       if(libraryMatch.provider) o.dataset.libraryProvider=libraryMatch.provider;
     }
     return o;
   };
-  const appendGroup=(label,list)=>{
+  const makeOnlineOption=voice=>{
+    const value=encodeOnlineVoiceValue(voice.id);
+    voiceSelectionIndex.set(value,{type:'online', voice:Object.assign({}, voice), value});
+    const o=document.createElement('option');
+    const langLabel=voice.lang||'it-IT';
+    const infoParts=[langLabel,'online',voice.quality||'naturale',voice.service||voice.provider];
+    o.value=value;
+    o.textContent=`${voice.name} (online) – ${infoParts.filter(Boolean).join(' · ')}`;
+    o.dataset.online='true';
+    o.dataset.quality=voice.quality||'naturale';
+    o.dataset.langHint=langLabel.toLowerCase().startsWith('it')?'italiano':langLabel;
+    o.dataset.displayName=voice.name;
+    o.dataset.source='cloud';
+    if(voice.provider) o.dataset.libraryProvider=voice.provider;
+    if(voice.description) o.dataset.description=voice.description;
+    return o;
+  };
+  const appendGroup=(label,list,builder)=>{
     if(!list.length) return;
     const group=document.createElement('optgroup');
     group.label=label;
-    list.forEach(v=>group.appendChild(makeOption(v)));
+    list.forEach(item=>group.appendChild(builder(item)));
     sel.appendChild(group);
   };
   const italianOnline=sorted.filter(v=>isItalianVoice(v) && !v.localService);
   const italianLocal=sorted.filter(v=>isItalianVoice(v) && v.localService);
   const otherVoices=sorted.filter(v=>!isItalianVoice(v) && isAllowedOtherLang(v));
-  const hasItalianOnline=italianOnline.length>0;
+  const hasItalianOnline=italianOnline.length>0 || ONLINE_TTS_VOICES.some(v=>(v.lang||'').toLowerCase().startsWith('it'));
   sel.dataset.hasItalianOnline=String(hasItalianOnline);
-  sel.dataset.hasItalianVoices=String(voiceStats.italian>0);
+  sel.dataset.hasItalianVoices=String(voiceStats.italian>0 || hasRemote);
   sel.title=hasItalianOnline
-    ? 'Voci italiane online preferenziali con alternative locali.'
-    : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser per abilitarle.';
-  appendGroup('Italiano · online (consigliate)', italianOnline);
-  appendGroup('Italiano · locale', italianLocal);
-  appendGroup('Altre lingue · inglese, francese, spagnolo', otherVoices);
-  const keep = voices.find(v=>v.voiceURI===state.voiceURI);
-  const preferred=keep || sorted.find(v=>isItalianVoice(v)) || sorted[0];
-  sel.value = (preferred?.voiceURI) || '';
-  if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
-  else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
+    ? 'Voci italiane disponibili: seleziona una voce online o locale.'
+    : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser o configura un servizio cloud.';
+  if(hasRemote) appendGroup('Italiano · online (servizi cloud)', ONLINE_TTS_VOICES, makeOnlineOption);
+  appendGroup('Italiano · online (browser)', italianOnline, makeLocalOption);
+  appendGroup('Italiano · locale', italianLocal, makeLocalOption);
+  appendGroup('Altre lingue · inglese, francese, spagnolo', otherVoices, makeLocalOption);
+  const desiredValue=ensureVoiceValue(state.voiceURI);
+  if(desiredValue!==state.voiceURI){ state.voiceURI=desiredValue; save(); }
+  if(desiredValue && voiceSelectionIndex.has(desiredValue)){
+    sel.value=desiredValue;
+  }else{
+    const fallbackLocal=getPreferredLocalVoiceEntry();
+    if(fallbackLocal && voiceSelectionIndex.has(fallbackLocal.value)){
+      sel.value=fallbackLocal.value;
+      state.voiceURI=fallbackLocal.value;
+      save();
+    }else if(hasRemote){
+      const firstOnline=encodeOnlineVoiceValue(ONLINE_TTS_VOICES[0]?.id||'');
+      if(firstOnline && voiceSelectionIndex.has(firstOnline)){
+        sel.value=firstOnline;
+        state.voiceURI=firstOnline;
+        save();
+      }
+    }else if(sorted[0]){
+      const value=encodeLocalVoiceValue(sorted[0].voiceURI);
+      sel.value=value;
+      state.voiceURI=value;
+      save();
+    }
+  }
   updateVoiceInfoUI();
 }
+// === FINE MODIFICA TTS ONLINE ===
 if('speechSynthesis' in window){
   setupVoices();
   if(typeof speechSynthesis.addEventListener==='function'){
@@ -1111,7 +1341,7 @@ if('speechSynthesis' in window){
     speechSynthesis.onvoiceschanged=setupVoices;
   }
 }
-const getSelVoice=()=>voices.find(v=>v.voiceURI===$('#voiceSel').value)||null;
+const getSelectedVoiceEntry=()=>getVoiceEntry($('#voiceSel')?.value||'');
 
 renderVoiceLibrary();
 updateVoiceAvailabilityMessage();
@@ -1149,14 +1379,28 @@ function buildTextAndRanges(root){
 }
 
 /* Karaoke ON/OFF (toggle persistente con evidenziazione) */
-function speakBundle(){
+// === INIZIO MODIFICA TTS ONLINE ===
+function speakBundle(entryOverride=null){
   if(!karaokeBundle || !karaokeBundle.text.trim()) return;
   stopTTS(true);
+  const selection=entryOverride || getSelectedVoiceEntry();
+  if(selection?.type==='online'){
+    console.warn('La modalità karaoke richiede una voce locale. Avvio fallback automatico.');
+    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry());
+    if(!fallback){
+      $('#pillStateTop').textContent='Karaoke non disponibile senza voce locale';
+      return;
+    }
+    speakBundle(fallback);
+    return;
+  }
+  const localVoice=selection?.voice||null;
   const speechPrep=prepareSpeechText(karaokeBundle.text);
   karaokeBundle.mapSpeechToOriginal=speechPrep.mapSpeechToOriginal;
   utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
-  const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
+  if(localVoice) utter.voice=localVoice;
+  utter.lang=localVoice?.lang||'it-IT';
 
   let ptr=-1;
   const act=(ci)=>{
@@ -1177,8 +1421,14 @@ function speakBundle(){
   utter.onerror=()=>{ state.karaoke=false; applyPrefs(); clearUI('Errore lettura'); afterSpeak=null; };
   try{ synth.speak(utter); }catch(_){}
 }
+// === FINE MODIFICA TTS ONLINE ===
 function stopTTS(quiet=false){
+  // === INIZIO MODIFICA TTS ONLINE ===
+  stopRemotePlayback();
   if(synth.speaking||synth.pending) synth.cancel();
+  paused=false;
+  remotePaused=false;
+  // === FINE MODIFICA TTS ONLINE ===
   const prev=$('#content .word.active'); if(prev) prev.classList.remove('active');
   content.classList.remove('karaoke');
   if(!quiet){ $('#pillStateTop').textContent='Pronto'; }
@@ -1192,18 +1442,56 @@ function getSelectedOrAll(){
   }
   return $('#content');
 }
-function speakPlain(el){
-  stopTTS(true);
-  const bundle=buildTextAndRanges(el); // riuso estrazione testo ma senza boundary/hl
-  const speechPrep=prepareSpeechText(bundle.text);
+// === INIZIO MODIFICA TTS ONLINE ===
+function speakPlainWithLocalVoice(speechPrep, localVoiceCandidate){
+  const resolvedVoice=resolveVoiceCandidate(localVoiceCandidate);
   utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
-  const v=getSelVoice(); if(v) utter.voice=v; utter.lang=v?.lang||'it-IT';
+  if(resolvedVoice){
+    try{ utter.voice=resolvedVoice; }
+    catch(err){ console.warn('Impossibile assegnare la voce selezionata, uso quella predefinita.', err); }
+  }
+  utter.lang=resolvedVoice?.lang||'it-IT';
   utter.onstart=()=>{ $('#pillStateTop').textContent='In lettura…'; };
   utter.onend=()=>{ $('#pillStateTop').textContent='Completato'; };
   utter.onerror=()=>{ $('#pillStateTop').textContent='Errore lettura'; };
   try{ synth.speak(utter); }catch(_){}
 }
+function speakPlain(el){
+  stopTTS(true);
+  const bundle=buildTextAndRanges(el); // riuso estrazione testo ma senza boundary/hl
+  const speechPrep=prepareSpeechText(bundle.text);
+  const selection=getSelectedVoiceEntry();
+  const useFallbackLocalVoice=(label='Voce online non disponibile')=>{
+    $('#pillStateTop').textContent=label;
+    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry());
+    if(fallback){
+      console.info('Passo automaticamente alla voce locale di fallback per completare la lettura.');
+      speakPlainWithLocalVoice(speechPrep, fallback);
+    }else{
+      console.info('Uso la voce locale predefinita del browser come fallback.');
+      speakPlainWithLocalVoice(speechPrep, null);
+    }
+  };
+  if(selection?.type==='online'){
+    $('#pillStateTop').textContent='Caricamento voce online…';
+    playOnlineSpeech(speechPrep.speechText, selection.voice, {
+      onstart:()=>{ $('#pillStateTop').textContent='In lettura…'; },
+      onend:()=>{ $('#pillStateTop').textContent='Completato'; },
+      onerror:(err)=>{
+        console.warn('Riproduzione TTS online non riuscita.', err);
+        useFallbackLocalVoice('Errore voce online');
+      }
+    }).catch(err=>{
+      if(err?.name==='AbortError') return;
+      console.warn('Voce online non disponibile, uso fallback locale predefinito.', err);
+      useFallbackLocalVoice('Voce online non disponibile');
+    });
+    return;
+  }
+  speakPlainWithLocalVoice(speechPrep, selection);
+}
+// === FINE MODIFICA TTS ONLINE ===
 
 /* =========================================================
    RICERCA PAROLE CHIAVE (POPOVER ANCHE NEL TESTO)
@@ -1715,13 +2003,30 @@ $('#tbKaraoke').addEventListener('click',()=>{
 
 // TTS plain
 $('#voiceSel').addEventListener('change',e=>{
-  state.voiceURI=e.target.value;
+  state.voiceURI=ensureVoiceValue(e.target.value);
   save();
   updateVoiceInfoUI();
 });
 $('#rate').addEventListener('input',e=>{state.rate=parseFloat(e.target.value);save();});
 $('#tbSpeak').addEventListener('click',()=>{ const el=getSelectedOrAll(); speakPlain(el); });
 $('#tbPause').addEventListener('click',()=>{
+  // === INIZIO MODIFICA TTS ONLINE ===
+  if(currentRemoteAudio){
+    if(!remotePaused){
+      currentRemoteAudio.pause();
+      remotePaused=true;
+      $('#pillStateTop').textContent='In pausa';
+    }else{
+      currentRemoteAudio.play().then(()=>{
+        remotePaused=false;
+        $('#pillStateTop').textContent='In lettura…';
+      }).catch(err=>{
+        console.warn('Impossibile riprendere la riproduzione online.', err);
+      });
+    }
+    return;
+  }
+  // === FINE MODIFICA TTS ONLINE ===
   if(!speechSynthesis.speaking) return;
   if(!paused){ speechSynthesis.pause(); paused=true; $('#pillStateTop').textContent='In pausa'; }
   else{ speechSynthesis.resume(); paused=false; $('#pillStateTop').textContent='In lettura…'; }
