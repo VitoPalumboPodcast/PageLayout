@@ -766,9 +766,15 @@ const ONLINE_TTS_PROVIDERS={
       try{ storedKey=localStorage.getItem('layoutInclusivo:tts:openai-demo:key')||''; }catch(_){ storedKey=''; }
       const apiKey=(voice.apiKey||window.OPENAI_API_KEY||storedKey||'YOUR_API_KEY').trim();
       const headers={
-        'Content-Type':'application/json'
+        'Content-Type':'application/json',
+        'Accept':voice.accept||'audio/mpeg'
       };
-      if(apiKey) headers['Authorization']=`Bearer ${apiKey}`;
+      if(apiKey && apiKey!=='YOUR_API_KEY'){
+        headers['Authorization']=`Bearer ${apiKey}`;
+        try{ localStorage.setItem('layoutInclusivo:tts:openai-demo:key', apiKey); }catch(_){/* ignore quota */}
+      }else{
+        console.warn('Chiave API OpenAI non configurata: imposta window.OPENAI_API_KEY o modifica la voce online.', voice.name);
+      }
       const body={
         model:voice.model||'gpt-4o-mini-tts',
         voice:voice.remoteVoice||voice.voiceId||'alloy',
