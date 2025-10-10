@@ -706,6 +706,7 @@ function prepareSpeechText(text){
 function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
 // Ordina le voci italiane dando priorità a quelle online di qualità elevata.
 const ITALIAN_LANG_CODES=['it','it-it','it-ch','it-sm','it-va'];
+const OTHER_ALLOWED_BASE_LANGS=['en','fr','es'];
 const ITALIAN_NAME_HINTS=[/italiano/,/italian/,/italia/];
 const ITALIAN_PRIORITY_PATTERNS=[
   {pattern:/google (italiano|italian)/, bonus:65},
@@ -720,6 +721,12 @@ function normalizeLang(lang=''){ return lang.toLowerCase().replace(/_/g,'-'); }
 function isItalianLangTag(lang=''){
   const norm=normalizeLang(lang);
   return ITALIAN_LANG_CODES.some(code=>norm===code || norm.startsWith(code+'-'));
+}
+function isAllowedOtherLang(v){
+  if(!v) return false;
+  const lang=normalizeLang(v.lang||'');
+  if(!lang) return false;
+  return OTHER_ALLOWED_BASE_LANGS.some(code=>lang===code || lang.startsWith(code+'-'));
 }
 function scoreVoice(v){
   const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
@@ -798,7 +805,7 @@ async function setupVoices(){
   };
   const italianOnline=sorted.filter(v=>isItalianVoice(v) && !v.localService);
   const italianLocal=sorted.filter(v=>isItalianVoice(v) && v.localService);
-  const otherVoices=sorted.filter(v=>!isItalianVoice(v));
+  const otherVoices=sorted.filter(v=>!isItalianVoice(v) && isAllowedOtherLang(v));
   const hasItalianOnline=italianOnline.length>0;
   sel.dataset.hasItalianOnline=String(hasItalianOnline);
   sel.title=hasItalianOnline
@@ -806,7 +813,7 @@ async function setupVoices(){
     : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser per abilitarle.';
   appendGroup('Italiano · online (consigliate)', italianOnline);
   appendGroup('Italiano · locale', italianLocal);
-  appendGroup('Altre lingue', otherVoices);
+  appendGroup('Altre lingue · inglese, francese, spagnolo', otherVoices);
   const keep = voices.find(v=>v.voiceURI===state.voiceURI);
   const preferred=keep || sorted.find(v=>isItalianVoice(v)) || sorted[0];
   sel.value = (preferred?.voiceURI) || '';
