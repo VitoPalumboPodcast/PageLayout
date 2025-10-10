@@ -756,6 +756,7 @@ const ONLINE_TTS_VOICES=[
     style:'calmo'
   }
 ];
+const ONLINE_TTS_PLACEHOLDER_KEYS=['YOUR_API_KEY','PASTE_API_KEY_HERE','INSERISCI_API_KEY'];
 const ONLINE_TTS_PROVIDERS={
   'openai-demo':{
     id:'openai-demo',
@@ -764,11 +765,19 @@ const ONLINE_TTS_PROVIDERS={
       const endpoint=voice.endpoint||'https://api.openai.com/v1/audio/speech';
       let storedKey='';
       try{ storedKey=localStorage.getItem('layoutInclusivo:tts:openai-demo:key')||''; }catch(_){ storedKey=''; }
-      const apiKey=(voice.apiKey||window.OPENAI_API_KEY||storedKey||'YOUR_API_KEY').trim();
+      const rawKey=(voice.apiKey||window.OPENAI_API_KEY||storedKey||'').trim();
+      const apiKey=ONLINE_TTS_PLACEHOLDER_KEYS.includes(rawKey)?'':rawKey;
+      if(!apiKey){
+        const err=new Error('Chiave API OpenAI mancante o non valida.');
+        err.code='MISSING_API_KEY';
+        err.isConfigError=true;
+        console.info('Voce online disattivata: configura una chiave API OpenAI valida per utilizzare', voice?.name||'la voce selezionata');
+        throw err;
+      }
       const headers={
         'Content-Type':'application/json'
       };
-      if(apiKey) headers['Authorization']=`Bearer ${apiKey}`;
+      headers['Authorization']=`Bearer ${apiKey}`;
       const body={
         model:voice.model||'gpt-4o-mini-tts',
         voice:voice.remoteVoice||voice.voiceId||'alloy',
@@ -1480,11 +1489,19 @@ function speakPlain(el){
       onend:()=>{ $('#pillStateTop').textContent='Completato'; },
       onerror:(err)=>{
         console.warn('Riproduzione TTS online non riuscita.', err);
+        if(err?.code==='MISSING_API_KEY' || err?.isConfigError){
+          useFallbackLocalVoice('Chiave voce online mancante');
+          return;
+        }
         useFallbackLocalVoice('Errore voce online');
       }
     }).catch(err=>{
       if(err?.name==='AbortError') return;
       console.warn('Voce online non disponibile, uso fallback locale predefinito.', err);
+      if(err?.code==='MISSING_API_KEY' || err?.isConfigError){
+        useFallbackLocalVoice('Chiave voce online mancante');
+        return;
+      }
       useFallbackLocalVoice('Voce online non disponibile');
     });
     return;
