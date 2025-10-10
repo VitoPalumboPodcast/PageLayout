@@ -120,6 +120,7 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 }
 .voice-info strong{font-weight:600;color:var(--fg);font-size:.9rem;}
 .voice-info .voice-info-meta{font-size:.78rem;color:var(--muted);}
+.voice-info-alert{font-size:.78rem;color:var(--danger);font-weight:600;}
 .toolbar .voice-info{background:transparent;border-radius:999px;}
 .voice-info[hidden]{display:none!important;}
 .toolbar-settings-menu .voice-library{
@@ -129,6 +130,60 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
   display:flex;
   flex-direction:column;
   gap:.55rem;
+}
+.voice-api{
+  border-top:1px solid var(--border);
+  margin-top:.6rem;
+  padding-top:.6rem;
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+}
+.voice-api-field{
+  display:flex;
+  flex-direction:column;
+  gap:.35rem;
+  font-size:.88rem;
+}
+.voice-api-field span{font-weight:600;}
+.voice-api-field input{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:.45rem .6rem;
+  font-size:.95rem;
+  background:var(--surface);
+  color:var(--fg);
+}
+.contrast-high .voice-api-field input{
+  background:#1a1a1a;
+  border-color:#444;
+  color:#fff;
+}
+.voice-api-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.4rem;
+}
+.voice-api .btn{
+  font-size:.85rem;
+  padding:.35rem .7rem;
+  justify-content:center;
+}
+.voice-api .btn.secondary{
+  background:transparent;
+}
+.contrast-high .voice-api .btn.secondary{
+  background:#1a1a1a;
+}
+.voice-api-hint{
+  margin:0;
+  font-size:.8rem;
+  color:var(--muted);
+}
+.voice-api-status{
+  margin:0;
+  font-size:.8rem;
+  color:var(--muted);
 }
 .voice-library-status{
   margin:0;
@@ -315,6 +370,19 @@ body:not(.mode-simplified) .semplificata{display:none}
           <li><i class="fa-solid fa-key"></i> Parola chiave • <i class="fa-solid fa-lightbulb"></i> Suggerimento • <i class="fa-solid fa-triangle-exclamation"></i> Avviso</li>
           <li><i class="fa-solid fa-book-open"></i> Definizione • <i class="fa-solid fa-image"></i> Esempio • <i class="fa-solid fa-ban"></i> Controesempio</li>
         </ul>
+      </div>
+      <div class="voice-api" role="group" aria-labelledby="voiceApiTitle">
+        <p id="voiceApiTitle"><strong><i class="fa-solid fa-key"></i> Accesso voci online</strong></p>
+        <label class="voice-api-field" for="openAiApiKey">
+          <span>Chiave OpenAI personale</span>
+          <input id="openAiApiKey" type="password" autocomplete="off" spellcheck="false" inputmode="text" placeholder="sk-..." aria-describedby="openAiKeyHint voiceApiStatus">
+        </label>
+        <p id="openAiKeyHint" class="voice-api-hint">Incolla la chiave privata (formato sk-...). Resta salvata solo in questo browser.</p>
+        <div class="voice-api-actions">
+          <button type="button" id="btnSaveOpenAiKey" class="btn">Salva chiave</button>
+          <button type="button" id="btnClearOpenAiKey" class="btn secondary">Rimuovi chiave</button>
+        </div>
+        <p id="voiceApiStatus" class="voice-api-status" role="status" aria-live="polite"></p>
       </div>
       <div class="voice-library" role="group" aria-labelledby="voiceLibraryTitle">
         <p id="voiceLibraryTitle"><strong><i class="fa-solid fa-wave-square"></i> Voci italiane naturali</strong></p>
@@ -729,7 +797,9 @@ const ONLINE_TTS_VOICES=[
     model:'gpt-4o-mini-tts',
     remoteVoice:'alloy',
     quality:'naturale',
-    style:'neutro'
+    style:'neutro',
+    libraryId:'azure-it-it-diego-neural',
+    requiresApiKey:true
   },
   {
     id:'francesca-naturale',
@@ -741,7 +811,9 @@ const ONLINE_TTS_VOICES=[
     model:'gpt-4o-mini-tts',
     remoteVoice:'verse',
     quality:'realistica',
-    style:'coinvolgente'
+    style:'coinvolgente',
+    libraryId:'ibm-watson-francesca',
+    requiresApiKey:true
   },
   {
     id:'giorgio-calmo',
@@ -751,30 +823,123 @@ const ONLINE_TTS_VOICES=[
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
     model:'gpt-4o-mini-tts',
-    remoteVoice:'calm',
+    remoteVoice:'lumen',
     quality:'naturale',
-    style:'calmo'
+    style:'calmo',
+    libraryId:'amazon-polly-giorgio',
+    requiresApiKey:true
   }
 ];
+const OPENAI_TTS_STORAGE_KEY='layoutInclusivo:tts:openai-demo:key';
+const normalizeApiKeyValue=value=>{
+  if(typeof value!=='string') return '';
+  const trimmed=value.trim();
+  if(!trimmed) return '';
+  if(trimmed.toUpperCase()==='YOUR_API_KEY') return '';
+  return trimmed;
+};
+function readStoredOpenAiKey(){
+  try{ return normalizeApiKeyValue(localStorage.getItem(OPENAI_TTS_STORAGE_KEY)||''); }
+  catch(_){ return ''; }
+}
+function persistOpenAiKey(value){
+  const normalized=normalizeApiKeyValue(value);
+  try{
+    if(normalized) localStorage.setItem(OPENAI_TTS_STORAGE_KEY, normalized);
+    else localStorage.removeItem(OPENAI_TTS_STORAGE_KEY);
+  }catch(_){/* ignore quota */}
+  return normalized;
+}
+function getGlobalOpenAiKey(){
+  if(typeof window==='undefined') return '';
+  const raw=typeof window.OPENAI_API_KEY==='string'?window.OPENAI_API_KEY:'';
+  return normalizeApiKeyValue(raw);
+}
+function getEffectiveOpenAiKey(voice){
+  const inline=normalizeApiKeyValue(voice?.apiKey||'');
+  if(inline) return inline;
+  const global=getGlobalOpenAiKey();
+  if(global) return global;
+  return readStoredOpenAiKey();
+}
+function hasOpenAiCredentials(){
+  if(getGlobalOpenAiKey()) return true;
+  return !!readStoredOpenAiKey();
+}
+function refreshOpenAiKeyUI(feedback){
+  const input=document.getElementById('openAiApiKey');
+  const status=document.getElementById('voiceApiStatus');
+  const hint=document.getElementById('openAiKeyHint');
+  const stored=readStoredOpenAiKey();
+  const hasStored=!!stored;
+  if(input){
+    input.value='';
+    input.placeholder=hasStored?'Chiave salvata (inserisci per sostituire)':'sk-...';
+  }
+  if(hint){
+    hint.textContent=hasStored
+      ? 'Chiave salvata localmente: inserisci un nuovo valore per aggiornarla oppure rimuovila.'
+      : 'Incolla una chiave privata OpenAI (formato sk-...). Verrà memorizzata solo in questo browser.';
+  }
+  if(status){
+    if(feedback){ status.textContent=feedback; }
+    else if(hasStored){ status.textContent='Chiave OpenAI salvata su questo dispositivo.'; }
+    else if(getGlobalOpenAiKey()){ status.textContent='Chiave OpenAI fornita globalmente via script.'; }
+    else status.textContent='Per usare Diego, Francesca e Giorgio inserisci una chiave API OpenAI personale.';
+  }
+  updateVoiceInfoUI();
+  updateVoiceAvailabilityMessage();
+}
+function setupOpenAiKeyControls(){
+  const input=document.getElementById('openAiApiKey');
+  if(!input || setupOpenAiKeyControls._initialized) return;
+  setupOpenAiKeyControls._initialized=true;
+  const saveBtn=document.getElementById('btnSaveOpenAiKey');
+  const clearBtn=document.getElementById('btnClearOpenAiKey');
+  if(saveBtn){
+    saveBtn.addEventListener('click',()=>{
+      const value=normalizeApiKeyValue(input.value||'');
+      if(value){
+        persistOpenAiKey(value);
+        refreshOpenAiKeyUI('Chiave OpenAI salvata nel browser.');
+      }else{
+        persistOpenAiKey('');
+        refreshOpenAiKeyUI('Chiave rimossa. Inserisci un nuovo valore per usare le voci online.');
+      }
+    });
+  }
+  if(clearBtn){
+    clearBtn.addEventListener('click',()=>{
+      persistOpenAiKey('');
+      refreshOpenAiKeyUI('Chiave rimossa. Le voci online resteranno disabilitate finché non ne inserisci una.');
+    });
+  }
+  input.addEventListener('keydown',(event)=>{
+    if(event.key==='Enter'){
+      event.preventDefault();
+      saveBtn?.click();
+    }
+  });
+  refreshOpenAiKeyUI();
+}
 const ONLINE_TTS_PROVIDERS={
   'openai-demo':{
     id:'openai-demo',
     label:'OpenAI Text-to-Speech (demo)',
     async synthesize({voice,text,signal}){
       const endpoint=voice.endpoint||'https://api.openai.com/v1/audio/speech';
-      let storedKey='';
-      try{ storedKey=localStorage.getItem('layoutInclusivo:tts:openai-demo:key')||''; }catch(_){ storedKey=''; }
-      const apiKey=(voice.apiKey||window.OPENAI_API_KEY||storedKey||'YOUR_API_KEY').trim();
+      const apiKey=getEffectiveOpenAiKey(voice);
       const headers={
         'Content-Type':'application/json',
         'Accept':voice.accept||'audio/mpeg'
       };
-      if(apiKey && apiKey!=='YOUR_API_KEY'){
-        headers['Authorization']=`Bearer ${apiKey}`;
-        try{ localStorage.setItem('layoutInclusivo:tts:openai-demo:key', apiKey); }catch(_){/* ignore quota */}
-      }else{
-        console.warn('Chiave API OpenAI non configurata: imposta window.OPENAI_API_KEY o modifica la voce online.', voice.name);
+      if(!apiKey){
+        const err=new Error('Chiave API OpenAI non configurata');
+        err.code='missing_api_key';
+        err.provider='openai-demo';
+        throw err;
       }
+      headers['Authorization']=`Bearer ${apiKey}`;
       const body={
         model:voice.model||'gpt-4o-mini-tts',
         voice:voice.remoteVoice||voice.voiceId||'alloy',
@@ -930,14 +1095,20 @@ function updateVoiceAvailabilityMessage(){
     parts.push(`${voiceStats.italian} installate`);
     parts.push(`${voiceStats.italianOnline} online`);
   }
+  let message='';
   if(hasLibrary){
     const base=`Libreria online: ${voiceLibraryEntries.length} voci neurali italiane disponibili.`;
-    status.textContent = parts.length ? `${base} Nel browser: ${parts.join(', ')}.` : base;
+    message = parts.length ? `${base} Nel browser: ${parts.join(', ')}.` : base;
   }else{
-    status.textContent = parts.length
+    message = parts.length
       ? `Nel browser sono disponibili ${parts.join(', ')}.`
       : 'Nessuna voce italiana rilevata.';
   }
+  if(hasLibrary && ONLINE_TTS_VOICES.some(v=>v.requiresApiKey) && !hasOpenAiCredentials()){
+    const reminder='Per usare le voci online inserisci la tua chiave API OpenAI nel menu Impostazioni.';
+    message = message ? `${message} ${reminder}` : reminder;
+  }
+  status.textContent=message;
 }
 
 function renderVoiceLibrary(){
@@ -1057,6 +1228,17 @@ function updateVoiceInfoUI(){
     const meta=document.createElement('span'); meta.className='voice-info-meta'; meta.textContent=details.join(' · ');
     voiceInfoEl.appendChild(document.createTextNode(' · '));
     voiceInfoEl.appendChild(meta);
+  }
+  if(option.dataset.requiresKey==='true'){
+    if(hasOpenAiCredentials()){
+      const ok=document.createElement('span'); ok.className='voice-info-meta'; ok.textContent='chiave API configurata';
+      voiceInfoEl.appendChild(document.createTextNode(' · '));
+      voiceInfoEl.appendChild(ok);
+    }else{
+      const warn=document.createElement('span'); warn.className='voice-info-alert'; warn.textContent='chiave API mancante';
+      voiceInfoEl.appendChild(document.createTextNode(' · '));
+      voiceInfoEl.appendChild(warn);
+    }
   }
 }
 const LETTER_RE=/[A-Za-zÀ-ÖØ-öø-ÿ]/;
@@ -1253,7 +1435,10 @@ function renderVoiceOptions(){
     voiceSelectionIndex.set(value,{type:'online', voice:Object.assign({}, voice), value});
     const o=document.createElement('option');
     const langLabel=voice.lang||'it-IT';
-    const infoParts=[langLabel,'online',voice.quality||'naturale',voice.service||voice.provider];
+    const libraryEntry=voice.libraryId ? getLibraryEntryById(voice.libraryId) : null;
+    const providerLabel=libraryEntry?.provider || voice.provider;
+    const serviceLabel=libraryEntry?.service || voice.service || voice.provider;
+    const infoParts=[langLabel,'online',voice.quality||'naturale',serviceLabel];
     o.value=value;
     o.textContent=`${voice.name} (online) – ${infoParts.filter(Boolean).join(' · ')}`;
     o.dataset.online='true';
@@ -1261,8 +1446,10 @@ function renderVoiceOptions(){
     o.dataset.langHint=langLabel.toLowerCase().startsWith('it')?'italiano':langLabel;
     o.dataset.displayName=voice.name;
     o.dataset.source='cloud';
-    if(voice.provider) o.dataset.libraryProvider=voice.provider;
+    if(voice.libraryId) o.dataset.libraryId=voice.libraryId;
+    if(providerLabel) o.dataset.libraryProvider=providerLabel;
     if(voice.description) o.dataset.description=voice.description;
+    if(voice.requiresApiKey) o.dataset.requiresKey='true';
     return o;
   };
   const appendGroup=(label,list,builder)=>{
@@ -1453,8 +1640,14 @@ function speakPlain(el){
       }
     }).catch(err=>{
       if(err?.name==='AbortError') return;
-      $('#pillStateTop').textContent='Voce online non disponibile';
-      console.warn('Voce online non disponibile, uso fallback locale predefinito.', err);
+      if(err?.code==='missing_api_key'){
+        $('#pillStateTop').textContent='Configura la chiave API per le voci online';
+        console.warn('Voce online non disponibile: chiave API OpenAI mancante.');
+        refreshOpenAiKeyUI('Chiave API mancante: apri Impostazioni e inseriscila per usare le voci online.');
+      }else{
+        $('#pillStateTop').textContent='Voce online non disponibile';
+        console.warn('Voce online non disponibile, uso fallback locale predefinito.', err);
+      }
       const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry());
       if(fallback){
         speakPlainWithLocalVoice(speechPrep, fallback.voice);
@@ -2555,6 +2748,7 @@ document.addEventListener('click',e=>{
     if(!settingsBtn || !settingsMenu) return;
     if(ensureToolbarButtons._initialized) return;
     ensureToolbarButtons._initialized=true;
+    setupOpenAiKeyControls();
 
     settingsBtn.setAttribute('aria-haspopup','true');
     settingsBtn.setAttribute('aria-expanded','false');
