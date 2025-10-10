@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2024-07-04",
+  "updatedAt": "2024-08-29",
   "voices": [
     {
       "id": "azure-it-it-elsa-neural",
@@ -169,6 +169,58 @@
       "notes": "Voce chiara e dal ritmo vivace, ottima per spiegazioni passo-passo.",
       "url": "https://learn.microsoft.com/azure/ai-services/speech-service/language-support?tabs=tts",
       "match": ["libero", "liberoneural", "azure libero"]
+    },
+    {
+      "id": "piper-it-it-riccardo-medium",
+      "name": "Riccardo (medium)",
+      "provider": "Piper TTS",
+      "service": "Modello open source",
+      "voiceId": "it_IT-riccardo-medium",
+      "gender": "Maschile",
+      "style": "Narratore naturale",
+      "quality": "neurale",
+      "notes": "Modello offline gratuito sviluppato dal progetto Piper; richiede soltanto l'esecuzione locale senza chiavi API.",
+      "url": "https://github.com/rhasspy/piper",
+      "match": ["piper riccardo", "it it riccardo", "riccardo medium"]
+    },
+    {
+      "id": "piper-it-it-lisa-medium",
+      "name": "Lisa (medium)",
+      "provider": "Piper TTS",
+      "service": "Modello open source",
+      "voiceId": "it_IT-lisa-medium",
+      "gender": "Femminile",
+      "style": "Conversazione calda",
+      "quality": "neurale",
+      "notes": "Voce femminile disponibile nei pacchetti Piper: installazione locale, output realistico senza bisogno di credenziali.",
+      "url": "https://github.com/rhasspy/piper",
+      "match": ["piper lisa", "it it lisa", "lisa medium"]
+    },
+    {
+      "id": "coqui-tts-it-venezia-vits",
+      "name": "Venezia VITS",
+      "provider": "Coqui TTS",
+      "service": "Modello community",
+      "voiceId": "tts_models/it/mai_female/vits",
+      "gender": "Femminile",
+      "style": "Storytelling morbido",
+      "quality": "neurale",
+      "notes": "Modello VITS open source dalla community Coqui, installabile via pip e utilizzabile offline senza API key.",
+      "url": "https://github.com/coqui-ai/TTS",
+      "match": ["coqui", "mai female", "vits venezia"]
+    },
+    {
+      "id": "espeakng-it-fabio",
+      "name": "Fabio",
+      "provider": "eSpeak NG",
+      "service": "Sintesi classica",
+      "voiceId": "it+f3",
+      "gender": "Maschile",
+      "style": "Voce chiara sintetica",
+      "quality": "formant",
+      "notes": "Voce leggera basata su formanti: meno naturale ma funziona su qualsiasi piattaforma senza servizi esterni.",
+      "url": "https://github.com/espeak-ng/espeak-ng",
+      "match": ["espeak", "espeak italiano", "fabio"]
     }
   ]
 }
