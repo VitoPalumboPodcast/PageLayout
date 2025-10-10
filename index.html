@@ -751,6 +751,14 @@ document.addEventListener('mousemove',e=>{
    KARAOKE / SINTESI VOCALE (Leggi ≠ Karaoke)
    ========================================================= */
 const EXCLUDE_WRAP='script,style,code,pre,.mermaid,.kw-pop,button,.btn,[role="button"],input,select,textarea,.choice-list,.concept-icon';
+function assignUtteranceVoice(target, voice){
+  if(!target || !voice) return;
+  try{
+    target.voice=voice;
+  }catch(err){
+    console.warn('Impossibile applicare la voce sintetica selezionata. Uso la voce predefinita del browser.', err);
+  }
+}
 const PLACEHOLDER_REGEX=/\[[\p{L}0-9_]+(?::[^\]]*)?\]/u;
 const PLACEHOLDER_OPEN_REGEX=/\[[\p{L}0-9_]+(?::[^\]]*)?$/u;
 function instrumentWords(root){
@@ -1659,7 +1667,7 @@ function speakBundle(entryOverride=null){
   karaokeBundle.mapSpeechToOriginal=speechPrep.mapSpeechToOriginal;
   utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
-  if(localVoice) utter.voice=localVoice;
+  assignUtteranceVoice(utter, localVoice);
   utter.lang=localVoice?.lang||'it-IT';
 
   let ptr=-1;
@@ -1706,7 +1714,7 @@ function getSelectedOrAll(){
 function speakPlainWithLocalVoice(speechPrep, localVoice){
   utter=new SpeechSynthesisUtterance(speechPrep.speechText);
   utter.rate=state.rate||1.0;
-  if(localVoice) utter.voice=localVoice;
+  assignUtteranceVoice(utter, localVoice);
   utter.lang=localVoice?.lang||'it-IT';
   utter.onstart=()=>{ $('#pillStateTop').textContent='In lettura…'; };
   utter.onend=()=>{ $('#pillStateTop').textContent='Completato'; };
