@@ -775,7 +775,7 @@ async function setupVoices(){
     if(score>=140) return 'standard';
     return 'di base';
   };
-  sorted.forEach(v=>{
+  const makeOption=v=>{
     const o=document.createElement('option');
     const voiceScore=scoreVoice(v);
     const badge=!v.localService?'online':'locale';
@@ -785,8 +785,28 @@ async function setupVoices(){
     o.textContent=`${v.name} – ${v.lang} · ${badge} · ${quality} · ${langHint}`;
     o.dataset.score=String(voiceScore);
     o.dataset.quality=quality;
-    sel.appendChild(o);
-  });
+    o.dataset.online=String(!v.localService);
+    o.dataset.langHint=langHint;
+    return o;
+  };
+  const appendGroup=(label,list)=>{
+    if(!list.length) return;
+    const group=document.createElement('optgroup');
+    group.label=label;
+    list.forEach(v=>group.appendChild(makeOption(v)));
+    sel.appendChild(group);
+  };
+  const italianOnline=sorted.filter(v=>isItalianVoice(v) && !v.localService);
+  const italianLocal=sorted.filter(v=>isItalianVoice(v) && v.localService);
+  const otherVoices=sorted.filter(v=>!isItalianVoice(v));
+  const hasItalianOnline=italianOnline.length>0;
+  sel.dataset.hasItalianOnline=String(hasItalianOnline);
+  sel.title=hasItalianOnline
+    ? 'Voci italiane online preferenziali con alternative locali.'
+    : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser per abilitarle.';
+  appendGroup('Italiano · online (consigliate)', italianOnline);
+  appendGroup('Italiano · locale', italianLocal);
+  appendGroup('Altre lingue', otherVoices);
   const keep = voices.find(v=>v.voiceURI===state.voiceURI);
   const preferred=keep || sorted.find(v=>isItalianVoice(v)) || sorted[0];
   sel.value = (preferred?.voiceURI) || '';
