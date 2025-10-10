@@ -746,7 +746,7 @@ function isDiegoVoice(v){
 async function setupVoices(){
   let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
   voices=Array.isArray(allVoices)
-    ? allVoices.filter(v=>isDiegoVoice(v) || (!v.localService && isItalianVoice(v)))
+    ? allVoices.filter(v=>isItalianVoice(v))
     : [];
   const sel=$('#voiceSel'); sel.innerHTML='';
   if(!voices.length){
