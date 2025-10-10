@@ -931,7 +931,8 @@ const ONLINE_TTS_PROVIDERS={
       const apiKey=getEffectiveOpenAiKey(voice);
       const headers={
         'Content-Type':'application/json',
-        'Accept':voice.accept||'audio/mpeg'
+        'Accept':voice.accept||'audio/mpeg',
+        'Authorization':`Bearer ${apiKey||''}`
       };
       if(!apiKey){
         const err=new Error('Chiave API OpenAI non configurata');
@@ -939,25 +940,48 @@ const ONLINE_TTS_PROVIDERS={
         err.provider='openai-demo';
         throw err;
       }
-      headers['Authorization']=`Bearer ${apiKey}`;
-      const body={
-        model:voice.model||'gpt-4o-mini-tts',
-        voice:voice.remoteVoice||voice.voiceId||'alloy',
-        input:text,
-        format:voice.format||'mp3'
-      };
-      const response=await fetch(endpoint,{
-        method:'POST',
-        headers,
-        body:JSON.stringify(body),
-        signal
-      });
-      if(!response.ok) throw new Error(`TTS online non disponibile (HTTP ${response.status})`);
-      const blob=await response.blob();
-      const url=URL.createObjectURL(blob);
-      const audio=new Audio(url);
-      const cleanup=()=>{ URL.revokeObjectURL(url); };
-      return {audio, cleanup};
+      const timeoutMs=15000;
+      const controller=new AbortController();
+      const onAbort=()=>controller.abort();
+      if(signal) signal.addEventListener('abort',onAbort,{once:true});
+      const timer=setTimeout(()=>controller.abort(),timeoutMs);
+      try{
+        const body={
+          model:voice.model||'gpt-4o-mini-tts',
+          voice:voice.remoteVoice||voice.voiceId||'alloy',
+          input:text,
+          format:voice.format||'mp3'
+        };
+        const response=await fetch(endpoint,{
+          method:'POST',
+          headers,
+          body:JSON.stringify(body),
+          signal:controller.signal
+        });
+        if(!response.ok){
+          let detail='';
+          try{
+            const maybeJson=await response.clone().json();
+            detail=maybeJson?.error?.message||JSON.stringify(maybeJson);
+          }catch(_){
+            try{ detail=await response.clone().text(); }catch(_){/* noop */}
+          }
+          const err=new Error(`TTS online non disponibile (HTTP ${response.status})${detail?': '+detail:''}`);
+          err.httpStatus=response.status;
+          err.provider='openai-demo';
+          if(response.status===401) err.code='invalid_api_key';
+          if(response.status===429) err.code='rate_limited';
+          throw err;
+        }
+        const blob=await response.blob();
+        const url=URL.createObjectURL(blob);
+        const audio=new Audio(url);
+        const cleanup=()=>{ URL.revokeObjectURL(url); };
+        return {audio, cleanup};
+      }finally{
+        clearTimeout(timer);
+        if(signal) signal.removeEventListener('abort',onAbort);
+      }
     }
   }
 };
