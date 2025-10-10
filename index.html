@@ -846,16 +846,19 @@ function resolveVoiceCandidate(candidate){
   }
   return pickBestVoice(safeGetSpeechVoices()) || pickBestVoice(voices) || null;
 }
-function applyFallbackVoiceSelection(entry){
+function applyFallbackVoiceSelection(entry,{persist=false}={}){
   if(!entry) return null;
-  const sel=$('#voiceSel');
-  if(sel && voiceSelectionIndex.has(entry.value)){
-    sel.value=entry.value;
-    state.voiceURI=entry.value;
-    save();
-    updateVoiceInfoUI();
+  const knownEntry=voiceSelectionIndex.get(entry.value)||entry;
+  if(persist){
+    const sel=$('#voiceSel');
+    if(sel && voiceSelectionIndex.has(knownEntry.value)){
+      sel.value=knownEntry.value;
+      state.voiceURI=knownEntry.value;
+      save();
+      updateVoiceInfoUI();
+    }
   }
-  return entry;
+  return knownEntry;
 }
 async function playOnlineSpeech(text, voiceEntry, {onstart,onend,onerror}={}){
   if(!voiceEntry) throw new Error('Voce online non configurata');
@@ -1395,11 +1398,12 @@ function speakBundle(entryOverride=null){
   const selection=entryOverride || getSelectedVoiceEntry();
   if(selection?.type==='online'){
     console.warn('La modalità karaoke richiede una voce locale. Avvio fallback automatico.');
-    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry());
+    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry(),{persist:false});
     if(!fallback){
       $('#pillStateTop').textContent='Karaoke non disponibile senza voce locale';
       return;
     }
+    if(typeof announce==='function') announce('Per il karaoke utilizzo automaticamente una voce locale.');
     speakBundle(fallback);
     return;
   }
@@ -1473,12 +1477,14 @@ function speakPlain(el){
   const selection=getSelectedVoiceEntry();
   const useFallbackLocalVoice=(label='Voce online non disponibile')=>{
     $('#pillStateTop').textContent=label;
-    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry());
+    const fallback=applyFallbackVoiceSelection(getPreferredLocalVoiceEntry(),{persist:false});
     if(fallback){
       console.info('Passo automaticamente alla voce locale di fallback per completare la lettura.');
+      if(typeof announce==='function') announce('Uso temporaneamente una voce locale per completare la lettura.');
       speakPlainWithLocalVoice(speechPrep, fallback);
     }else{
       console.info('Uso la voce locale predefinita del browser come fallback.');
+      if(typeof announce==='function') announce('Uso la voce locale predefinita del browser per proseguire la lettura.');
       speakPlainWithLocalVoice(speechPrep, null);
     }
   };
