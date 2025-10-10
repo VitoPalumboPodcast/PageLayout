@@ -702,7 +702,7 @@ function prepareSpeechText(text){
   return {speechText,mapSpeechToOriginal,mapOriginalToSpeech};
 }
 
-/* Precarica voci privilegiando automaticamente le migliori voci italiane (online se presenti). */
+/* Precarica voci privilegiando automaticamente le migliori voci italiane (online se presenti) ma mantenendo visibili tutte le voci disponibili. */
 function waitForVoices(ms=2500){return new Promise(res=>{let t=0;const s=100;const id=setInterval(()=>{if(synth.getVoices().length||t>=ms){clearInterval(id);res(synth.getVoices());}t+=s;},s);});}
 // Ordina le voci italiane dando priorità a quelle online di qualità elevata.
 const ITALIAN_LANG_CODES=['it','it-it','it-ch','it-sm','it-va'];
@@ -725,7 +725,7 @@ function scoreVoice(v){
   const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
   const lang=normalizeLang(v.lang||'');
   let score=0;
-  if(isItalianLangTag(lang)) score+=160; else score-=160;
+  if(isItalianVoice(v)) score+=220; else score+=80;
   if(/online|cloud/.test(name) || !v.localService) score+=70;
   if(isDiegoVoice(v)) score+=120;
   ITALIAN_PRIORITY_PATTERNS.forEach(({pattern,bonus})=>{ if(pattern.test(name)) score+=bonus; });
@@ -733,7 +733,7 @@ function scoreVoice(v){
   if(/\bneural\b/.test(name) || /\bnatural\b/.test(name)) score+=40;
   if(/\bstandard\b/.test(name) && v.localService) score-=30;
   if(v.localService && !/neural|natural|studio|premium|realistic/.test(name)) score-=40;
-  if(/\bit-?it\b/.test(lang)) score+=25;
+  if(isItalianLangTag(lang)) score+=35;
   return score;
 }
 function isItalianVoice(v){
@@ -750,12 +750,12 @@ function isDiegoVoice(v){
 async function setupVoices(){
   let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
   voices=Array.isArray(allVoices)
-    ? allVoices.filter(v=>isItalianVoice(v))
+    ? allVoices.slice()
     : [];
   const sel=$('#voiceSel'); sel.innerHTML='';
   if(!voices.length){
     const o=document.createElement('option');
-    o.textContent='Nessuna voce italiana disponibile';
+    o.textContent='Nessuna voce disponibile';
     o.disabled=true; o.selected=true; o.value='';
     sel.appendChild(o);
     sel.disabled=true;
@@ -781,13 +781,14 @@ async function setupVoices(){
     const badge=!v.localService?'online':'locale';
     const quality=describeQuality(v);
     o.value=v.voiceURI;
-    o.textContent=`${v.name} – ${v.lang} · ${badge} · ${quality}`;
+    const langHint=isItalianVoice(v)?'italiano':'altra lingua';
+    o.textContent=`${v.name} – ${v.lang} · ${badge} · ${quality} · ${langHint}`;
     o.dataset.score=String(voiceScore);
     o.dataset.quality=quality;
     sel.appendChild(o);
   });
   const keep = voices.find(v=>v.voiceURI===state.voiceURI);
-  const preferred=keep || sorted[0];
+  const preferred=keep || sorted.find(v=>isItalianVoice(v)) || sorted[0];
   sel.value = (preferred?.voiceURI) || '';
   if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
   else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
