@@ -794,7 +794,7 @@ const ONLINE_TTS_VOICES=[
     provider:'openai-demo',
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
-    model:'gpt-4o-mini-tts',
+    model:'tts-1',
     remoteVoice:'alloy',
     quality:'naturale',
     style:'neutro',
@@ -808,8 +808,8 @@ const ONLINE_TTS_VOICES=[
     provider:'openai-demo',
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
-    model:'gpt-4o-mini-tts',
-    remoteVoice:'verse',
+    model:'tts-1',
+    remoteVoice:'nova',
     quality:'realistica',
     style:'coinvolgente',
     libraryId:'ibm-watson-francesca',
@@ -822,14 +822,28 @@ const ONLINE_TTS_VOICES=[
     provider:'openai-demo',
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
-    model:'gpt-4o-mini-tts',
-    remoteVoice:'lumen',
+    model:'tts-1',
+    remoteVoice:'onyx',
     quality:'naturale',
     style:'calmo',
     libraryId:'amazon-polly-giorgio',
     requiresApiKey:true
+  },
+  {
+    id:'elena-hd',
+    name:'Elena HD',
+    description:'Voce femminile ad alta qualità',
+    provider:'openai-demo',
+    service:'OpenAI Text-to-Speech HD',
+    lang:'it-IT',
+    model:'tts-1-hd',
+    remoteVoice:'nova',
+    quality:'premium',
+    style:'espressiva',
+    requiresApiKey:true
   }
 ];
+const OPENAI_TTS_MAX_CHARS=4096;
 const OPENAI_TTS_STORAGE_KEY='layoutInclusivo:tts:openai-demo:key';
 const normalizeApiKeyValue=value=>{
   if(typeof value!=='string') return '';
@@ -946,11 +960,17 @@ const ONLINE_TTS_PROVIDERS={
       if(signal) signal.addEventListener('abort',onAbort,{once:true});
       const timer=setTimeout(()=>controller.abort(),timeoutMs);
       try{
+        if(typeof text==='string' && text.length>OPENAI_TTS_MAX_CHARS){
+          const err=new Error(`Il testo supera il limite di ${OPENAI_TTS_MAX_CHARS} caratteri supportato da OpenAI TTS.`);
+          err.code='text_too_long';
+          err.provider='openai-demo';
+          throw err;
+        }
         const body={
-          model:voice.model||'gpt-4o-mini-tts',
+          model:voice.model||'tts-1',
           voice:voice.remoteVoice||voice.voiceId||'alloy',
           input:text,
-          format:voice.format||'mp3'
+          response_format:voice.response_format||voice.format||'mp3'
         };
         const response=await fetch(endpoint,{
           method:'POST',
