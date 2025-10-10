@@ -774,9 +774,16 @@ function instrumentWords(root){
 }
 function instrumentSubtree(el){ instrumentWords(el); annotateKeywordWords(el); }
 
+const RECOMMENDED_BROWSER_VOICES=[
+  {name:'Diego', pattern:/diego/, bonus:260},
+  {name:'Giuseppe', pattern:/giusepp(?:e|i)/, bonus:240},
+  {name:'Elsa', pattern:/elsa/, bonus:240},
+  {name:'Isabella', pattern:/isabella/, bonus:240}
+];
+const RECOMMENDED_VOICE_NAMES=RECOMMENDED_BROWSER_VOICES.map(v=>v.name);
 const synth=window.speechSynthesis; let voices=[]; let utter=null; let paused=false;
 const voiceInfoEl=document.getElementById('voiceInfo');
-if(voiceInfoEl) voiceInfoEl.textContent='Caricamento voci italiane…';
+if(voiceInfoEl) voiceInfoEl.textContent=`Caricamento voci italiane… Consigliate: ${RECOMMENDED_VOICE_NAMES.join(', ')}.`;
 let voiceStats={italian:0,italianOnline:0};
 let voiceLibraryEntries=[];
 const voiceLibraryTokens=new Map();
@@ -788,58 +795,59 @@ const LOCAL_VOICE_PREFIX='local::';
 const ONLINE_VOICE_PREFIX='online::';
 const ONLINE_TTS_VOICES=[
   {
-    id:'diego-it-demo',
-    name:'Diego Italiano',
-    description:'Voce maschile calda e naturale',
+    id:'diego-neurale',
+    name:'Diego (online)',
+    description:'Voce maschile energica consigliata per spiegazioni coinvolgenti.',
     provider:'openai-demo',
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
     model:'tts-1',
     remoteVoice:'alloy',
     quality:'naturale',
-    style:'neutro',
+    style:'energico',
     libraryId:'azure-it-it-diego-neural',
     requiresApiKey:true
   },
   {
-    id:'francesca-naturale',
-    name:'Francesca Naturale',
-    description:'Voce femminile espressiva per narrativa',
-    provider:'openai-demo',
-    service:'OpenAI Text-to-Speech',
-    lang:'it-IT',
-    model:'tts-1',
-    remoteVoice:'nova',
-    quality:'realistica',
-    style:'coinvolgente',
-    libraryId:'ibm-watson-francesca',
-    requiresApiKey:true
-  },
-  {
-    id:'giorgio-calmo',
-    name:'Giorgio Calmo',
-    description:'Voce maschile lenta, ideale per contenuti educativi',
+    id:'giuseppe-neurale',
+    name:'Giuseppe (online)',
+    description:'Voce maschile equilibrata ideale per lezioni strutturate.',
     provider:'openai-demo',
     service:'OpenAI Text-to-Speech',
     lang:'it-IT',
     model:'tts-1',
     remoteVoice:'onyx',
     quality:'naturale',
-    style:'calmo',
-    libraryId:'amazon-polly-giorgio',
+    style:'equilibrato',
+    libraryId:'azure-it-it-giuseppe-neural',
     requiresApiKey:true
   },
   {
-    id:'elena-hd',
-    name:'Elena HD',
-    description:'Voce femminile ad alta qualità',
+    id:'elsa-neurale',
+    name:'Elsa (online)',
+    description:'Voce femminile luminosa e chiara, perfetta per spiegazioni guidate.',
     provider:'openai-demo',
-    service:'OpenAI Text-to-Speech HD',
+    service:'OpenAI Text-to-Speech',
     lang:'it-IT',
-    model:'tts-1-hd',
+    model:'tts-1',
     remoteVoice:'nova',
-    quality:'premium',
-    style:'espressiva',
+    quality:'naturale',
+    style:'chiaro',
+    libraryId:'azure-it-it-elsa-neural',
+    requiresApiKey:true
+  },
+  {
+    id:'isabella-neurale',
+    name:'Isabella (online)',
+    description:'Voce femminile morbida e naturale per letture rassicuranti.',
+    provider:'openai-demo',
+    service:'OpenAI Text-to-Speech',
+    lang:'it-IT',
+    model:'tts-1',
+    remoteVoice:'verse',
+    quality:'naturale',
+    style:'caldo',
+    libraryId:'azure-it-it-isabella-neural',
     requiresApiKey:true
   }
 ];
@@ -899,7 +907,7 @@ function refreshOpenAiKeyUI(feedback){
     if(feedback){ status.textContent=feedback; }
     else if(hasStored){ status.textContent='Chiave OpenAI salvata su questo dispositivo.'; }
     else if(getGlobalOpenAiKey()){ status.textContent='Chiave OpenAI fornita globalmente via script.'; }
-    else status.textContent='Per usare Diego, Francesca e Giorgio inserisci una chiave API OpenAI personale.';
+      else status.textContent='Per usare Diego, Giuseppe, Elsa e Isabella inserisci una chiave API OpenAI personale.';
   }
   updateVoiceInfoUI();
   updateVoiceAvailabilityMessage();
@@ -1018,7 +1026,9 @@ function ensureVoiceValue(value=''){ if(!value) return ''; if(value.startsWith(L
 function getVoiceEntry(value=''){ return voiceSelectionIndex.get(value)||null; }
 function getOnlineVoiceConfigById(id=''){ return ONLINE_TTS_VOICES.find(v=>v.id===id)||null; }
 function getPreferredLocalVoiceEntry(){
-  const candidate=lastSortedVoices.find(v=>isItalianVoice(v) && v.localService)
+  const preferredLocal=lastSortedVoices.find(v=>v.localService && getPreferredVoiceLabel(v));
+  const candidate=preferredLocal
+    || lastSortedVoices.find(v=>isItalianVoice(v) && v.localService)
     || lastSortedVoices.find(v=>v.localService)
     || lastSortedVoices[0]
     || null;
@@ -1152,7 +1162,8 @@ function updateVoiceAvailabilityMessage(){
     const reminder='Per usare le voci online inserisci la tua chiave API OpenAI nel menu Impostazioni.';
     message = message ? `${message} ${reminder}` : reminder;
   }
-  status.textContent=message;
+  const recommendedInfo=`Voci consigliate: ${RECOMMENDED_VOICE_NAMES.join(', ')}.`;
+  status.textContent=message ? `${message} ${recommendedInfo}` : recommendedInfo;
 }
 
 function renderVoiceLibrary(){
@@ -1190,11 +1201,13 @@ function renderVoiceLibrary(){
     }
 
     const tags=document.createElement('ul'); tags.className='tags';
+    const recommendedLabel=detectPreferredVoiceNameFromText(`${entry.name||''} ${entry.voiceId||''}`);
     const addTag=value=>{ if(!value) return; const li=document.createElement('li'); li.className='tag'; li.textContent=value; tags.appendChild(li); };
     addTag(entry.voiceId?`ID: ${entry.voiceId}`:null);
     addTag(entry.gender?`Genere: ${entry.gender}`:null);
     addTag(entry.style);
     addTag(entry.quality?`Qualità: ${entry.quality}`:null);
+    if(recommendedLabel) addTag(`Consigliata (${recommendedLabel})`);
     if(tags.childElementCount) card.appendChild(tags);
 
     const actions=document.createElement('div'); actions.className='actions';
@@ -1255,7 +1268,7 @@ function updateVoiceInfoUI(){
   voiceInfoEl.innerHTML='';
   const option=sel?.selectedOptions?.[0]||null;
   if(!option){
-    voiceInfoEl.textContent='Seleziona una voce italiana naturale per la lettura.';
+    voiceInfoEl.textContent=`Seleziona una voce italiana naturale per la lettura. Consigliate: ${RECOMMENDED_VOICE_NAMES.join(', ')}.`;
     return;
   }
   const strong=document.createElement('strong'); strong.textContent='Voce:';
@@ -1272,6 +1285,20 @@ function updateVoiceInfoUI(){
     const meta=document.createElement('span'); meta.className='voice-info-meta'; meta.textContent=details.join(' · ');
     voiceInfoEl.appendChild(document.createTextNode(' · '));
     voiceInfoEl.appendChild(meta);
+  }
+  if(option.dataset.preferred){
+    const badge=document.createElement('span');
+    badge.className='voice-info-meta';
+    badge.textContent=`voce consigliata (${option.dataset.preferred})`;
+    voiceInfoEl.appendChild(document.createTextNode(' · '));
+    voiceInfoEl.appendChild(badge);
+  }
+  if(option.dataset.description){
+    const note=document.createElement('span');
+    note.className='voice-info-meta';
+    note.textContent=option.dataset.description;
+    voiceInfoEl.appendChild(document.createTextNode(' · '));
+    voiceInfoEl.appendChild(note);
   }
   if(option.dataset.requiresKey==='true'){
     if(hasOpenAiCredentials()){
@@ -1375,13 +1402,29 @@ function isAllowedOtherLang(v){
   if(!lang) return false;
   return OTHER_ALLOWED_BASE_LANGS.some(code=>lang===code || lang.startsWith(code+'-'));
 }
+function detectPreferredVoiceNameFromText(text=''){
+  const norm=String(text||'').toLowerCase();
+  const match=RECOMMENDED_BROWSER_VOICES.find(entry=>entry.pattern.test(norm));
+  return match?.name||'';
+}
+function getPreferredVoiceBonus(v){
+  if(!v) return 0;
+  const label=detectPreferredVoiceNameFromText(`${v.name||''} ${v.voiceURI||''}`);
+  if(!label) return 0;
+  const entry=RECOMMENDED_BROWSER_VOICES.find(item=>item.name===label);
+  return entry?.bonus||0;
+}
+function getPreferredVoiceLabel(v){
+  if(!v) return '';
+  return detectPreferredVoiceNameFromText(`${v.name||''} ${v.voiceURI||''}`);
+}
 function scoreVoice(v){
   const name=`${v.name||''} ${v.voiceURI||''}`.toLowerCase();
   const lang=normalizeLang(v.lang||'');
   let score=0;
   if(isItalianVoice(v)) score+=220; else score+=80;
   if(/online|cloud/.test(name) || !v.localService) score+=70;
-  if(isDiegoVoice(v)) score+=120;
+  score+=getPreferredVoiceBonus(v);
   const libraryMatch=getLibraryEntryForVoice(v);
   if(libraryMatch) score+=200;
   ITALIAN_PRIORITY_PATTERNS.forEach(({pattern,bonus})=>{ if(pattern.test(name)) score+=bonus; });
@@ -1399,10 +1442,6 @@ function isItalianVoice(v){
   if(ITALIAN_NAME_HINTS.some(re=>re.test(name))) return true;
   return ITALIAN_COMMON_NAMES.some(common=>name.includes(common));
 }
-function isDiegoVoice(v){
-  const name=`${v?.name||''} ${v?.voiceURI||''}`.toLowerCase();
-  return /\bdiego\b/.test(name);
-}
 async function setupVoices(){
   let allVoices=synth.getVoices();
   if(!allVoices.length) allVoices=await waitForVoices();
@@ -1411,6 +1450,8 @@ async function setupVoices(){
 }
 
 function describeVoiceQuality(v){
+  const preferredBonus=getPreferredVoiceBonus(v);
+  if(preferredBonus>=200) return 'voce consigliata';
   const score=scoreVoice(v);
   if(score>=360) return 'realistica (consigliata)';
   if(score>=300) return 'molto naturale';
@@ -1454,20 +1495,24 @@ function renderVoiceOptions(){
     const value=encodeLocalVoiceValue(v.voiceURI);
     voiceSelectionIndex.set(value,{type:'local', voice:v, value});
     const o=document.createElement('option');
-    const badge=!v.localService?'online':'locale';
     const quality=describeVoiceQuality(v);
     const langHint=isItalianVoice(v)?'italiano':'altra lingua';
     const libraryMatch=getLibraryEntryForVoice(v);
-    const infoParts=[v.lang, badge, quality, langHint];
+    const connection=v.localService?'locale':'online';
+    const preferredLabel=getPreferredVoiceLabel(v);
+    const labelParts=[connection];
+    if(preferredLabel) labelParts.push('consigliata');
+    const infoParts=[v.lang, quality, langHint];
     if(libraryMatch?.provider) infoParts.push(`libreria ${libraryMatch.provider}`);
     o.value=value;
-    o.textContent=`${v.name} (${badge}) – ${infoParts.join(' · ')}`;
+    o.textContent=`${v.name} (${labelParts.join(' · ')}) – ${infoParts.filter(Boolean).join(' · ')}`;
     o.dataset.score=String(scoreVoice(v));
     o.dataset.quality=quality;
     o.dataset.online=String(!v.localService);
     o.dataset.langHint=langHint;
     o.dataset.displayName=v.name||libraryMatch?.name||'Voce';
     o.dataset.source='local';
+    if(preferredLabel) o.dataset.preferred=preferredLabel;
     if(libraryMatch){
       if(libraryMatch.id) o.dataset.libraryId=libraryMatch.id;
       if(libraryMatch.provider) o.dataset.libraryProvider=libraryMatch.provider;
@@ -1482,14 +1527,18 @@ function renderVoiceOptions(){
     const libraryEntry=voice.libraryId ? getLibraryEntryById(voice.libraryId) : null;
     const providerLabel=libraryEntry?.provider || voice.provider;
     const serviceLabel=libraryEntry?.service || voice.service || voice.provider;
-    const infoParts=[langLabel,'online',voice.quality||'naturale',serviceLabel];
+    const preferredLabel=detectPreferredVoiceNameFromText(`${voice.name} ${voice.libraryId||''}`);
+    const infoParts=[langLabel, voice.quality||'naturale', serviceLabel];
+    const labelParts=['online'];
+    if(preferredLabel) labelParts.push('consigliata');
     o.value=value;
-    o.textContent=`${voice.name} (online) – ${infoParts.filter(Boolean).join(' · ')}`;
+    o.textContent=`${voice.name} (${labelParts.join(' · ')}) – ${infoParts.filter(Boolean).join(' · ')}`;
     o.dataset.online='true';
     o.dataset.quality=voice.quality||'naturale';
     o.dataset.langHint=langLabel.toLowerCase().startsWith('it')?'italiano':langLabel;
     o.dataset.displayName=voice.name;
     o.dataset.source='cloud';
+    if(preferredLabel) o.dataset.preferred=preferredLabel;
     if(voice.libraryId) o.dataset.libraryId=voice.libraryId;
     if(providerLabel) o.dataset.libraryProvider=providerLabel;
     if(voice.description) o.dataset.description=voice.description;
@@ -1509,9 +1558,10 @@ function renderVoiceOptions(){
   const hasItalianOnline=italianOnline.length>0 || ONLINE_TTS_VOICES.some(v=>(v.lang||'').toLowerCase().startsWith('it'));
   sel.dataset.hasItalianOnline=String(hasItalianOnline);
   sel.dataset.hasItalianVoices=String(voiceStats.italian>0 || hasRemote);
-  sel.title=hasItalianOnline
+  const baseTitle=hasItalianOnline
     ? 'Voci italiane disponibili: seleziona una voce online o locale.'
     : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser o configura un servizio cloud.';
+  sel.title=`${baseTitle} Consigliate: ${RECOMMENDED_VOICE_NAMES.join(', ')}.`;
   if(hasRemote) appendGroup('Italiano · online (servizi cloud)', ONLINE_TTS_VOICES, makeOnlineOption);
   appendGroup('Italiano · online (browser)', italianOnline, makeLocalOption);
   appendGroup('Italiano · locale', italianLocal, makeLocalOption);
