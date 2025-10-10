@@ -109,6 +109,65 @@ a:focus,button:focus,select:focus,input:focus,summary:focus{outline:3px solid va
 .contrast-high .toolbar .btn{background:#1a1a1a;border-color:#444;color:#fff}
 .contrast-high .toolbar .btn i{color:#fff}
 .state-pill{background:var(--accent-weak);border:1px solid var(--border);border-radius:999px;padding:.2rem .5rem;font-size:.85rem}
+.voice-info{
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+  font-size:.85rem;
+  color:var(--muted);
+  padding:0 .35rem;
+  min-height:1.8rem;
+}
+.voice-info strong{font-weight:600;color:var(--fg);font-size:.9rem;}
+.voice-info .voice-info-meta{font-size:.78rem;color:var(--muted);}
+.toolbar .voice-info{background:transparent;border-radius:999px;}
+.voice-info[hidden]{display:none!important;}
+.toolbar-settings-menu .voice-library{
+  border-top:1px solid var(--border);
+  margin-top:.6rem;
+  padding-top:.6rem;
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+}
+.voice-library-status{
+  margin:0;
+  font-size:.85rem;
+  color:var(--muted);
+}
+.voice-library-list{
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  max-height:260px;
+  overflow:auto;
+  padding-right:.3rem;
+}
+.voice-card{
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface);
+  padding:.65rem .75rem;
+  display:flex;
+  flex-direction:column;
+  gap:.45rem;
+  box-shadow:none;
+}
+.contrast-high .voice-card{background:#1a1a1a;border-color:#333;}
+.voice-card header{display:flex;flex-direction:column;gap:.25rem;}
+.voice-card .title{display:flex;align-items:center;gap:.45rem;font-size:1rem;}
+.voice-card .title i{color:var(--accent);}
+.voice-card .meta{display:flex;flex-wrap:wrap;gap:.4rem;font-size:.8rem;color:var(--muted);}
+.voice-card .desc{margin:0;font-size:.9rem;color:var(--fg);}
+.voice-card .tags{display:flex;flex-wrap:wrap;gap:.35rem;margin:0;padding:0;list-style:none;}
+.voice-card .tag{background:var(--accent-weak);border:1px solid var(--border);border-radius:999px;padding:.2rem .6rem;font-size:.78rem;color:var(--fg);}
+.contrast-high .voice-card .tag{background:#333;border-color:#555;color:#fff;}
+.voice-card .actions{display:flex;flex-wrap:wrap;gap:.45rem;}
+.voice-card .actions .mini{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .8rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:.78rem;text-decoration:none;cursor:pointer;}
+.voice-card .actions .mini.secondary{background:transparent;}
+.voice-card .actions .mini:focus{outline:3px solid var(--focus);outline-offset:2px;}
+.voice-card .actions .mini[aria-disabled="true"]{opacity:.55;cursor:default;}
+#voiceSel option[data-library-id]{font-weight:600;}
 
 /* Contenuti */
 .mode-simplified .estesa{display:none}
@@ -257,6 +316,11 @@ body:not(.mode-simplified) .semplificata{display:none}
           <li><i class="fa-solid fa-book-open"></i> Definizione • <i class="fa-solid fa-image"></i> Esempio • <i class="fa-solid fa-ban"></i> Controesempio</li>
         </ul>
       </div>
+      <div class="voice-library" role="group" aria-labelledby="voiceLibraryTitle">
+        <p id="voiceLibraryTitle"><strong><i class="fa-solid fa-wave-square"></i> Voci italiane naturali</strong></p>
+        <p id="voiceLibraryStatus" class="voice-library-status">Caricamento libreria di voci italiane…</p>
+        <div id="voiceLibraryList" class="voice-library-list" role="list"></div>
+      </div>
     </div>
   </div>
   <!-- Tipografia/impaginazione (azioni non persistenti) -->
@@ -282,6 +346,7 @@ body:not(.mode-simplified) .semplificata{display:none}
   <select id="voiceSel" class="btn" style="min-width:12ch" title="Voce sintetica"></select>
   <label class="visually-hidden" for="rate">Velocità</label>
   <input type="range" id="rate" min="0.7" max="1.4" step="0.05" value="1" title="Velocità" style="accent-color:var(--accent)">
+  <span id="voiceInfo" class="voice-info" aria-live="polite"></span>
   <span class="sep"></span>
   <!-- Docente on demand + stampa -->
   <button id="tbDoc" class="btn tbtn" aria-pressed="false" title="Mostra/Nascondi sezione per il docente"><i class="fa-solid fa-chalkboard-user"></i> Docente</button>
@@ -642,6 +707,195 @@ function instrumentWords(root){
 function instrumentSubtree(el){ instrumentWords(el); annotateKeywordWords(el); }
 
 const synth=window.speechSynthesis; let voices=[]; let utter=null; let paused=false;
+const voiceInfoEl=document.getElementById('voiceInfo');
+if(voiceInfoEl) voiceInfoEl.textContent='Caricamento voci italiane…';
+let voiceStats={italian:0,italianOnline:0};
+let voiceLibraryEntries=[];
+const voiceLibraryTokens=new Map();
+const voiceLibraryIdIndex=new Map();
+let voiceLibraryMatchCache=new WeakMap();
+
+const normalizeVoiceToken=(value='')=>String(value||'')
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'')
+  .replace(/[^a-z0-9]+/g,' ')
+  .trim();
+
+function collectVoiceTokens(v){
+  const tokens=new Set();
+  if(!v) return tokens;
+  const add=value=>{ const norm=normalizeVoiceToken(value); if(norm) tokens.add(norm); };
+  add(v.name); add(v.voiceURI); add(v.lang);
+  add(`${v.lang||''} ${v.name||''}`);
+  add(`${v.name||''} ${v.lang||''}`);
+  add(`${v.voiceURI||''} ${v.lang||''}`);
+  add(`${v.name||''} ${v.voiceURI||''}`);
+  return tokens;
+}
+
+function getLibraryEntryForVoice(v){
+  if(!v) return null;
+  if(voiceLibraryMatchCache.has(v)) return voiceLibraryMatchCache.get(v);
+  const tokens=collectVoiceTokens(v);
+  let match=null;
+  for(const token of tokens){
+    if(!token) continue;
+    const entry=voiceLibraryIdIndex.get(token);
+    if(entry){ match=entry; break; }
+  }
+  voiceLibraryMatchCache.set(v, match);
+  return match;
+}
+
+function getLibraryEntryById(id){
+  if(!id) return null;
+  const norm=normalizeVoiceToken(id);
+  return norm ? voiceLibraryIdIndex.get(norm) || null : null;
+}
+
+function updateVoiceAvailabilityMessage(){
+  const status=document.getElementById('voiceLibraryStatus');
+  if(!status) return;
+  const hasLibrary=voiceLibraryEntries.length>0;
+  if(!voiceStats.italian && !hasLibrary){
+    status.textContent='Nessuna voce italiana rilevata. Caricamento libreria online in corso…';
+    return;
+  }
+  const parts=[];
+  if(voiceStats.italian){
+    parts.push(`${voiceStats.italian} installate`);
+    parts.push(`${voiceStats.italianOnline} online`);
+  }
+  if(hasLibrary){
+    const base=`Libreria online: ${voiceLibraryEntries.length} voci neurali italiane disponibili.`;
+    status.textContent = parts.length ? `${base} Nel browser: ${parts.join(', ')}.` : base;
+  }else{
+    status.textContent = parts.length
+      ? `Nel browser sono disponibili ${parts.join(', ')}.`
+      : 'Nessuna voce italiana rilevata.';
+  }
+}
+
+function renderVoiceLibrary(){
+  const list=document.getElementById('voiceLibraryList');
+  const status=document.getElementById('voiceLibraryStatus');
+  if(!list){
+    if(status && voiceLibraryEntries.length){ status.textContent=''; }
+    return;
+  }
+  list.innerHTML='';
+  if(!voiceLibraryEntries.length){
+    if(status) status.textContent='Caricamento libreria di voci italiane…';
+    return;
+  }
+  voiceLibraryEntries.forEach(entry=>{
+    const card=document.createElement('article');
+    card.className='voice-card';
+    card.setAttribute('role','listitem');
+
+    const header=document.createElement('header');
+    const title=document.createElement('div');
+    title.className='title';
+    const icon=document.createElement('i'); icon.className='fa-solid fa-wave-square'; icon.setAttribute('aria-hidden','true');
+    const strong=document.createElement('strong'); strong.textContent=entry.name||entry.voiceId||'Voce';
+    title.append(icon); title.append(strong);
+    header.appendChild(title);
+    const provider=document.createElement('div'); provider.className='meta';
+    const providerParts=[entry.provider||'', entry.service||''].filter(Boolean);
+    provider.textContent=providerParts.join(' · ');
+    header.appendChild(provider);
+    card.appendChild(header);
+
+    if(entry.notes){
+      const desc=document.createElement('p'); desc.className='desc'; desc.textContent=entry.notes; card.appendChild(desc);
+    }
+
+    const tags=document.createElement('ul'); tags.className='tags';
+    const addTag=value=>{ if(!value) return; const li=document.createElement('li'); li.className='tag'; li.textContent=value; tags.appendChild(li); };
+    addTag(entry.voiceId?`ID: ${entry.voiceId}`:null);
+    addTag(entry.gender?`Genere: ${entry.gender}`:null);
+    addTag(entry.style);
+    addTag(entry.quality?`Qualità: ${entry.quality}`:null);
+    if(tags.childElementCount) card.appendChild(tags);
+
+    const actions=document.createElement('div'); actions.className='actions';
+    if(entry.voiceId){
+      const copy=document.createElement('button');
+      copy.type='button';
+      copy.className='mini';
+      copy.dataset.copyVoice=entry.voiceId;
+      copy.dataset.label='Copia ID voce';
+      copy.textContent='Copia ID voce';
+      actions.appendChild(copy);
+    }
+    if(entry.url){
+      const link=document.createElement('a');
+      link.className='mini secondary';
+      link.href=entry.url;
+      link.target='_blank';
+      link.rel='noopener';
+      link.textContent='Scheda servizio';
+      actions.appendChild(link);
+    }
+    if(actions.childElementCount) card.appendChild(actions);
+
+    list.appendChild(card);
+  });
+  updateVoiceAvailabilityMessage();
+}
+
+function registerVoiceLibrary(entries){
+  voiceLibraryEntries = (Array.isArray(entries)?entries:[]).map(item=>Object.assign({}, item));
+  voiceLibraryTokens.clear();
+  voiceLibraryIdIndex.clear();
+  voiceLibraryMatchCache=new WeakMap();
+  voiceLibraryEntries.forEach(entry=>{
+    const tokens=new Set();
+    const add=value=>{
+      const norm=normalizeVoiceToken(value);
+      if(!norm) return;
+      tokens.add(norm);
+      voiceLibraryIdIndex.set(norm, entry);
+    };
+    add(entry.id);
+    add(entry.voiceId);
+    add(entry.name);
+    add(entry.provider);
+    add(entry.service);
+    (entry.match||entry.aliases||[]).forEach(add);
+    voiceLibraryTokens.set(entry.id, tokens);
+  });
+  renderVoiceLibrary();
+  updateVoiceAvailabilityMessage();
+  renderVoiceOptions();
+}
+
+function updateVoiceInfoUI(){
+  if(!voiceInfoEl) return;
+  const sel=document.getElementById('voiceSel');
+  voiceInfoEl.innerHTML='';
+  const option=sel?.selectedOptions?.[0]||null;
+  if(!option){
+    voiceInfoEl.textContent='Seleziona una voce italiana naturale per la lettura.';
+    return;
+  }
+  const strong=document.createElement('strong'); strong.textContent='Voce:';
+  voiceInfoEl.appendChild(strong);
+  const displayName=option.dataset.displayName || option.textContent.split(' – ')[0]?.trim() || option.textContent.trim();
+  if(displayName){ voiceInfoEl.appendChild(document.createTextNode(' '+displayName)); }
+  const details=[];
+  if(option.dataset.langHint) details.push(option.dataset.langHint);
+  if(option.dataset.online==='true') details.push('online');
+  else details.push('locale');
+  if(option.dataset.quality) details.push(option.dataset.quality);
+  if(option.dataset.libraryProvider) details.push(`libreria ${option.dataset.libraryProvider}`);
+  if(details.length){
+    const meta=document.createElement('span'); meta.className='voice-info-meta'; meta.textContent=details.join(' · ');
+    voiceInfoEl.appendChild(document.createTextNode(' · '));
+    voiceInfoEl.appendChild(meta);
+  }
+}
 const LETTER_RE=/[A-Za-zÀ-ÖØ-öø-ÿ]/;
 const SPEECH_RULES=[
   (text, index)=>{
@@ -710,13 +964,17 @@ const OTHER_ALLOWED_BASE_LANGS=['en','fr','es'];
 const ITALIAN_NAME_HINTS=[/italiano/,/italian/,/italia/];
 const ITALIAN_PRIORITY_PATTERNS=[
   {pattern:/google (italiano|italian)/, bonus:65},
-  {pattern:/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca|diego|luca|paolo|giorgio|imelda|serena)/, bonus:55},
-  {pattern:/ibm watson|amazon (camila|luigi)|polly (bianca|giovanni)/, bonus:45},
+  {pattern:/google (neural2|wavenet)/, bonus:60},
+  {pattern:/microsoft (lucia|isabella|elsa|valentina|andrea|gianni|bianca|diego|luca|paolo|giorgio|imelda|serena|giuseppe|libero|benigno|palmira|fabiola|calimero|giovanni)/, bonus:55},
+  {pattern:/amazon (bianca|giorgio|luca|matteo|paolo)|polly (bianca|giorgio|luca|matteo|paolo)/, bonus:50},
+  {pattern:/ibm (watson)? (francesca|italiano)/, bonus:45},
   {pattern:/voispeed|readspeaker|nuance|acapela/, bonus:35},
   {pattern:/neural|natural|studio|premium|realistic|hi[- ]?fidelity/, bonus:30},
   {pattern:/campus|colab|azure|cloud/, bonus:20},
 ];
-const ITALIAN_COMMON_NAMES=['alice','chiara','caterina','luca','paolo','giorgio','silvia','carla','federica','matteo','vittoria','giulia','marco','sofia','andrea','marta','gianni','bianca'];
+const ITALIAN_COMMON_NAMES=[
+  'alice','chiara','caterina','luca','paolo','giorgio','silvia','carla','federica','matteo','vittoria','giulia','marco','sofia','andrea','marta','gianni','bianca','elsa','isabella','valentina','diego','giuseppe','imelda','libero','benigno','palmira','fabiola','calimero','giovanni','giorgia','francesca','gabriele','noemi','gaia'
+];
 function normalizeLang(lang=''){ return lang.toLowerCase().replace(/_/g,'-'); }
 function isItalianLangTag(lang=''){
   const norm=normalizeLang(lang);
@@ -735,6 +993,8 @@ function scoreVoice(v){
   if(isItalianVoice(v)) score+=220; else score+=80;
   if(/online|cloud/.test(name) || !v.localService) score+=70;
   if(isDiegoVoice(v)) score+=120;
+  const libraryMatch=getLibraryEntryForVoice(v);
+  if(libraryMatch) score+=200;
   ITALIAN_PRIORITY_PATTERNS.forEach(({pattern,bonus})=>{ if(pattern.test(name)) score+=bonus; });
   ITALIAN_COMMON_NAMES.forEach(common=>{ if(name.includes(common)) score+=18; });
   if(/\bneural\b/.test(name) || /\bnatural\b/.test(name)) score+=40;
@@ -755,17 +1015,34 @@ function isDiegoVoice(v){
   return /\bdiego\b/.test(name);
 }
 async function setupVoices(){
-  let allVoices=synth.getVoices(); if(!allVoices.length) allVoices=await waitForVoices();
-  voices=Array.isArray(allVoices)
-    ? allVoices.slice()
-    : [];
-  const sel=$('#voiceSel'); sel.innerHTML='';
+  let allVoices=synth.getVoices();
+  if(!allVoices.length) allVoices=await waitForVoices();
+  voices=Array.isArray(allVoices) ? allVoices.slice() : [];
+  renderVoiceOptions();
+}
+
+function describeVoiceQuality(v){
+  const score=scoreVoice(v);
+  if(score>=360) return 'realistica (consigliata)';
+  if(score>=300) return 'molto naturale';
+  if(score>=220) return 'buona qualità';
+  if(score>=160) return 'standard';
+  return 'di base';
+}
+
+function renderVoiceOptions(){
+  const sel=$('#voiceSel');
+  if(!sel) return;
+  sel.innerHTML='';
   if(!voices.length){
     const o=document.createElement('option');
     o.textContent='Nessuna voce disponibile';
     o.disabled=true; o.selected=true; o.value='';
     sel.appendChild(o);
     sel.disabled=true;
+    voiceStats={italian:0,italianOnline:0};
+    updateVoiceAvailabilityMessage();
+    updateVoiceInfoUI();
     if(state.voiceURI){ state.voiceURI=''; save(); }
     return;
   }
@@ -774,26 +1051,30 @@ async function setupVoices(){
     const diff=scoreVoice(b)-scoreVoice(a);
     return diff!==0?diff:(a.name.localeCompare(b.name));
   });
-  const describeQuality=v=>{
-    const score=scoreVoice(v);
-    if(score>=340) return 'realistica (consigliata)';
-    if(score>=260) return 'molto naturale';
-    if(score>=200) return 'buona qualità';
-    if(score>=140) return 'standard';
-    return 'di base';
+  voiceStats={
+    italian: sorted.filter(v=>isItalianVoice(v)).length,
+    italianOnline: sorted.filter(v=>isItalianVoice(v) && !v.localService).length
   };
+  updateVoiceAvailabilityMessage();
   const makeOption=v=>{
     const o=document.createElement('option');
-    const voiceScore=scoreVoice(v);
     const badge=!v.localService?'online':'locale';
-    const quality=describeQuality(v);
-    o.value=v.voiceURI;
+    const quality=describeVoiceQuality(v);
     const langHint=isItalianVoice(v)?'italiano':'altra lingua';
-    o.textContent=`${v.name} – ${v.lang} · ${badge} · ${quality} · ${langHint}`;
-    o.dataset.score=String(voiceScore);
+    const libraryMatch=getLibraryEntryForVoice(v);
+    const infoParts=[v.lang, badge, quality, langHint];
+    if(libraryMatch?.provider) infoParts.push(`libreria ${libraryMatch.provider}`);
+    o.value=v.voiceURI;
+    o.textContent=`${v.name} – ${infoParts.join(' · ')}`;
+    o.dataset.score=String(scoreVoice(v));
     o.dataset.quality=quality;
     o.dataset.online=String(!v.localService);
     o.dataset.langHint=langHint;
+    o.dataset.displayName=v.name||libraryMatch?.name||'Voce';
+    if(libraryMatch){
+      if(libraryMatch.id) o.dataset.libraryId=libraryMatch.id;
+      if(libraryMatch.provider) o.dataset.libraryProvider=libraryMatch.provider;
+    }
     return o;
   };
   const appendGroup=(label,list)=>{
@@ -808,6 +1089,7 @@ async function setupVoices(){
   const otherVoices=sorted.filter(v=>!isItalianVoice(v) && isAllowedOtherLang(v));
   const hasItalianOnline=italianOnline.length>0;
   sel.dataset.hasItalianOnline=String(hasItalianOnline);
+  sel.dataset.hasItalianVoices=String(voiceStats.italian>0);
   sel.title=hasItalianOnline
     ? 'Voci italiane online preferenziali con alternative locali.'
     : 'Voci disponibili. Se possiedi voci online italiane riavvia il browser per abilitarle.';
@@ -819,6 +1101,7 @@ async function setupVoices(){
   sel.value = (preferred?.voiceURI) || '';
   if(!keep && preferred){ state.voiceURI=preferred.voiceURI; save(); }
   else if(!state.voiceURI){ state.voiceURI=sel.value; save(); }
+  updateVoiceInfoUI();
 }
 if('speechSynthesis' in window){
   setupVoices();
@@ -829,6 +1112,17 @@ if('speechSynthesis' in window){
   }
 }
 const getSelVoice=()=>voices.find(v=>v.voiceURI===$('#voiceSel').value)||null;
+
+renderVoiceLibrary();
+updateVoiceAvailabilityMessage();
+fetch('italian-voice-library.json')
+  .then(res=>res.ok?res.json():Promise.reject(new Error(`HTTP ${res.status}`)))
+  .then(data=>{ if(data?.voices) registerVoiceLibrary(data.voices); })
+  .catch(err=>{
+    console.error('Impossibile caricare la libreria di voci italiane.', err);
+    const status=document.getElementById('voiceLibraryStatus');
+    if(status) status.textContent='Impossibile caricare la libreria di voci italiane online.';
+  });
 
 let karaokeBundle=null, afterSpeak=null;
 function buildTextAndRanges(root){
@@ -1420,7 +1714,11 @@ $('#tbKaraoke').addEventListener('click',()=>{
 });
 
 // TTS plain
-$('#voiceSel').addEventListener('change',e=>{state.voiceURI=e.target.value;save();});
+$('#voiceSel').addEventListener('change',e=>{
+  state.voiceURI=e.target.value;
+  save();
+  updateVoiceInfoUI();
+});
 $('#rate').addEventListener('input',e=>{state.rate=parseFloat(e.target.value);save();});
 $('#tbSpeak').addEventListener('click',()=>{ const el=getSelectedOrAll(); speakPlain(el); });
 $('#tbPause').addEventListener('click',()=>{
@@ -1464,6 +1762,53 @@ $('#toc')?.addEventListener('click',e=>{
 /* ARIA live announcer */
 const live=document.createElement('div'); live.setAttribute('aria-live','polite'); live.setAttribute('aria-atomic','true'); live.style.position='fixed'; live.style.left='-9999px'; live.style.top='-9999px'; document.body.appendChild(live);
 function announce(msg){ live.textContent=msg; }
+
+function fallbackCopyToClipboard(text){
+  try{
+    const textarea=document.createElement('textarea');
+    textarea.value=text;
+    textarea.setAttribute('readonly','true');
+    textarea.style.position='fixed';
+    textarea.style.left='-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const ok=document.execCommand('copy');
+    document.body.removeChild(textarea);
+    return ok;
+  }catch(_){
+    return false;
+  }
+}
+
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-copy-voice]');
+  if(!btn) return;
+  const value=btn.dataset.copyVoice;
+  if(!value) return;
+  e.preventDefault();
+  const originalLabel=btn.dataset.label || btn.textContent || 'Copia ID';
+  const showResult=(ok)=>{
+    if(ok){
+      btn.textContent='Copiato!';
+      btn.setAttribute('aria-disabled','true');
+      setTimeout(()=>{
+        btn.textContent=originalLabel;
+        btn.removeAttribute('aria-disabled');
+      },1600);
+      announce(`ID voce ${value} copiato negli appunti.`);
+    }else{
+      btn.textContent='Copia non riuscita';
+      setTimeout(()=>{ btn.textContent=originalLabel; },1600);
+    }
+  };
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(value).then(()=>showResult(true)).catch(()=>{
+      showResult(fallbackCopyToClipboard(value));
+    });
+  }else{
+    showResult(fallbackCopyToClipboard(value));
+  }
+});
 </script>
 
 <!-- ==== UPGRADE PACK: Import/Export + Incolla JSON + Segnaposto Globali ==== -->
