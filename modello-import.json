@@ -17,6 +17,7 @@
     "SCOP0_IN_2_RIGHE": "Obbligatorio. Due frasi sugli obiettivi operativi (CEFR B1). Es.: '[OBIETTIVO_1] presentato con parole inclusive. [OBIETTIVO_2] collegato a [CONTESTO_REALE]'.",
     "UTILITÀ_IN_2_RIGHE": "Obbligatorio. Descrive perché serve l'argomento nella vita reale. Es.: 'Comprendere [ARGOMENTO_SPECIFICO] aiuta a [APPLICAZIONE_PRATICA] in [SCENARIO_QUOTIDIANO]'.",
     "PRIMA_DI_INIZIARE": "Obbligatorio. Breve recap narrativo che riassume contesto storico o concetti base da ricordare prima di iniziare.",
+    "PRIMA_DI_INIZIARE_SEMPLIFICATA": "Obbligatorio. Versione in linguaggio essenziale (massimo 2-3 frasi) del recap iniziale per la modalità Semplifica.",
     "ALT_IMMAGINE": "Obbligatorio. Testo alternativo dell'immagine di contesto (10–15 parole). Es.: 'Persona che esplora [ARGOMENTO_SPECIFICO] all'interno di [AMBIENTE_CONTESTO]'.",
     "DIDASCALIA_IMMAGINE": "Obbligatorio. Didascalia mostrata sotto l'immagine. Es.: 'La scena mette in evidenza [DETTagLIO_VISIVO] legato a [ARGOMENTO_SPECIFICO]'.",
     "ISTRUZIONI_BREVI": "Obbligatorio. Introduzione alla micro-attivazione (1 frase). Es.: 'Rispondi a due domande rapide su [ARGOMENTO_SPECIFICO] per riattivare ciò che sai'.",
