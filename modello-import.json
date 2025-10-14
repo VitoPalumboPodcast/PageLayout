@@ -105,6 +105,25 @@
     "quiz": "Sostituisci con un titolo originale per la sezione Verifica formativa su [CONCETTO_CHIAVE].",
     "glossario": "Sostituisci con un titolo originale per la sezione Glossario dedicato ai termini di [ARGOMENTO_SPECIFICO]."
   },
+  "sectionIcons": {
+    "orientamento": "fa-solid fa-book",
+    "immagine": "fa-solid fa-image",
+    "percorso": {
+      "icon": "fa-solid fa-layer-group",
+      "modules": [
+        "fa-solid fa-1",
+        "fa-solid fa-2",
+        "fa-solid fa-3"
+      ]
+    },
+    "attivazione": "fa-solid fa-bolt",
+    "primer": "fa-solid fa-rocket",
+    "schema": "fa-solid fa-sitemap",
+    "attivita": "fa-solid fa-person-chalkboard",
+    "quiz": "fa-solid fa-clipboard-list",
+    "docente": "fa-solid fa-chalkboard-user",
+    "glossario": "fa-solid fa-key"
+  },
   "image": {
     "src": "URL assoluto o relativo dell'immagine di contesto legata a [ARGOMENTO_SPECIFICO] (supporta PNG/JPG/SVG, anche data URI e link HTTPS esterni come file da Commons).",
     "ALT": "Testo alternativo (sovrascritto da ALT_IMMAGINE se presente) che descrive [DETTagLIO_VISIVO].",
