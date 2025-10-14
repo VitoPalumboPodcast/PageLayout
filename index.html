@@ -315,6 +315,65 @@ body:not(.mode-simplified) .semplificata{display:none}
 #importDialog .actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 #importDialog .error{color:var(--danger);margin-top:.6rem}
 
+/* Editor manuale contenuti */
+#manualEditorDialog{border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);width:min(960px,96vw);max-width:960px}
+#manualEditorDialog::backdrop{background:rgba(15,23,42,.35)}
+#manualEditorDialog h2{margin:0;font-size:1.35rem}
+.manual-editor-intro{margin:.3rem 0 1rem;color:var(--muted);font-size:.92rem}
+.manual-editor-body{display:flex;flex-direction:column;gap:1rem;max-height:min(72vh,72dvh);overflow:auto;padding-right:.2rem}
+.manual-editor-section{border:1px solid var(--border);border-radius:12px;background:var(--surface-weak);padding:1rem;display:flex;flex-direction:column;gap:.75rem}
+.manual-editor-section>h3{margin:.1rem 0;font-size:1.1rem}
+.manual-editor-section>p{margin:0;color:var(--muted);font-size:.85rem}
+.manual-placeholder-list{display:flex;flex-direction:column;gap:.6rem}
+.manual-placeholder-list details{border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:.35rem .65rem}
+.manual-placeholder-list details[open]{box-shadow:inset 0 0 0 1px var(--accent-weak)}
+.manual-placeholder-list summary{display:flex;align-items:center;gap:.5rem;font-weight:600;cursor:pointer;list-style:none}
+.manual-placeholder-key{font-family:monospace;font-size:.85rem;background:var(--card);padding:.1rem .4rem;border-radius:6px}
+.manual-placeholder-hint{font-size:.85rem;color:var(--muted);flex:1 1 auto}
+.manual-placeholder-editor{margin-top:.55rem}
+.manual-rich-editor{border:1px solid var(--border);border-radius:10px;background:var(--surface);display:flex;flex-direction:column;overflow:hidden}
+.manual-rich-toolbar{display:flex;flex-wrap:wrap;gap:.25rem;padding:.25rem .35rem;border-bottom:1px solid var(--border);background:var(--surface-weak)}
+.manual-rich-toolbar button{border:1px solid transparent;background:transparent;color:inherit;border-radius:6px;padding:.25rem .45rem;font-size:.9rem;cursor:pointer}
+.manual-rich-toolbar button:focus{outline:2px solid var(--focus);outline-offset:1px}
+.manual-rich-toolbar button:hover{background:var(--card)}
+.manual-rich-area{min-height:84px;padding:.6rem;font-size:.95rem;line-height:1.6;outline:none}
+.manual-rich-area:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
+.manual-field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem}
+.manual-field-grid label{display:flex;flex-direction:column;gap:.35rem;font-size:.9rem}
+.manual-field-grid input,.manual-field-grid textarea{border:1px solid var(--border);border-radius:10px;padding:.5rem .6rem;font-size:.95rem;background:var(--surface);color:inherit}
+.manual-field-grid textarea{min-height:120px;resize:vertical}
+.manual-icon-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.manual-icon-field{display:flex;flex-direction:column;gap:.35rem}
+.manual-icon-input{display:flex;align-items:center;gap:.55rem}
+.manual-icon-preview{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface);font-size:1.2rem;color:var(--accent)}
+.manual-icon-input input{flex:1;border:1px solid var(--border);border-radius:10px;padding:.45rem .6rem;font-size:.95rem;background:var(--surface);color:inherit}
+.manual-icon-input input:focus{outline:3px solid var(--focus);outline-offset:1px}
+.manual-inline-note{margin:0;font-size:.8rem;color:var(--muted)}
+.manual-list{display:flex;flex-direction:column;gap:.75rem}
+.manual-glossary-item,.manual-quiz-item{border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:.75rem;display:flex;flex-direction:column;gap:.6rem}
+.manual-item-actions{display:flex;justify-content:flex-end;gap:.5rem}
+.manual-btn{border:1px solid var(--border);border-radius:10px;padding:.45rem .8rem;font-size:.9rem;cursor:pointer;background:var(--card);color:inherit;display:inline-flex;align-items:center;gap:.35rem}
+.manual-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.manual-btn.secondary{background:var(--surface);border-color:var(--border)}
+.manual-btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.manual-btn.text{background:transparent;border:1px solid transparent;color:var(--accent);padding:.2rem .4rem}
+.manual-btn:focus{outline:3px solid var(--focus);outline-offset:1px}
+.manual-quiz-choices{display:flex;flex-direction:column;gap:.45rem}
+.manual-quiz-choice{display:flex;align-items:center;gap:.45rem}
+.manual-quiz-choice input[type="text"]{flex:1;border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;background:var(--surface);font-size:.95rem;color:inherit}
+.manual-quiz-choice input[type="radio"]{width:1.15rem;height:1.15rem}
+.manual-quiz-extra{display:flex;flex-direction:column;gap:.4rem}
+.manual-quiz-extra p{margin:0;color:var(--muted);font-size:.85rem}
+.manual-dialog-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1rem}
+.manual-empty-hint{margin:0;font-size:.85rem;color:var(--muted)}
+.manual-editor-body::-webkit-scrollbar{width:10px}
+.manual-editor-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+.manual-editor-body::-webkit-scrollbar-track{background:transparent}
+@media(max-width:720px){
+  #manualEditorDialog{padding:.9rem;width:min(96vw,720px)}
+  .manual-rich-area{min-height:72px}
+}
+
 /* STAMPA */
 @media print{
   .toolbar,.read-progress,.reading-ruler,.kw-pop,#quizControls{display:none!important}
@@ -354,6 +413,9 @@ body:not(.mode-simplified) .semplificata{display:none}
       </button>
       <button id="tbPasteImport" class="btn ebtn" role="menuitem" title="[TOOLTIP_INCOLLA]">
         <i class="fa-solid fa-paste"></i><span>Incolla contenuti</span>
+      </button>
+      <button id="tbManualEditor" class="btn ebtn" role="menuitem" title="[TOOLTIP_EDITOR_MANUALE]">
+        <i class="fa-solid fa-pen-to-square"></i><span>Inserisci contenuti</span>
       </button>
       <button id="tbExport" class="btn ebtn" role="menuitem" title="[TOOLTIP_ESPORTA]">
         <i class="fa-solid fa-file-export"></i><span>Esporta</span>
@@ -658,6 +720,95 @@ flowchart TD
     <div class="actions">
       <button type="button" id="importCancel">Annulla</button>
       <button type="submit" id="importConfirm" class="primary">Importa</button>
+    </div>
+  </form>
+</dialog>
+
+<datalist id="faIconSuggestions">
+  <option value="fa-solid fa-book"></option>
+  <option value="fa-solid fa-image"></option>
+  <option value="fa-solid fa-layer-group"></option>
+  <option value="fa-solid fa-bolt"></option>
+  <option value="fa-solid fa-circle-question"></option>
+  <option value="fa-solid fa-key"></option>
+  <option value="fa-solid fa-person-chalkboard"></option>
+  <option value="fa-solid fa-map"></option>
+  <option value="fa-solid fa-lightbulb"></option>
+  <option value="fa-solid fa-chalkboard-user"></option>
+</datalist>
+
+<dialog id="manualEditorDialog" aria-labelledby="manualEditorTitle" aria-modal="true" hidden>
+  <form id="manualEditorForm">
+    <h2 id="manualEditorTitle">Inserisci contenuti manualmente</h2>
+    <p class="manual-editor-intro">Compila i campi per aggiornare testi, titoli, icone e quiz senza ricorrere al file JSON. Gli editor supportano l'HTML consentito dal layout.</p>
+    <div class="manual-editor-body">
+      <section class="manual-editor-section" aria-labelledby="manualPlaceholdersTitle">
+        <h3 id="manualPlaceholdersTitle">Segnaposto e testi</h3>
+        <p>Apri un campo per inserire o modificare il contenuto. Usa la barra in alto per applicare grassetti, liste, link o incollare HTML.</p>
+        <div id="manualPlaceholderList" class="manual-placeholder-list"></div>
+        <p id="manualPlaceholderEmptyHint" class="manual-empty-hint" hidden>Nessun segnaposto trovato nel modello corrente.</p>
+      </section>
+
+      <section class="manual-editor-section" aria-labelledby="manualSectionsTitle">
+        <h3 id="manualSectionsTitle">Titoli e icone</h3>
+        <div id="manualSectionTitleList" class="manual-field-grid"></div>
+        <p class="manual-inline-note">Inserisci le classi Font Awesome per personalizzare le icone (es. <code>fa-solid fa-book</code>). Il suggerimento mostra l'icona attuale.</p>
+        <div id="manualSectionIconList" class="manual-icon-grid"></div>
+        <h4 style="margin:0;font-size:1rem">Icone dei moduli del percorso</h4>
+        <div id="manualModuleIconList" class="manual-icon-grid"></div>
+      </section>
+
+      <section class="manual-editor-section" aria-labelledby="manualImageTitle">
+        <h3 id="manualImageTitle">Immagine e risorse</h3>
+        <div class="manual-field-grid">
+          <label for="manualImageSrc">URL immagine principale<input type="url" id="manualImageSrc" placeholder="https://..." spellcheck="false"></label>
+          <label for="manualImageAlt">Testo alternativo<input type="text" id="manualImageAlt"></label>
+          <label for="manualImageCaption">Didascalia<input type="text" id="manualImageCaption"></label>
+          <label for="manualImageCreditLabel">Crediti (testo)<input type="text" id="manualImageCreditLabel"></label>
+          <label for="manualImageCreditUrl">Crediti (URL)<input type="url" id="manualImageCreditUrl" placeholder="https://..." spellcheck="false"></label>
+        </div>
+        <div class="manual-field-grid">
+          <label for="manualInlineSvg">Codice SVG inline (opzionale)
+            <textarea id="manualInlineSvg" rows="4" spellcheck="false"></textarea>
+          </label>
+          <label for="manualInlineAlt">Descrizione SVG inline
+            <input type="text" id="manualInlineAlt" placeholder="Descrizione per screen reader">
+          </label>
+        </div>
+      </section>
+
+      <section class="manual-editor-section" aria-labelledby="manualMermaidTitle">
+        <h3 id="manualMermaidTitle">Mappa Mermaid</h3>
+        <p>Incolla il codice del diagramma per aggiornare la mappa concettuale.</p>
+        <div class="manual-field-grid">
+          <label for="manualMermaid">Codice Mermaid
+            <textarea id="manualMermaid" rows="6" spellcheck="false"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="manual-editor-section" aria-labelledby="manualGlossaryTitle">
+        <h3 id="manualGlossaryTitle">Glossario</h3>
+        <p>Aggiungi i termini chiave e le relative definizioni.</p>
+        <div id="manualGlossaryList" class="manual-list"></div>
+        <div class="manual-item-actions" style="justify-content:flex-start">
+          <button type="button" class="manual-btn" id="manualAddGlossary"><i class="fa-solid fa-plus"></i> Aggiungi voce</button>
+        </div>
+      </section>
+
+      <section class="manual-editor-section" aria-labelledby="manualQuizTitle">
+        <h3 id="manualQuizTitle">Domande e risposte</h3>
+        <p>Definisci le domande del quiz, le opzioni disponibili e indica quale risposta è corretta.</p>
+        <div id="manualQuizList" class="manual-list"></div>
+        <div class="manual-item-actions" style="justify-content:flex-start">
+          <button type="button" class="manual-btn" id="manualAddQuiz"><i class="fa-solid fa-plus"></i> Aggiungi domanda</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="manual-dialog-actions">
+      <button type="button" class="manual-btn secondary" id="manualEditorCancel">Annulla</button>
+      <button type="submit" class="manual-btn primary" id="manualEditorApply"><i class="fa-solid fa-floppy-disk"></i> Applica contenuti</button>
     </div>
   </form>
 </dialog>
@@ -2403,6 +2554,34 @@ document.addEventListener('click',e=>{
   const importCancelBtn=importDialog?.querySelector('#importCancel');
   let importDialogLastFocus=null;
 
+  function capturePlaceholderDescriptors(){
+    const root=document.body;
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const descriptors=new Map();
+    const regex=/\[([^:\]]+)(?::([^\]]*))?\]/g;
+    let node;
+    while((node=walker.nextNode())){
+      const text=node.nodeValue;
+      if(!text || text.indexOf('[')===-1) continue;
+      let match;
+      while((match=regex.exec(text))){
+        const rawKey=match[1];
+        if(!rawKey) continue;
+        const key=rawKey.trim();
+        if(!key) continue;
+        const hint=(match[2]||'').trim();
+        if(!descriptors.has(key)){
+          descriptors.set(key,{key,hint});
+        }else if(hint && !descriptors.get(key).hint){
+          descriptors.get(key).hint=hint;
+        }
+      }
+    }
+    return Array.from(descriptors.values()).sort((a,b)=>a.key.localeCompare(b.key,'it',{sensitivity:'base'}));
+  }
+
+  const initialPlaceholderDescriptors=capturePlaceholderDescriptors();
+
   function resetImportDialog(){
     if(importTextarea){ importTextarea.value=''; importTextarea.removeAttribute('aria-invalid'); }
     if(importError){ importError.textContent=''; importError.hidden=true; }
@@ -2511,6 +2690,735 @@ document.addEventListener('click',e=>{
       });
     }
   }
+
+  const manualEditorDialog=document.getElementById('manualEditorDialog');
+  const manualEditorForm=manualEditorDialog?.querySelector('#manualEditorForm');
+  const manualPlaceholderList=document.getElementById('manualPlaceholderList');
+  const manualPlaceholderEmptyHint=document.getElementById('manualPlaceholderEmptyHint');
+  const manualSectionTitleList=document.getElementById('manualSectionTitleList');
+  const manualSectionIconList=document.getElementById('manualSectionIconList');
+  const manualModuleIconList=document.getElementById('manualModuleIconList');
+  const manualImageSrc=document.getElementById('manualImageSrc');
+  const manualImageAlt=document.getElementById('manualImageAlt');
+  const manualImageCaption=document.getElementById('manualImageCaption');
+  const manualImageCreditLabel=document.getElementById('manualImageCreditLabel');
+  const manualImageCreditUrl=document.getElementById('manualImageCreditUrl');
+  const manualInlineSvg=document.getElementById('manualInlineSvg');
+  const manualInlineAlt=document.getElementById('manualInlineAlt');
+  const manualMermaidTextarea=document.getElementById('manualMermaid');
+  const manualGlossaryList=document.getElementById('manualGlossaryList');
+  const manualAddGlossaryBtn=document.getElementById('manualAddGlossary');
+  const manualQuizList=document.getElementById('manualQuizList');
+  const manualAddQuizBtn=document.getElementById('manualAddQuiz');
+  const manualEditorCancelBtn=document.getElementById('manualEditorCancel');
+  let manualEditorLastFocus=null;
+  let manualEditorReady=false;
+  const manualPlaceholderEditors=new Map();
+  const manualSectionTitleInputs=new Map();
+  const manualSectionIconInputs=new Map();
+  const manualModuleIconInputs=[];
+
+  const SECTION_TITLE_CONFIG=[
+    {key:'immagine', label:'Immagine di contesto', selector:'#immagine>h2'},
+    {key:'percorso', label:'Percorso modulare', selector:'#percorso>h2'},
+    {key:'attivazione', label:'Micro-attivazione', selector:'#attivazione>h2'},
+    {key:'primer', label:'Primer', selector:'#primer>h2'},
+    {key:'schema', label:'Mappa (Mermaid)', selector:'#schema>h2'},
+    {key:'attivita', label:'Attività guidata', selector:'#attivita>h2'},
+    {key:'quiz', label:'Verifica formativa', selector:'#quiz>h2'},
+    {key:'glossario', label:'Glossario', selector:'#glossario>h2'},
+    {key:'docente', label:'Per il docente', selector:'#docente>h2'}
+  ];
+
+  const SECTION_ICON_CONFIG=[
+    {key:'orientamento', label:'Orientamento', selector:'#orientamento>h1'},
+    {key:'immagine', label:'Immagine di contesto', selector:'#immagine>h2'},
+    {key:'percorso', label:'Percorso modulare', selector:'#percorso>h2'},
+    {key:'attivazione', label:'Micro-attivazione', selector:'#attivazione>h2'},
+    {key:'primer', label:'Primer', selector:'#primer>h2'},
+    {key:'schema', label:'Mappa (Mermaid)', selector:'#schema>h2'},
+    {key:'attivita', label:'Attività guidata', selector:'#attivita>h2'},
+    {key:'quiz', label:'Verifica formativa', selector:'#quiz>h2'},
+    {key:'glossario', label:'Glossario', selector:'#glossario>h2'},
+    {key:'docente', label:'Per il docente', selector:'#docente>h2'}
+  ];
+
+  const MODULE_ICON_COUNT=8;
+
+  function normalizeIconClass(value){
+    if(typeof value!=='string') return '';
+    return value
+      .split(/\s+/)
+      .map(token=>token.trim())
+      .filter(token=>/^fa[a-z0-9-]*$/i.test(token))
+      .join(' ')
+      .trim();
+  }
+
+  function updateIconPreview(input){
+    if(!input) return;
+    const preview=input._previewIcon;
+    if(!preview) return;
+    const raw=input.value.trim();
+    const sanitized=normalizeIconClass(raw) || normalizeIconClass(input.placeholder||'') || 'fa-regular fa-circle-question';
+    preview.className=sanitized;
+  }
+
+  function readHeadingText(selector){
+    if(!selector) return '';
+    const heading=document.querySelector(selector);
+    if(!heading) return '';
+    const clone=heading.cloneNode(true);
+    clone.querySelectorAll('i').forEach(icon=>icon.remove());
+    return (clone.textContent||'').trim();
+  }
+
+  function readIconClass(selector){
+    if(!selector) return '';
+    const heading=document.querySelector(selector);
+    if(!heading) return '';
+    const icon=heading.tagName==='I'?heading:heading.querySelector('i');
+    return icon?.className||'';
+  }
+
+  function getCurrentImageSnapshot(){
+    const snapshot={};
+    const figure=document.querySelector('#immagine figure');
+    if(!figure) return snapshot;
+    const img=figure.querySelector('img');
+    if(img){
+      if(img.getAttribute('src')) snapshot.src=img.getAttribute('src');
+      if(img.getAttribute('alt')) snapshot.ALT=img.getAttribute('alt');
+    }
+    const caption=figure.querySelector('[data-role="caption-text"]');
+    if(caption) snapshot.caption=(caption.textContent||'').trim();
+    const creditLink=figure.querySelector('[data-role="credit-link"]');
+    if(creditLink){
+      snapshot.creditUrl=creditLink.getAttribute('href')||'';
+      snapshot.creditLabel=(creditLink.textContent||'').trim();
+    }
+    const inlineHolder=figure.querySelector('[data-role="inline-svg"]');
+    if(inlineHolder){
+      const inlineHtml=inlineHolder.innerHTML.trim();
+      if(inlineHtml) snapshot.inlineSvg=inlineHtml;
+      const alt=inlineHolder.getAttribute('aria-label');
+      if(alt) snapshot.inlineAlt=alt;
+    }
+    return snapshot;
+  }
+
+  function createRichEditor({placeholder='Scrivi il contenuto…'}={}){
+    const wrapper=document.createElement('div');
+    wrapper.className='manual-rich-editor';
+    const toolbar=document.createElement('div');
+    toolbar.className='manual-rich-toolbar';
+    toolbar.innerHTML=`
+      <button type="button" data-cmd="bold" title="Grassetto"><i class="fa-solid fa-bold"></i></button>
+      <button type="button" data-cmd="italic" title="Corsivo"><i class="fa-solid fa-italic"></i></button>
+      <button type="button" data-cmd="underline" title="Sottolineato"><i class="fa-solid fa-underline"></i></button>
+      <button type="button" data-cmd="insertUnorderedList" title="Elenco puntato"><i class="fa-solid fa-list-ul"></i></button>
+      <button type="button" data-cmd="insertOrderedList" title="Elenco numerato"><i class="fa-solid fa-list-ol"></i></button>
+      <button type="button" data-cmd="createLink" title="Inserisci link"><i class="fa-solid fa-link"></i></button>
+      <button type="button" data-cmd="insertHtml" title="Incolla HTML"><i class="fa-solid fa-code"></i></button>
+      <button type="button" data-cmd="clear" title="Rimuovi formattazione"><i class="fa-solid fa-eraser"></i></button>`;
+    const area=document.createElement('div');
+    area.className='manual-rich-area';
+    area.contentEditable='true';
+    area.dataset.placeholder=placeholder;
+    wrapper.append(toolbar, area);
+
+    const execCommand=(command,value=null)=>{
+      area.focus();
+      try{
+        document.execCommand(command,false,value);
+      }catch(err){
+        console.warn('Comando editor non supportato:', command, err);
+      }
+    };
+
+    toolbar.querySelectorAll('button[data-cmd]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const cmd=btn.dataset.cmd;
+        if(cmd==='createLink'){
+          const url=prompt('Inserisci l\'URL (https://...)');
+          if(!url) return;
+          if(isSafeHref(url)){
+            execCommand('createLink', url);
+          }else{
+            alert('URL non valido. Usa un indirizzo che inizi con http o https.');
+          }
+          return;
+        }
+        if(cmd==='insertHtml'){
+          const html=prompt('Incolla il codice HTML da inserire');
+          if(html){
+            area.focus();
+            document.execCommand('insertHTML', false, sanitizeAllowedHTML(html));
+          }
+          return;
+        }
+        if(cmd==='clear'){
+          execCommand('removeFormat');
+          execCommand('unlink');
+          return;
+        }
+        execCommand(cmd);
+      });
+    });
+
+    area.addEventListener('paste',(event)=>{
+      const data=event.clipboardData;
+      if(!data) return;
+      event.preventDefault();
+      const html=data.getData('text/html');
+      const text=data.getData('text/plain');
+      const toInsert=html ? sanitizeAllowedHTML(html) : escapeHTML(text);
+      document.execCommand('insertHTML', false, toInsert);
+    });
+
+    return {
+      root:wrapper,
+      area,
+      setValue(value){
+        if(!area) return;
+        area.innerHTML=value ? sanitizeAllowedHTML(value) : '';
+      },
+      getValue(){
+        if(!area) return '';
+        const html=area.innerHTML;
+        return sanitizeAllowedHTML(html).trim();
+      },
+      focus(){ area?.focus(); }
+    };
+  }
+
+  function buildManualEditor(){
+    if(manualEditorReady || !manualEditorDialog) return;
+    manualEditorReady=true;
+
+    manualPlaceholderEditors.clear();
+    if(manualPlaceholderList){
+      manualPlaceholderList.innerHTML='';
+      if(initialPlaceholderDescriptors.length){
+        initialPlaceholderDescriptors.forEach((info,idx)=>{
+          const details=document.createElement('details');
+          details.className='manual-placeholder-item';
+          if(idx<4) details.open=true;
+          const summary=document.createElement('summary');
+          const keySpan=document.createElement('span');
+          keySpan.className='manual-placeholder-key';
+          keySpan.textContent=`[${info.key}]`;
+          summary.appendChild(keySpan);
+          if(info.hint){
+            const hintSpan=document.createElement('span');
+            hintSpan.className='manual-placeholder-hint';
+            hintSpan.textContent=info.hint;
+            summary.appendChild(hintSpan);
+          }
+          details.appendChild(summary);
+          const editorWrap=document.createElement('div');
+          editorWrap.className='manual-placeholder-editor';
+          const editor=createRichEditor({placeholder:info.hint||'Scrivi il contenuto…'});
+          editorWrap.appendChild(editor.root);
+          details.appendChild(editorWrap);
+          manualPlaceholderList.appendChild(details);
+          manualPlaceholderEditors.set(info.key, editor);
+        });
+        manualPlaceholderEmptyHint?.setAttribute('hidden','');
+      }else{
+        manualPlaceholderEmptyHint?.removeAttribute('hidden');
+      }
+    }
+
+    if(manualSectionTitleList){
+      manualSectionTitleList.innerHTML='';
+      manualSectionTitleInputs.clear();
+      SECTION_TITLE_CONFIG.forEach(cfg=>{
+        const label=document.createElement('label');
+        label.textContent=cfg.label;
+        const input=document.createElement('input');
+        input.type='text';
+        input.dataset.sectionTitle=cfg.key;
+        const current=readHeadingText(cfg.selector);
+        if(current) input.placeholder=current;
+        label.appendChild(input);
+        manualSectionTitleList.appendChild(label);
+        manualSectionTitleInputs.set(cfg.key, input);
+      });
+    }
+
+    if(manualSectionIconList){
+      manualSectionIconList.innerHTML='';
+      manualSectionIconInputs.clear();
+      SECTION_ICON_CONFIG.forEach(cfg=>{
+        const field=document.createElement('div');
+        field.className='manual-icon-field';
+        const label=document.createElement('span');
+        label.textContent=cfg.label;
+        const wrapper=document.createElement('div');
+        wrapper.className='manual-icon-input';
+        const preview=document.createElement('span');
+        preview.className='manual-icon-preview';
+        const icon=document.createElement('i');
+        const defaultClass=normalizeIconClass(readIconClass(cfg.selector));
+        icon.className=defaultClass || 'fa-regular fa-circle-question';
+        preview.appendChild(icon);
+        const input=document.createElement('input');
+        input.type='text';
+        input.setAttribute('list','faIconSuggestions');
+        if(defaultClass) input.placeholder=defaultClass;
+        input._previewIcon=icon;
+        input.addEventListener('input',()=>updateIconPreview(input));
+        wrapper.append(preview,input);
+        field.append(label, wrapper);
+        manualSectionIconList.appendChild(field);
+        manualSectionIconInputs.set(cfg.key, input);
+      });
+    }
+
+    if(manualModuleIconList){
+      manualModuleIconList.innerHTML='';
+      manualModuleIconInputs.length=0;
+      const moduleIcons=document.querySelectorAll('#percorso .concept-icon i');
+      for(let i=0;i<MODULE_ICON_COUNT;i+=1){
+        const field=document.createElement('div');
+        field.className='manual-icon-field';
+        const label=document.createElement('span');
+        label.textContent=`Modulo ${i+1}`;
+        const wrapper=document.createElement('div');
+        wrapper.className='manual-icon-input';
+        const preview=document.createElement('span');
+        preview.className='manual-icon-preview';
+        const icon=document.createElement('i');
+        const defaultClass=normalizeIconClass(moduleIcons[i]?.className||'');
+        icon.className=defaultClass || 'fa-regular fa-circle-question';
+        preview.appendChild(icon);
+        const input=document.createElement('input');
+        input.type='text';
+        input.setAttribute('list','faIconSuggestions');
+        if(defaultClass) input.placeholder=defaultClass;
+        input._previewIcon=icon;
+        input.addEventListener('input',()=>updateIconPreview(input));
+        wrapper.append(preview,input);
+        field.append(label, wrapper);
+        manualModuleIconList.appendChild(field);
+        manualModuleIconInputs.push(input);
+      }
+    }
+  }
+
+  function populateManualEditor(){
+    if(!manualEditorDialog) return;
+    const data=lastIngestedData || {};
+    const placeholders=data.placeholders || {};
+    manualPlaceholderEditors.forEach((editor,key)=>{
+      editor.setValue(placeholders[key]||'');
+    });
+
+    const sectionTitles=data.sectionTitles || {};
+    manualSectionTitleInputs.forEach((input,key)=>{
+      input.value=sectionTitles[key] ? String(sectionTitles[key]) : '';
+    });
+
+    const sectionIcons=data.sectionIcons || {};
+    manualSectionIconInputs.forEach((input,key)=>{
+      let value='';
+      const entry=sectionIcons[key];
+      if(entry && typeof entry==='object' && !Array.isArray(entry)){
+        if(entry.icon) value=normalizeIconClass(entry.icon);
+      }else if(typeof entry==='string'){
+        value=normalizeIconClass(entry);
+      }
+      input.value=value;
+      updateIconPreview(input);
+    });
+
+    const moduleIcons=Array.isArray(sectionIcons.percorsoModules) ? sectionIcons.percorsoModules : [];
+    manualModuleIconInputs.forEach((input,idx)=>{
+      const value=moduleIcons[idx] ? normalizeIconClass(moduleIcons[idx]) : '';
+      input.value=value;
+      updateIconPreview(input);
+    });
+
+    const imageSnapshot=getCurrentImageSnapshot();
+    const imageData=data.image || {};
+    if(manualImageSrc){
+      manualImageSrc.value=imageData.src || imageSnapshot.src || '';
+      if(imageSnapshot.src) manualImageSrc.placeholder=imageSnapshot.src;
+    }
+    if(manualImageAlt){
+      manualImageAlt.value=imageData.ALT || imageData.alt || imageSnapshot.ALT || '';
+      if(imageSnapshot.ALT) manualImageAlt.placeholder=imageSnapshot.ALT;
+    }
+    if(manualImageCaption){
+      manualImageCaption.value=imageData.caption || imageSnapshot.caption || '';
+      if(imageSnapshot.caption) manualImageCaption.placeholder=imageSnapshot.caption;
+    }
+    if(manualImageCreditLabel){
+      manualImageCreditLabel.value=imageData.creditLabel || imageSnapshot.creditLabel || '';
+      if(imageSnapshot.creditLabel) manualImageCreditLabel.placeholder=imageSnapshot.creditLabel;
+    }
+    if(manualImageCreditUrl){
+      manualImageCreditUrl.value=imageData.creditUrl || imageSnapshot.creditUrl || '';
+      if(imageSnapshot.creditUrl) manualImageCreditUrl.placeholder=imageSnapshot.creditUrl;
+    }
+    if(manualInlineSvg){
+      manualInlineSvg.value=imageData.inlineSvg || imageSnapshot.inlineSvg || '';
+    }
+    if(manualInlineAlt){
+      manualInlineAlt.value=imageData.inlineAlt || imageSnapshot.inlineAlt || '';
+      if(imageSnapshot.inlineAlt) manualInlineAlt.placeholder=imageSnapshot.inlineAlt;
+    }
+
+    if(manualMermaidTextarea){
+      const currentMermaid=document.getElementById('mermaidMap')?.textContent?.trim()||'';
+      manualMermaidTextarea.value=(data.mermaid||'') || currentMermaid;
+    }
+
+    if(manualGlossaryList){
+      manualGlossaryList.innerHTML='';
+      const glossary=Array.isArray(data.glossario) ? data.glossario : [];
+      if(glossary.length){
+        glossary.forEach(entry=>addGlossaryItem(entry));
+      }else{
+        addGlossaryItem();
+      }
+    }
+
+    if(manualQuizList){
+      manualQuizList.innerHTML='';
+      const quiz=Array.isArray(data.quiz) ? data.quiz : [];
+      if(quiz.length){
+        quiz.forEach(entry=>addQuizItem(entry));
+      }else{
+        addQuizItem();
+      }
+    }
+  }
+
+  function addGlossaryItem(entry={}){
+    if(!manualGlossaryList) return;
+    const item=document.createElement('div');
+    item.className='manual-glossary-item';
+    const fieldWrap=document.createElement('div');
+    fieldWrap.className='manual-field-grid';
+    const termLabel=document.createElement('label');
+    termLabel.textContent='Termine';
+    const termInput=document.createElement('input');
+    termInput.type='text';
+    termInput.value=entry.term||'';
+    termInput.placeholder='Termine';
+    termLabel.appendChild(termInput);
+    fieldWrap.appendChild(termLabel);
+    item.appendChild(fieldWrap);
+    const editor=createRichEditor({placeholder:'Definizione'});
+    editor.setValue(entry.def||'');
+    item.appendChild(editor.root);
+    const actions=document.createElement('div');
+    actions.className='manual-item-actions';
+    const removeBtn=document.createElement('button');
+    removeBtn.type='button';
+    removeBtn.className='manual-btn danger';
+    removeBtn.dataset.action='remove-glossary';
+    removeBtn.innerHTML='<i class="fa-solid fa-trash"></i> Rimuovi';
+    actions.appendChild(removeBtn);
+    item.appendChild(actions);
+    item.__termInput=termInput;
+    item.__editor=editor;
+    manualGlossaryList.appendChild(item);
+  }
+
+  function addQuizChoiceRow(item,{text='',correct=false}={}){
+    if(!item || !item.__choicesContainer) return;
+    const container=item.__choicesContainer;
+    const row=document.createElement('div');
+    row.className='manual-quiz-choice';
+    const radio=document.createElement('input');
+    radio.type='radio';
+    radio.name=item.dataset.quizGroup;
+    radio.title='Segna risposta corretta';
+    const input=document.createElement('input');
+    input.type='text';
+    input.placeholder='Risposta';
+    input.value=text;
+    const removeBtn=document.createElement('button');
+    removeBtn.type='button';
+    removeBtn.className='manual-btn text';
+    removeBtn.dataset.action='remove-choice';
+    removeBtn.innerHTML='<i class="fa-solid fa-trash"></i>';
+    row.append(radio,input,removeBtn);
+    container.appendChild(row);
+    if(correct) radio.checked=true;
+    else if(!container.querySelector('input[type="radio"]:checked')) radio.checked=true;
+  }
+
+  function ensureMinimumChoices(item){
+    if(!item || !item.__choicesContainer) return;
+    const container=item.__choicesContainer;
+    while(container.children.length<4){
+      addQuizChoiceRow(item);
+    }
+    if(!container.querySelector('input[type="radio"]:checked')){
+      const first=container.querySelector('input[type="radio"]');
+      if(first) first.checked=true;
+    }
+  }
+
+  function addQuizItem(entry={}){
+    if(!manualQuizList) return;
+    const item=document.createElement('div');
+    item.className='manual-quiz-item';
+    item.dataset.quizGroup=`quiz-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
+    const questionLabel=document.createElement('p');
+    questionLabel.className='manual-inline-note';
+    questionLabel.textContent='Domanda';
+    const questionEditor=createRichEditor({placeholder:'Testo della domanda'});
+    questionEditor.setValue(entry.q||'');
+    item.append(questionLabel, questionEditor.root);
+    const choicesLabel=document.createElement('p');
+    choicesLabel.className='manual-inline-note';
+    choicesLabel.textContent='Opzioni di risposta';
+    item.appendChild(choicesLabel);
+    const choicesContainer=document.createElement('div');
+    choicesContainer.className='manual-quiz-choices';
+    item.appendChild(choicesContainer);
+    item.__choicesContainer=choicesContainer;
+    const addChoiceBtn=document.createElement('button');
+    addChoiceBtn.type='button';
+    addChoiceBtn.className='manual-btn text';
+    addChoiceBtn.dataset.action='add-choice';
+    addChoiceBtn.innerHTML='<i class="fa-solid fa-plus"></i> Aggiungi opzione';
+    item.appendChild(addChoiceBtn);
+    const hintWrap=document.createElement('div');
+    hintWrap.className='manual-quiz-extra';
+    const hintLabel=document.createElement('p');
+    hintLabel.textContent='Suggerimento (opzionale)';
+    const hintEditor=createRichEditor({placeholder:'Suggerimento'});
+    hintEditor.setValue(entry.hint||'');
+    hintWrap.append(hintLabel, hintEditor.root);
+    item.appendChild(hintWrap);
+    const explainWrap=document.createElement('div');
+    explainWrap.className='manual-quiz-extra';
+    const explainLabel=document.createElement('p');
+    explainLabel.textContent='Spiegazione (opzionale)';
+    const explainEditor=createRichEditor({placeholder:'Spiegazione della risposta'});
+    explainEditor.setValue(entry.explain||'');
+    explainWrap.append(explainLabel, explainEditor.root);
+    item.appendChild(explainWrap);
+    const actions=document.createElement('div');
+    actions.className='manual-item-actions';
+    const removeBtn=document.createElement('button');
+    removeBtn.type='button';
+    removeBtn.className='manual-btn danger';
+    removeBtn.dataset.action='remove-quiz';
+    removeBtn.innerHTML='<i class="fa-solid fa-trash"></i> Rimuovi domanda';
+    actions.appendChild(removeBtn);
+    item.appendChild(actions);
+    manualQuizList.appendChild(item);
+    const choices=Array.isArray(entry.choices)?entry.choices:[];
+    if(choices.length){
+      choices.forEach((choice,idx)=>addQuizChoiceRow(item,{text:choice,correct:idx===entry.correct}));
+    }
+    ensureMinimumChoices(item);
+    item.__questionEditor=questionEditor;
+    item.__hintEditor=hintEditor;
+    item.__explainEditor=explainEditor;
+  }
+
+  function openManualEditor(triggerBtn){
+    if(!manualEditorDialog) return;
+    manualEditorLastFocus = triggerBtn || document.activeElement || null;
+    if(!manualEditorReady) buildManualEditor();
+    populateManualEditor();
+    if(typeof manualEditorDialog.showModal==='function'){
+      manualEditorDialog.removeAttribute('hidden');
+      if(!manualEditorDialog.open) manualEditorDialog.showModal();
+    }else{
+      manualEditorDialog.setAttribute('open','');
+      manualEditorDialog.removeAttribute('hidden');
+    }
+    requestAnimationFrame(()=>{
+      const focusable=manualEditorDialog.querySelector('input, textarea, [contenteditable="true"]');
+      if(focusable && typeof focusable.focus==='function'){ focusable.focus(); }
+    });
+  }
+
+  function closeManualEditor(result){
+    if(!manualEditorDialog) return;
+    if(typeof manualEditorDialog.close==='function'){
+      if(manualEditorDialog.open) manualEditorDialog.close(result||'close');
+    }else{
+      manualEditorDialog.removeAttribute('open');
+    }
+    manualEditorDialog.setAttribute('hidden','');
+    const target=manualEditorLastFocus;
+    manualEditorLastFocus=null;
+    if(target && typeof target.focus==='function'){
+      target.focus();
+    }
+  }
+
+  function collectPlaceholderPayload(){
+    const out={};
+    manualPlaceholderEditors.forEach((editor,key)=>{
+      const value=editor.getValue();
+      if(value) out[key]=value;
+    });
+    return out;
+  }
+
+  function collectSectionTitlesPayload(){
+    const out={};
+    manualSectionTitleInputs.forEach((input,key)=>{
+      const value=input.value.trim();
+      if(value) out[key]=value;
+    });
+    return out;
+  }
+
+  function collectSectionIconsPayload(){
+    const out={};
+    manualSectionIconInputs.forEach((input,key)=>{
+      const value=normalizeIconClass(input.value.trim());
+      if(value) out[key]=value;
+    });
+    const moduleValues=manualModuleIconInputs
+      .map(input=>normalizeIconClass(input.value.trim()))
+      .filter(Boolean);
+    if(moduleValues.length){
+      out.percorsoModules=moduleValues;
+    }
+    return out;
+  }
+
+  function collectGlossaryPayload(){
+    if(!manualGlossaryList) return [];
+    const entries=[];
+    manualGlossaryList.querySelectorAll('.manual-glossary-item').forEach(item=>{
+      const term=item.__termInput?.value.trim()||'';
+      const def=item.__editor?.getValue()||'';
+      if(term || def){
+        entries.push({term,def});
+      }
+    });
+    return entries;
+  }
+
+  function collectQuizPayload(){
+    if(!manualQuizList) return [];
+    const entries=[];
+    manualQuizList.querySelectorAll('.manual-quiz-item').forEach(item=>{
+      const question=item.__questionEditor?.getValue()||'';
+      const choices=[];
+      let correctIndex=null;
+      const rows=item.__choicesContainer?.querySelectorAll('.manual-quiz-choice')||[];
+      rows.forEach(row=>{
+        const input=row.querySelector('input[type="text"]');
+        const text=input?.value.trim()||'';
+        if(!text) return;
+        const idx=choices.length;
+        choices.push(text);
+        const radio=row.querySelector('input[type="radio"]');
+        if(radio?.checked) correctIndex=idx;
+      });
+      if(!question || !choices.length) return;
+      const entry={q:question,choices,correct:typeof correctIndex==='number'?correctIndex:0};
+      const hint=item.__hintEditor?.getValue()||'';
+      const explain=item.__explainEditor?.getValue()||'';
+      if(hint) entry.hint=hint;
+      if(explain) entry.explain=explain;
+      entries.push(entry);
+    });
+    return entries;
+  }
+
+  function handleManualSubmit(event){
+    event.preventDefault();
+    if(!manualEditorDialog) return;
+    const payload={};
+    const placeholders=collectPlaceholderPayload();
+    if(Object.keys(placeholders).length) payload.placeholders=placeholders;
+    const titles=collectSectionTitlesPayload();
+    if(Object.keys(titles).length) payload.sectionTitles=titles;
+    const icons=collectSectionIconsPayload();
+    if(Object.keys(icons).length) payload.sectionIcons=icons;
+
+    const image={};
+    const src=manualImageSrc?.value.trim();
+    const alt=manualImageAlt?.value.trim();
+    const caption=manualImageCaption?.value.trim();
+    const creditLabel=manualImageCreditLabel?.value.trim();
+    const creditUrl=manualImageCreditUrl?.value.trim();
+    const inlineSvg=manualInlineSvg?.value.trim();
+    const inlineAlt=manualInlineAlt?.value.trim();
+    if(src) image.src=src;
+    if(alt) image.ALT=alt;
+    if(caption) image.caption=caption;
+    if(creditLabel) image.creditLabel=creditLabel;
+    if(creditUrl) image.creditUrl=creditUrl;
+    if(inlineSvg) image.inlineSvg=inlineSvg;
+    if(inlineAlt) image.inlineAlt=inlineAlt;
+    if(Object.keys(image).length) payload.image=image;
+
+    const mermaid=manualMermaidTextarea?.value.trim();
+    if(mermaid) payload.mermaid=mermaid;
+
+    const glossary=collectGlossaryPayload();
+    if(glossary.length) payload.glossario=glossary;
+
+    const quiz=collectQuizPayload();
+    if(quiz.length) payload.quiz=quiz;
+
+    try{
+      ingestData(payload);
+      if(typeof announce==='function') announce('Contenuti aggiornati manualmente.');
+      closeManualEditor('confirm');
+    }catch(err){
+      console.error('Errore durante l\'aggiornamento manuale dei contenuti', err);
+      alert('Impossibile applicare i contenuti. Controlla i dati inseriti.');
+    }
+  }
+
+  manualEditorForm?.addEventListener('submit', handleManualSubmit);
+  manualEditorCancelBtn?.addEventListener('click', ()=>closeManualEditor('cancel'));
+  manualEditorDialog?.addEventListener('cancel',(event)=>{
+    event.preventDefault();
+    closeManualEditor('cancel');
+  });
+  manualAddGlossaryBtn?.addEventListener('click', ()=>addGlossaryItem());
+  manualGlossaryList?.addEventListener('click',(event)=>{
+    const btn=event.target.closest('[data-action="remove-glossary"]');
+    if(!btn) return;
+    event.preventDefault();
+    const item=btn.closest('.manual-glossary-item');
+    if(item){
+      item.remove();
+      if(manualGlossaryList.children.length===0) addGlossaryItem();
+    }
+  });
+  manualAddQuizBtn?.addEventListener('click', ()=>addQuizItem());
+  manualQuizList?.addEventListener('click',(event)=>{
+    const btn=event.target.closest('[data-action]');
+    if(!btn) return;
+    event.preventDefault();
+    const action=btn.dataset.action;
+    const item=btn.closest('.manual-quiz-item');
+    if(action==='remove-quiz' && item){
+      item.remove();
+      if(manualQuizList.children.length===0) addQuizItem();
+      return;
+    }
+    if(action==='remove-choice' && item){
+      const row=btn.closest('.manual-quiz-choice');
+      row?.remove();
+      ensureMinimumChoices(item);
+      return;
+    }
+    if(action==='add-choice' && item){
+      addQuizChoiceRow(item);
+      return;
+    }
+  });
 
   window.openImportDialog=openImportDialog;
   window.closeImportDialog=closeImportDialog;
@@ -2944,6 +3852,7 @@ document.addEventListener('click',e=>{
     const settingsMenu=document.getElementById('tbSettingsMenu');
     const importBtn=document.getElementById('tbImport');
     const pasteBtn=document.getElementById('tbPasteImport');
+    const manualBtn=document.getElementById('tbManualEditor');
     const exportBtn=document.getElementById('tbExport');
     const downloadBtn=document.getElementById('tbDownloadTemplate');
     const exampleDemoBtn=document.getElementById('tbDownloadExample');
@@ -3043,6 +3952,14 @@ document.addEventListener('click',e=>{
       event.preventDefault();
       if(typeof openImportDialog==='function'){
         openImportDialog(pasteBtn);
+      }
+      closeMenu(true);
+    });
+
+    manualBtn?.addEventListener('click', (event)=>{
+      event.preventDefault();
+      if(typeof openManualEditor==='function'){
+        openManualEditor(manualBtn);
       }
       closeMenu(true);
     });
