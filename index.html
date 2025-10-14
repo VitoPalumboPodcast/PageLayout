@@ -2521,6 +2521,104 @@ document.addEventListener('click',e=>{
   ensure('buildGlossary', NOP);
   ensure('applyPrefs', NOP);
   ensure('renderQuizList', NOP);
+  ensure('applySectionIcons', function(icons){
+    if(!icons || typeof icons!=='object') return;
+
+    const headingMap={
+      orientamento:'#orientamento>h1',
+      immagine:'#immagine>h2',
+      percorso:'#percorso>h2',
+      attivazione:'#attivazione>h2',
+      primer:'#primer>h2',
+      schema:'#schema>h2',
+      attivita:'#attivita>h2',
+      quiz:'#quiz>h2',
+      glossario:'#glossario>h2',
+      docente:'#docente>h2'
+    };
+
+    const sanitizeClasses=value=>{
+      if(typeof value!=='string') return '';
+      return value
+        .split(/\s+/)
+        .map(token=>token.trim())
+        .filter(token=>/^fa[a-z0-9-]*$/i.test(token))
+        .join(' ')
+        .trim();
+    };
+
+    const ensureIconEl=heading=>{
+      if(!heading) return null;
+      let iconEl=heading.querySelector('i');
+      if(!iconEl){
+        iconEl=document.createElement('i');
+        iconEl.setAttribute('aria-hidden','true');
+        heading.insertBefore(iconEl, heading.firstChild||null);
+        const next=iconEl.nextSibling;
+        if(!next || next.nodeType!==Node.TEXT_NODE){
+          heading.insertBefore(document.createTextNode(' '), iconEl.nextSibling);
+        }else if(!/^\s/.test(next.textContent||'')){
+          next.textContent=' '+next.textContent;
+        }
+      }
+      return iconEl;
+    };
+
+    const moduleClasses=[];
+
+    const applyHeadingIcon=(key, raw)=>{
+      const selector=headingMap[key];
+      if(!selector) return;
+      const heading=document.querySelector(selector);
+      if(!heading) return;
+
+      let iconClass='';
+      let modules=null;
+      if(raw && typeof raw==='object' && !Array.isArray(raw)){
+        if(raw.icon) iconClass=sanitizeClasses(raw.icon);
+        if(Array.isArray(raw.modules)){
+          modules=raw.modules.map(sanitizeClasses).filter(Boolean);
+        }
+      }else{
+        iconClass=sanitizeClasses(raw);
+      }
+
+      if(iconClass){
+        const iconEl=ensureIconEl(heading);
+        if(iconEl){
+          iconEl.className=iconClass;
+          if(!iconEl.hasAttribute('aria-hidden')) iconEl.setAttribute('aria-hidden','true');
+        }
+      }
+
+      if(key==='percorso' && modules && modules.length){
+        moduleClasses.splice(0,moduleClasses.length,...modules);
+      }
+    };
+
+    Object.keys(icons).forEach(key=>{
+      if(key==='percorsoModules') return;
+      applyHeadingIcon(key, icons[key]);
+    });
+
+    if(Array.isArray(icons.percorsoModules)){
+      const sanitized=icons.percorsoModules.map(sanitizeClasses).filter(Boolean);
+      if(sanitized.length){
+        moduleClasses.splice(0,moduleClasses.length,...sanitized);
+      }
+    }
+
+    if(moduleClasses.length){
+      const moduleIcons=document.querySelectorAll('#percorso .concept-icon i');
+      moduleClasses.forEach((cls,idx)=>{
+        const iconEl=moduleIcons[idx];
+        if(iconEl && cls){
+          iconEl.className=cls;
+          if(!iconEl.hasAttribute('aria-hidden')) iconEl.setAttribute('aria-hidden','true');
+        }
+      });
+    }
+  });
   ensure('applySectionTitles', function(titles){
     if(!titles) return;
     const map = {
@@ -2797,6 +2895,7 @@ document.addEventListener('click',e=>{
     const payload=(data && typeof data==='object') ? data : {};
     const ph=payload.placeholders||{};
     applyGlobalPlaceholders(ph);
+    call('applySectionIcons', payload.sectionIcons||null);
     call('applySectionTitles', payload.sectionTitles||null);
     if(payload.image){
       const img=Object.assign({}, payload.image);

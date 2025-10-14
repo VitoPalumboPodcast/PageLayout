@@ -102,6 +102,25 @@
     "quiz": "Verifica rapida sulla crisi",
     "glossario": "Lessico della tarda Repubblica"
   },
+  "sectionIcons": {
+    "orientamento": "fa-solid fa-landmark",
+    "immagine": "fa-solid fa-map",
+    "percorso": {
+      "icon": "fa-solid fa-route",
+      "modules": [
+        "fa-solid fa-scale-balanced",
+        "fa-solid fa-shield-halved",
+        "fa-solid fa-crown"
+      ]
+    },
+    "attivazione": "fa-solid fa-flag",
+    "primer": "fa-solid fa-scroll",
+    "schema": "fa-solid fa-timeline",
+    "attivita": "fa-solid fa-list-check",
+    "quiz": "fa-solid fa-circle-question",
+    "docente": "fa-solid fa-user-tie",
+    "glossario": "fa-solid fa-book-open"
+  },
   "image": {
     "src": "https://upload.wikimedia.org/wikipedia/commons/5/58/Mondo_romano_nel_56_aC_al_tempo_del_primo_triumvirato.png",
     "ALT": "Carta del mondo romano nel 56 a.C. con province e alleati",

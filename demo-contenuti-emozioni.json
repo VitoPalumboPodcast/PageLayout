@@ -99,6 +99,25 @@
     "quiz": "Metti alla prova ciò che sai",
     "glossario": "Parole da tenere a mente"
   },
+  "sectionIcons": {
+    "orientamento": "fa-solid fa-heart-pulse",
+    "immagine": "fa-solid fa-photo-film",
+    "percorso": {
+      "icon": "fa-solid fa-diagram-project",
+      "modules": [
+        "fa-solid fa-heart",
+        "fa-solid fa-brain",
+        "fa-solid fa-hands-holding"
+      ]
+    },
+    "attivazione": "fa-solid fa-fire",
+    "primer": "fa-solid fa-lightbulb",
+    "schema": "fa-solid fa-network-wired",
+    "attivita": "fa-solid fa-people-group",
+    "quiz": "fa-solid fa-circle-question",
+    "docente": "fa-solid fa-user-graduate",
+    "glossario": "fa-solid fa-book-bookmark"
+  },
   "image": {
     "src": "https://mastercoachitalia.com/wp-content/uploads/2023/08/ruota-emozioni.png",
     "ALT": "Ruota delle emozioni con famiglie e intensità",
